@@ -7,6 +7,8 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
+    "prisma:generate": "pnpm --dir apps/api exec prisma generate --schema ../../prisma/schema.prisma",
+    "prisma:migrate": "pnpm --dir apps/api exec prisma migrate dev --schema ../../prisma/schema.prisma",
     "format": "prettier --check .",
     "format:write": "prettier --write ."
   },
