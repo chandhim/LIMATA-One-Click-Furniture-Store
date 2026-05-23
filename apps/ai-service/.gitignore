@@ -1,0 +1,20 @@
+# Ignore bundled Python runtime and caches
+Python/
+Python/**
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.venv/
+pip-wheel-metadata/
+build/
+dist/
+.pytest_cache/
+
+# Node / JS
+node_modules/
+
+# Logs
+*.log
+.turbo
