@@ -127,6 +127,12 @@ dist
 
 # pnpm
 .pnpm-store
+.turbo
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
 
 # yarn v3
 .pnp.*

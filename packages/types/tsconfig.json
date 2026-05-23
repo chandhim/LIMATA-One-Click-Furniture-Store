@@ -1,0 +1,5 @@
+{
+  "extends": "@limata/config/typescript/base",
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
