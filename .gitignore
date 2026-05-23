@@ -147,3 +147,23 @@ __pycache__/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# OS, IDE and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE directories
+.idea/
+.vscode/
+
+# Build outputs (additional)
+/build
+
+# Local env files (already generally covered but keep explicit common patterns)
+.env.local
+.env.*.local
+
+# Misc
+npm-debug.log*
+.cache/
