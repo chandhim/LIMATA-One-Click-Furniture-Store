@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "@limata/config": "workspace:*",
+    "@prisma/client": "^7.8.0",
     "prettier": "^3.6.2",
+    "prisma": "^7.8.0",
     "turbo": "^2.5.8"
   },
   "dependencies": {
