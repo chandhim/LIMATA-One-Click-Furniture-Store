@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ReactQueryProvider } from "@/components/providers/react-query-provider";
-import "./globals.css";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
+// import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LIMATA",
+  // title: "LIMATA",
   description: "AI-assisted furniture ecommerce monorepo starter",
 };
 

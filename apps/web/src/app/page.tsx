@@ -1,16 +1,16 @@
-import { Button } from "@limata/ui";
+import { MainLayout } from "@/components/layout/main-layout";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center gap-6 px-6 py-16">
-      <h1 className="text-3xl font-semibold">LIMATA Monorepo Starter</h1>
-      <p className="text-muted-foreground">
-        Next.js 15 web app connected to shared UI, API, and AI service
-        workspaces.
-      </p>
-      <div>
-        <Button>shadcn/ui button from packages/ui</Button>
-      </div>
-    </main>
+    <MainLayout>
+      <section className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6">
+        <div className="text-center">
+          <h1 className="text-5xl font-bold">LIMATA</h1>
+          <p className="mt-4 text-lg text-slate-600">
+            AI-assisted furniture ecommerce platform
+          </p>
+        </div>
+      </section>
+    </MainLayout>
   );
 }
