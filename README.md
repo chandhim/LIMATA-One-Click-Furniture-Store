@@ -1,2 +1,19 @@
 # LIMATA-One-Click-Furniture-Store
-AI-assisted furniture e-commerce platform with 3D and AR visualization, intelligent furniture placement analysis, contextual recommendations, YOLOv8 object detection, and MiDaS depth estimation to improve online furniture shopping and customer decision-making.
+
+Beginner-friendly modular monorepo starter for LIMATA (AI-assisted furniture ecommerce platform).
+
+## Workspace
+
+- `apps/web` — Next.js 15 (App Router, TypeScript, Tailwind, React Query, Zustand)
+- `apps/api` — Express.js + Prisma + PostgreSQL starter
+- `apps/ai-service` — FastAPI starter
+- `packages/ui` — shared shadcn/ui-style components
+- `packages/types` — shared TypeScript types
+- `packages/config` — shared TypeScript, ESLint, and Prettier configs
+
+## Getting started
+
+```bash
+pnpm install
+pnpm dev
+```

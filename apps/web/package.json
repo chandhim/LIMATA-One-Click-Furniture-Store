@@ -1,0 +1,30 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@limata/types": "workspace:*",
+    "@limata/ui": "workspace:*",
+    "@tanstack/react-query": "^5.90.3",
+    "next": "15.5.18",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^20.19.25",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "15.5.18",
+    "typescript": "^5.9.3"
+  }
+}
