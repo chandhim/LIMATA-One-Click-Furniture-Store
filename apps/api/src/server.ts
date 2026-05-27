@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
 import app from "./app";
+import { loadProjectEnv } from "./config/load-env";
 import { healthRouter } from "./modules/health/health.route";
 
-dotenv.config();
+loadProjectEnv();
 
 const port = Number(process.env.API_PORT ?? 4000);
 
