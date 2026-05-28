@@ -167,3 +167,34 @@ desktop.ini
 # Misc
 npm-debug.log*
 .cache/
+
+```gitignore
+# =========================
+# LIMATA Specific
+# =========================
+
+# AI model weights
+*.pt
+*.pth
+weights/
+models/
+
+# Upload folders
+uploads/
+temp/
+
+# Render
+.render
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# AI virtual environments
+venv/
+env/
+.venv/
+
+# Optional generated Python runtime folders
+Python/
+Python/**
+```
