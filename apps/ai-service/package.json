@@ -3,7 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "python -m uvicorn app.main:app --reload --port 8000",
-    "start": "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    "dev": ".venv\\Scripts\\python -m uvicorn app.main:app --reload --port 8000",
+    "start": ".venv\\Scripts\\python -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "axios": "^1.16.1",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "react-hook-form": "^7.76.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
