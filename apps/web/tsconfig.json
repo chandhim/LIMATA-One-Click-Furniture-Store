@@ -1,6 +1,7 @@
 {
   "extends": "@limata/config/typescript/nextjs",
   "compilerOptions": {
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
