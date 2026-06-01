@@ -2,10 +2,14 @@
 
 import { MainLayout } from "@/components/layout/main-layout";
 import { RegisterForm } from "@/features/auth/components/register-form";
-import { useAuthBootstrap } from "@/features/auth/hooks/use-auth-session";
+import {
+  useAuthBootstrap,
+  useRedirectIfAuthenticated,
+} from "@/features/auth/hooks/use-auth-session";
 
 export default function RegisterPage() {
   useAuthBootstrap();
+  useRedirectIfAuthenticated();
 
   return (
     <MainLayout>
