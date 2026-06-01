@@ -41,3 +41,23 @@ export function useAuthGuard(requiredRole?: AuthRole) {
     user,
   };
 }
+
+/**
+ * Redirects already-authenticated users away from guest-only pages
+ * (e.g. /login, /register) to /dashboard once the store has hydrated.
+ */
+export function useRedirectIfAuthenticated(redirectTo = "/dashboard") {
+  const router = useRouter();
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    if (isAuthenticated) {
+      router.replace(redirectTo);
+    }
+  }, [isHydrated, isAuthenticated, redirectTo, router]);
+}

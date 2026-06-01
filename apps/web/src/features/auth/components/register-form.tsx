@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { register } from "../api/auth";
+import { register as signUp } from "../api/auth";
 import { registerSchema, type RegisterSchema } from "../schemas/auth.schemas";
 import { useAuthStore } from "../store/use-auth-store";
 
@@ -24,7 +24,7 @@ export function RegisterForm() {
 
   const handleSubmit = form.handleSubmit(async (values) => {
     try {
-      const session = await register(values);
+      const session = await signUp(values);
       setSession(session);
       router.replace("/dashboard");
     } catch (error) {

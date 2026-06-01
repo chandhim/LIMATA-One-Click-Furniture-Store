@@ -2,10 +2,14 @@
 
 import { MainLayout } from "@/components/layout/main-layout";
 import { LoginForm } from "@/features/auth/components/login-form";
-import { useAuthBootstrap } from "@/features/auth/hooks/use-auth-session";
+import {
+  useAuthBootstrap,
+  useRedirectIfAuthenticated,
+} from "@/features/auth/hooks/use-auth-session";
 
 export default function LoginPage() {
   useAuthBootstrap();
+  useRedirectIfAuthenticated();
 
   return (
     <MainLayout>
