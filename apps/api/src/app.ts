@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { loadProjectEnv } from "./config/load-env";
 import { authRouter } from "./modules/auth/auth.routes";
+import { productsRouter } from "./modules/products/product.routes";
 import { healthRouter } from "./modules/health/health.route";
 import { errorHandler } from "./shared/middleware/error-handler";
 
@@ -21,6 +22,7 @@ app.use(express.json());
 
 app.use("/api/v1/health", healthRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/products", productsRouter);
 
 app.use(errorHandler);
 
