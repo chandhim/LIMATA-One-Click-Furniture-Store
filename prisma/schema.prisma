@@ -22,3 +22,23 @@ enum Role {
   CUSTOMER
   ADMIN
 }
+
+model Product {
+  id          String   @id @default(cuid())
+
+  name        String
+  description String
+
+  price       Float
+
+  stock       Int
+
+  category    String
+
+  material    String?
+
+  images      String[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
