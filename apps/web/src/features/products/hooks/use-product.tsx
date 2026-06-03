@@ -5,7 +5,9 @@ import { fetchProduct } from "../services/product.service";
 import type { Product } from "../types/product.types";
 
 export function useProduct(id: string | undefined) {
-  return useQuery<Product, Error>(["product", id], () => fetchProduct(id as string), {
+  return useQuery<Product, Error>({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id as string),
     enabled: Boolean(id),
   });
 }
