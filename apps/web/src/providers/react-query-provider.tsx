@@ -11,6 +11,8 @@ export function ReactQueryProvider({
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
   );
 }

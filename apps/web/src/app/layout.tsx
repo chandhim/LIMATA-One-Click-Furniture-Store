@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ReactQueryProvider } from "@/components/providers/react-query-provider";
+import { Providers } from "@/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,9 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full bg-background text-foreground">
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
+      <body className="min-h-full bg-background text-foreground" suppressHydrationWarning>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

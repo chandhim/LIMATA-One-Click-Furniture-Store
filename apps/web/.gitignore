@@ -39,3 +39,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+```gitignore
+# Turbo
+.turbo
+
+# Logs
+*.log
+
+# Cache
+.cache/
+
+# Vite temp files (safe for future tooling)
+.vite/
+
+# Local uploads/temp
+uploads/
+temp/
+```
