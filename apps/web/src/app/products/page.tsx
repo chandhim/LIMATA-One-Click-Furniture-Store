@@ -5,6 +5,8 @@ import { useProducts } from "@/features/products/hooks/use-products";
 import { ProductGrid } from "@/features/products/components/product-grid";
 import { ProductSearch } from "@/features/products/components/product-search";
 import { CategoryFilter } from "@/features/products/components/category-filter";
+import { ProductSkeleton } from "@/features/products/components/product-skeleton";
+import { ProductEmpty } from "@/features/products/components/product-empty";
 
 export default function ProductsPage() {
   const [search, setSearch] = useState<string | undefined>(undefined);
