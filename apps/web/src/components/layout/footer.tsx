@@ -1,26 +1,224 @@
+"use client";
+
+import Link from "next/link";
+
 export function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="border-t bg-gray-50 px-6 py-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-          <div>
-            <div className="text-xl font-semibold">LIMATA</div>
-            <div className="text-sm text-slate-600">One Click Furniture Store</div>
+    <footer
+      style={{
+        background: "var(--bg-dark)",
+        color: "var(--fg-inverse)",
+        paddingTop: "4rem",
+        paddingBottom: "2rem",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Decorative top gradient */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+          background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
+        }}
+      />
+
+      {/* Decorative background blob */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "-4rem",
+          right: "-6rem",
+          width: "24rem",
+          height: "24rem",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+        {/* Main Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "3rem",
+            paddingBottom: "3rem",
+          }}
+        >
+          {/* Brand Column */}
+          <div style={{ gridColumn: "span 2" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                marginBottom: "1rem",
+              }}
+            >
+              LIMATA
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "var(--accent)",
+                  display: "inline-block",
+                  marginBottom: 12,
+                  marginLeft: 2,
+                }}
+              />
+            </div>
+            <p
+              style={{
+                fontSize: "0.9375rem",
+                color: "rgba(250,249,247,0.55)",
+                lineHeight: 1.7,
+                maxWidth: "22rem",
+                marginBottom: "1.5rem",
+              }}
+            >
+              One-click furniture shopping with AI visualization. Transform your space with curated, quality pieces.
+            </p>
+            {/* Social Links */}
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              {["𝕏", "IG", "FB"].map((s) => (
+                <button
+                  key={s}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "var(--radius-sm)",
+                    border: "1px solid rgba(250,249,247,0.12)",
+                    background: "rgba(250,249,247,0.05)",
+                    color: "rgba(250,249,247,0.5)",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "border-color 0.2s, color 0.2s, background 0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+                    (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                    (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(250,249,247,0.12)";
+                    (e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.5)";
+                    (e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.05)";
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex gap-8">
-            <div>
-              <div className="font-medium">Links</div>
-              <div className="mt-2 flex flex-col text-sm text-slate-600">
-                <a href="/">Home</a>
-                <a href="/products">Products</a>
-                <a href="/contact">Contact</a>
-              </div>
+          {/* Links Column */}
+          <div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                marginBottom: "1.25rem",
+              }}
+            >
+              Navigate
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {[
+                { label: "Home", href: "/" },
+                { label: "Products", href: "/products" },
+                { label: "Categories", href: "/#categories" },
+                { label: "About", href: "/#about" },
+              ].map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "rgba(250,249,247,0.55)",
+                    textDecoration: "none",
+                    transition: "color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-inverse)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.55)")}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Legal Column */}
+          <div>
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                marginBottom: "1.25rem",
+              }}
+            >
+              Legal
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((label) => (
+                <span
+                  key={label}
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "rgba(250,249,247,0.55)",
+                    cursor: "pointer",
+                    transition: "color 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-inverse)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.55)")}
+                >
+                  {label}
+                </span>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-6 text-sm text-slate-500">© 2026 LIMATA</div>
+        {/* Bottom Bar */}
+        <div
+          style={{
+            borderTop: "1px solid rgba(250,249,247,0.08)",
+            paddingTop: "1.5rem",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.75rem",
+          }}
+        >
+          <p style={{ fontSize: "0.8125rem", color: "rgba(250,249,247,0.35)" }}>
+            © {year} LIMATA. All rights reserved.
+          </p>
+          <p style={{ fontSize: "0.8125rem", color: "rgba(250,249,247,0.25)" }}>
+            Crafted with care for beautiful spaces
+          </p>
+        </div>
       </div>
     </footer>
   );

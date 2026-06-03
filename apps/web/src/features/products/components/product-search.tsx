@@ -1,26 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 
-export function ProductSearch({ onSearch }: { onSearch: (q: string) => void }) {
-  const [q, setQ] = useState("");
+interface ProductSearchProps {
+  onSearch: (query: string) => void;
+}
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    onSearch(q);
-  }
+export function ProductSearch({ onSearch }: ProductSearchProps) {
+  const ref = useRef<HTMLInputElement>(null);
 
   return (
-    <form onSubmit={submit} className="flex gap-2">
+    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+      <svg
+        style={{
+          position: "absolute",
+          left: "0.875rem",
+          color: "var(--fg-muted)",
+          pointerEvents: "none",
+          flexShrink: 0,
+        }}
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
+      </svg>
       <input
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
+        ref={ref}
+        type="search"
         placeholder="Search furniture..."
-        className="border rounded px-3 py-2 flex-1"
+        onChange={(e) => onSearch(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "0.625rem 0.875rem 0.625rem 2.5rem",
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          fontSize: "0.9rem",
+          color: "var(--fg-primary)",
+          fontFamily: "var(--font-sans)",
+        }}
       />
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-        Search
-      </button>
-    </form>
+    </div>
   );
 }
