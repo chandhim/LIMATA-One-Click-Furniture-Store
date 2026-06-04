@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { Product } from "@prisma/client";
+import type { ProductCreate, ProductUpdate } from "./product.validation";
 
 export async function getProducts(opts: { search?: string; category?: string }) {
   const { search, category } = opts;
@@ -37,3 +38,37 @@ export async function getProductById(id: string) {
 
   return product as Product | null;
 }
+
+export async function createProduct(data: ProductCreate) {
+  const product = await prisma.product.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      category: data.category,
+      material: data.material,
+      images: [],
+    },
+  });
+
+  return product;
+}
+
+export async function updateProduct(id: string, data: ProductUpdate) {
+  const product = await prisma.product.update({
+    where: { id },
+    data,
+  });
+
+  return product;
+}
+
+export async function deleteProduct(id: string) {
+  const product = await prisma.product.delete({
+    where: { id },
+  });
+
+  return product;
+}
+
