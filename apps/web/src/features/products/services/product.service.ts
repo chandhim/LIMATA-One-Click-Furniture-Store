@@ -7,10 +7,10 @@ export async function fetchProducts(params?: { search?: string; category?: strin
     { params },
   );
 
-  return res.data as ProductSummary[];
+  return res.data.data as ProductSummary[];
 }
 
 export async function fetchProduct(id: string) {
   const res = await api.get<Product>(`/products/${id}`);
-  return res.data as Product;
+  return res.data.data as Product;
 }

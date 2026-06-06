@@ -1,13 +1,15 @@
 "use client";
 
-import { useAuthBootstrap, useAuthGuard } from "@/features/auth/hooks/use-auth-session";
 import { MainLayout } from "@/components/layout/main-layout";
 import { ProductForm } from "@/features/admin-products/components/product-form";
+import { useAuthBootstrap, useAuthGuard } from "@/features/auth/hooks/use-auth-session";
 import type { AuthRole } from "@/features/auth/types/auth.types";
+import { use } from "react";
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   useAuthBootstrap();
   const { isHydrated } = useAuthGuard("ADMIN" as AuthRole);
+  const { id } = use(params);
 
   if (!isHydrated) {
     return null;
@@ -21,7 +23,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           <p className="mt-2 text-slate-600">Update product details</p>
         </div>
 
-        <ProductForm productId={params.id} />
+        <ProductForm productId={id} />
       </section>
     </MainLayout>
   );
