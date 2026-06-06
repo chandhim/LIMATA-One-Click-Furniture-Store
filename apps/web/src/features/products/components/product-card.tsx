@@ -36,6 +36,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
         el.style.borderColor = "var(--accent-light)";
         const overlay = el.querySelector(".quick-view-overlay") as HTMLElement;
         if (overlay) overlay.style.opacity = "1";
+        const img = el.querySelector(".product-card-image") as HTMLElement;
+        if (img) img.style.transform = "scale(1.05)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
@@ -44,6 +46,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
         el.style.borderColor = "var(--border)";
         const overlay = el.querySelector(".quick-view-overlay") as HTMLElement;
         if (overlay) overlay.style.opacity = "0";
+        const img = el.querySelector(".product-card-image") as HTMLElement;
+        if (img) img.style.transform = "scale(1)";
       }}
     >
       {/* Image / Visual Area */}
@@ -59,9 +63,24 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           overflow: "hidden",
         }}
       >
-        <span style={{ opacity: 0.45, transition: "transform 0.4s ease" }}>
-          {emoji}
-        </span>
+        {product.images && product.images.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className="product-card-image"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transition: "transform 0.4s ease",
+            }}
+          />
+        ) : (
+          <span style={{ opacity: 0.45, transition: "transform 0.4s ease" }}>
+            {emoji}
+          </span>
+        )}
 
         {/* Gradient overlay on hover */}
         <div
