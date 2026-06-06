@@ -6,58 +6,64 @@ export function CTASection() {
   return (
     <section
       style={{
-        background: "linear-gradient(135deg, var(--bg-dark) 0%, #2D2520 50%, #1C1A17 100%)",
-        padding: "7rem 1.5rem",
+        background:
+          "linear-gradient(135deg, #C9935A 0%, #A8724A 50%, #8A5A38 100%)",
+        padding: "8rem 2rem",
         position: "relative",
         overflow: "hidden",
         textAlign: "center",
       }}
     >
-      {/* Dot grid pattern overlay */}
+      {/* Subtle texture */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          backgroundImage: "radial-gradient(circle, rgba(250,249,247,0.04) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
+          background:
+            "radial-gradient(ellipse at 30% 50%, rgba(255,230,190,0.15) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(100,50,20,0.2) 0%, transparent 60%)",
           pointerEvents: "none",
         }}
       />
 
-      {/* Warm glow */}
       <div
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "40rem",
-          height: "20rem",
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(201,169,110,0.12) 0%, transparent 70%)",
-          pointerEvents: "none",
+          maxWidth: "680px",
+          margin: "0 auto",
+          position: "relative",
         }}
-      />
-
-      <div style={{ maxWidth: "800px", margin: "0 auto", position: "relative" }}>
+      >
         {/* Label */}
         <div
           className="animate-fade-up"
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: "0.5rem",
-            fontSize: "0.75rem",
+            gap: "0.625rem",
+            fontSize: "0.7rem",
             fontWeight: 600,
-            letterSpacing: "0.12em",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: "var(--accent)",
+            color: "rgba(255,240,220,0.7)",
             marginBottom: "1.5rem",
           }}
         >
-          <span style={{ width: "1.5rem", height: "1.5px", background: "var(--accent)", display: "block" }} />
+          <span
+            style={{
+              display: "block",
+              width: "1.5rem",
+              height: "1px",
+              background: "rgba(255,240,220,0.5)",
+            }}
+          />
           Start Shopping
-          <span style={{ width: "1.5rem", height: "1.5px", background: "var(--accent)", display: "block" }} />
+          <span
+            style={{
+              display: "block",
+              width: "1.5rem",
+              height: "1px",
+              background: "rgba(255,240,220,0.5)",
+            }}
+          />
         </div>
 
         {/* Headline */}
@@ -67,24 +73,32 @@ export function CTASection() {
             fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
             fontWeight: 700,
             letterSpacing: "-0.03em",
-            color: "var(--fg-inverse)",
+            color: "#FAF9F7",
             lineHeight: 1.1,
-            marginBottom: "1.25rem",
+            marginBottom: "1.125rem",
           }}
         >
-          Ready to Find Your
-          <br />
-          <em style={{ fontStyle: "italic", color: "var(--accent)" }}>Perfect</em> Furniture?
+          Ready to Find Your{" "}
+          <em
+            style={{
+              fontStyle: "italic",
+              fontWeight: 400,
+              color: "rgba(255,240,210,0.85)",
+            }}
+          >
+            Perfect
+          </em>{" "}
+          Furniture?
         </h2>
 
         {/* Subtext */}
         <p
           className="animate-fade-up delay-200"
           style={{
-            fontSize: "1.0625rem",
+            fontSize: "1rem",
             color: "rgba(250,249,247,0.6)",
             lineHeight: 1.75,
-            maxWidth: "34rem",
+            maxWidth: "32rem",
             margin: "0 auto 2.5rem",
           }}
         >
@@ -92,64 +106,49 @@ export function CTASection() {
           your dream space to life — one click at a time.
         </p>
 
-        {/* CTA Buttons */}
-        <div
-          className="animate-fade-up delay-300"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "1rem",
-            justifyContent: "center",
-          }}
-        >
+        {/* Single CTA */}
+        <div className="animate-fade-up delay-300">
           <Link
             href="/products"
-            className="btn-shimmer"
             style={{
-              padding: "1rem 2.25rem",
-              fontSize: "1rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.625rem",
+              padding: "1.0625rem 2.5rem",
+              fontSize: "0.9375rem",
               fontWeight: 700,
-              color: "var(--fg-primary)",
+              color: "#8A5A38",
+              background: "#FAF9F7",
               textDecoration: "none",
               borderRadius: "var(--radius-full)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Start Shopping
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </Link>
-          <Link
-            href="/register"
-            style={{
-              padding: "1rem 2.25rem",
-              fontSize: "1rem",
-              fontWeight: 600,
-              color: "rgba(250,249,247,0.8)",
-              textDecoration: "none",
-              borderRadius: "var(--radius-full)",
-              border: "1.5px solid rgba(250,249,247,0.2)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              transition: "border-color 0.2s, color 0.2s",
+              letterSpacing: "0.01em",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              boxShadow: "0 4px 20px rgba(80,40,10,0.25)",
             }}
             onMouseEnter={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = "rgba(250,249,247,0.5)";
-              el.style.color = "rgba(250,249,247,1)";
+              el.style.transform = "translateY(-2px)";
+              el.style.boxShadow = "0 8px 32px rgba(80,40,10,0.35)";
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = "rgba(250,249,247,0.2)";
-              el.style.color = "rgba(250,249,247,0.8)";
+              el.style.transform = "translateY(0)";
+              el.style.boxShadow = "0 4px 20px rgba(80,40,10,0.25)";
             }}
           >
-            Create Free Account
+            Browse the Collection
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
       </div>

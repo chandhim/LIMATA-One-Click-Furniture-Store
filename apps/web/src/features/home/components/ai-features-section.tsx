@@ -2,24 +2,21 @@
 
 const aiFeatures = [
   {
-    number: "01",
     icon: "🎯",
-    title: "3D Product Visualization",
-    desc: "Rotate, zoom, and inspect every detail of our furniture in full 3D — before you buy. Get a true sense of scale, texture, and finish.",
+    title: "3D Visualization",
+    desc: "Rotate and inspect every detail before you buy. True sense of scale and texture.",
     badge: "Coming Soon",
   },
   {
-    number: "02",
     icon: "📱",
-    title: "AR Furniture Placement",
-    desc: "Point your phone camera at any room and drop furniture into the scene. See exactly how that sofa looks in your living room.",
+    title: "AR Placement",
+    desc: "Drop any piece into your room via your phone camera. See it live before ordering.",
     badge: "Beta",
   },
   {
-    number: "03",
     icon: "✨",
-    title: "AI Style Guidance",
-    desc: "Tell us your aesthetic and our AI recommends pieces that work together — color, scale, and proportion all considered.",
+    title: "AI Style Match",
+    desc: "Tell us your aesthetic — our AI recommends pieces that work together beautifully.",
     badge: "Coming Soon",
   },
 ];
@@ -29,59 +26,75 @@ export function AIFeaturesSection() {
     <section
       style={{
         background: "var(--bg-dark)",
-        padding: "6rem 1.5rem",
+        padding: "7rem 2rem",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Decorative blobs */}
+      {/* Subtle warm glow */}
       <div
         style={{
           position: "absolute",
-          top: "-8rem",
-          left: "-8rem",
-          width: "40rem",
-          height: "40rem",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "50rem",
+          height: "25rem",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 65%)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-6rem",
-          right: "-6rem",
-          width: "30rem",
-          height: "30rem",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 65%)",
+          background:
+            "radial-gradient(ellipse, rgba(201,169,110,0.07) 0%, transparent 70%)",
           pointerEvents: "none",
         }}
       />
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", position: "relative" }}>
-        {/* Section header */}
-        <div style={{ marginBottom: "3.5rem", textAlign: "center" }}>
+      <div
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          position: "relative",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "4rem",
+          }}
+        >
           <div
+            className="animate-fade-up"
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "0.5rem",
-              fontSize: "0.75rem",
+              gap: "0.625rem",
+              fontSize: "0.7rem",
               fontWeight: 600,
-              letterSpacing: "0.12em",
+              letterSpacing: "0.18em",
               textTransform: "uppercase",
               color: "var(--accent)",
               marginBottom: "1.25rem",
             }}
           >
-            <span style={{ display: "block", width: "1.5rem", height: "1.5px", background: "var(--accent)" }} />
+            <span
+              style={{
+                display: "block",
+                width: "1.5rem",
+                height: "1px",
+                background: "var(--accent)",
+              }}
+            />
             Future Technology
-            <span style={{ display: "block", width: "1.5rem", height: "1.5px", background: "var(--accent)" }} />
+            <span
+              style={{
+                display: "block",
+                width: "1.5rem",
+                height: "1px",
+                background: "var(--accent)",
+              }}
+            />
           </div>
           <h2
-            className="font-display animate-fade-up"
+            className="font-display animate-fade-up delay-100"
             style={{
               fontSize: "clamp(2rem, 3.5vw, 2.875rem)",
               fontWeight: 700,
@@ -94,106 +107,86 @@ export function AIFeaturesSection() {
             AI & AR Features
           </h2>
           <p
+            className="animate-fade-up delay-200"
             style={{
               fontSize: "1rem",
-              color: "rgba(250,249,247,0.55)",
-              maxWidth: "30rem",
+              color: "rgba(250,249,247,0.45)",
+              maxWidth: "28rem",
               margin: "0 auto",
               lineHeight: 1.75,
             }}
           >
-            Practical tools to help you visualize, match, and place furniture in your
-            real space — powered by modern AI and augmented reality.
+            Practical tools to visualize, match, and place furniture in your
+            real space.
           </p>
         </div>
 
-        {/* Feature Cards */}
+        {/* Cards */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "1.25rem",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "1.5rem",
           }}
         >
-          {aiFeatures.map((feature, i) => (
+          {aiFeatures.map((f, i) => (
             <div
-              key={feature.title}
+              key={f.title}
               className={`animate-fade-up delay-${(i + 1) * 100}`}
               style={{
                 background: "rgba(250,249,247,0.04)",
-                border: "1px solid rgba(250,249,247,0.08)",
+                border: "1px solid rgba(250,249,247,0.07)",
                 borderRadius: "var(--radius-lg)",
-                padding: "2rem",
-                transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease, background 0.3s ease",
+                padding: "2.25rem 2rem",
+                transition:
+                  "transform 0.3s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease",
                 cursor: "default",
-                position: "relative",
-                overflow: "hidden",
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.transform = "translateY(-5px)";
-                el.style.borderColor = "rgba(201,169,110,0.4)";
-                el.style.background = "rgba(250,249,247,0.07)";
+                el.style.borderColor = "rgba(201,169,110,0.3)";
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.transform = "translateY(0)";
-                el.style.borderColor = "rgba(250,249,247,0.08)";
-                el.style.background = "rgba(250,249,247,0.04)";
+                el.style.borderColor = "rgba(250,249,247,0.07)";
               }}
             >
-              {/* Number watermark */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "1rem",
-                  right: "1.25rem",
-                  fontFamily: "var(--font-serif)",
-                  fontSize: "5rem",
-                  fontWeight: 700,
-                  color: "rgba(250,249,247,0.04)",
-                  lineHeight: 1,
-                  userSelect: "none",
-                }}
-              >
-                {feature.number}
-              </div>
-
               {/* Icon */}
               <div
                 style={{
-                  width: 52,
-                  height: 52,
+                  width: 48,
+                  height: 48,
                   borderRadius: "var(--radius-md)",
-                  background: "rgba(201,169,110,0.15)",
-                  border: "1px solid rgba(201,169,110,0.25)",
+                  background: "rgba(201,169,110,0.12)",
+                  border: "1px solid rgba(201,169,110,0.2)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "1.5rem",
+                  fontSize: "1.375rem",
                   marginBottom: "1.5rem",
                 }}
               >
-                {feature.icon}
+                {f.icon}
               </div>
 
               {/* Badge */}
               <div
                 style={{
                   display: "inline-flex",
-                  alignItems: "center",
-                  fontSize: "0.7rem",
+                  fontSize: "0.68rem",
                   fontWeight: 700,
                   letterSpacing: "0.08em",
                   textTransform: "uppercase",
                   color: "var(--accent)",
-                  background: "rgba(201,169,110,0.12)",
+                  background: "rgba(201,169,110,0.1)",
                   borderRadius: "var(--radius-full)",
-                  padding: "0.25rem 0.625rem",
+                  padding: "0.2rem 0.6rem",
                   marginBottom: "0.875rem",
                 }}
               >
-                {feature.badge}
+                {f.badge}
               </div>
 
               <h3
@@ -201,25 +194,33 @@ export function AIFeaturesSection() {
                   fontSize: "1.0625rem",
                   fontWeight: 600,
                   color: "var(--fg-inverse)",
-                  marginBottom: "0.75rem",
+                  marginBottom: "0.625rem",
                   letterSpacing: "-0.01em",
                 }}
               >
-                {feature.title}
+                {f.title}
               </h3>
               <p
                 style={{
-                  fontSize: "0.9rem",
-                  color: "rgba(250,249,247,0.55)",
-                  lineHeight: 1.7,
+                  fontSize: "0.875rem",
+                  color: "rgba(250,249,247,0.45)",
+                  lineHeight: 1.75,
                 }}
               >
-                {feature.desc}
+                {f.desc}
               </p>
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          div[style*="grid-template-columns: repeat(3"] {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

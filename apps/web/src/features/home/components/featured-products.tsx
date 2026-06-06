@@ -14,9 +14,10 @@ export function FeaturedProducts() {
   return (
     <section
       style={{
-        background: "var(--bg-elevated)",
-        padding: "6rem 1.5rem",
+        background: "var(--bg-surface)",
+        padding: "7rem 2rem",
         position: "relative",
+        borderTop: "1px solid var(--border)",
       }}
     >
       <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
