@@ -3,14 +3,21 @@ import { dirname, resolve } from "node:path";
 
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-const s3Client = new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.R2_ENDPOINT}`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
-  },
-});
+let s3Client: S3Client | null = null;
+
+function getS3Client(): S3Client {
+  if (!s3Client) {
+    s3Client = new S3Client({
+      region: "auto",
+      endpoint: `https://${process.env.R2_ENDPOINT}`,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+      },
+    });
+  }
+  return s3Client;
+}
 
 function getApiBaseUrl() {
   return (process.env.API_PUBLIC_URL ?? `http://127.0.0.1:${process.env.API_PORT ?? 4000}`).replace(/\/$/, "");
@@ -35,7 +42,7 @@ export async function uploadToR2(key: string, buffer: Buffer, contentType: strin
         ContentType: contentType,
       });
 
-      await s3Client.send(command);
+      await getS3Client().send(command);
 
       return `${process.env.R2_PUBLIC_URL}/${key}`;
     } catch (error) {

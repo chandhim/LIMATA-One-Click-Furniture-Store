@@ -2,7 +2,10 @@ import { prisma } from "@/lib/prisma";
 import type { Product } from "@prisma/client";
 import type { ProductCreate, ProductUpdate } from "./product.validation";
 
-export async function getProducts(opts: { search?: string; category?: string }) {
+export async function getProducts(opts: {
+  search?: string;
+  category?: string;
+}) {
   const { search, category } = opts;
 
   const where: any = {};
@@ -28,7 +31,9 @@ export async function getProducts(opts: { search?: string; category?: string }) 
     orderBy: { createdAt: "desc" },
   });
 
-  return products as Array<Pick<Product, "id" | "name" | "price" | "category" | "images" | "stock">>;
+  return products as Array<
+    Pick<Product, "id" | "name" | "price" | "category" | "images" | "stock">
+  >;
 }
 
 export async function getProductById(id: string) {
@@ -48,7 +53,8 @@ export async function createProduct(data: ProductCreate) {
       stock: data.stock,
       category: data.category,
       material: data.material,
-      images: [],
+      images: data.images ?? [],
+      model3dUrl: data.model3dUrl ?? null,
     },
   });
 
@@ -71,4 +77,3 @@ export async function deleteProduct(id: string) {
 
   return product;
 }
-

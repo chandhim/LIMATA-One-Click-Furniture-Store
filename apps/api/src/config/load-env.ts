@@ -31,9 +31,11 @@ function loadEnvFile(envPath: string) {
 }
 
 export function loadProjectEnv() {
+  const relativeEnvPath = resolve(__dirname, "../../../.env");
   const workspaceRootEnvPath = resolve(process.cwd(), "../../.env");
   const apiLocalEnvPath = resolve(process.cwd(), ".env");
 
+  loadEnvFile(relativeEnvPath);
   loadEnvFile(workspaceRootEnvPath);
   loadEnvFile(apiLocalEnvPath);
 }
