@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { resolve } from "node:path";
 import { loadProjectEnv } from "./config/load-env";
 import { authRouter } from "./modules/auth/auth.routes";
 import { productsRouter } from "./modules/products/product.routes";
@@ -19,6 +20,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
 
 app.use("/api/v1/health", healthRouter);
 app.use("/api/auth", authRouter);
