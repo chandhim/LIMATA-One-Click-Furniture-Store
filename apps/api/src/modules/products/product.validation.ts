@@ -16,6 +16,8 @@ export const productCreateSchema = z.object({
   stock: z.number().int().nonnegative("Stock must be non-negative"),
   category: z.string().min(1, "Category is required"),
   material: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  model3dUrl: z.string().nullable().optional(),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();
@@ -24,4 +26,3 @@ export type ListQuery = z.infer<typeof listQuerySchema>;
 export type IdParam = z.infer<typeof idParamSchema>;
 export type ProductCreate = z.infer<typeof productCreateSchema>;
 export type ProductUpdate = z.infer<typeof productUpdateSchema>;
-

@@ -6,10 +6,10 @@ import type { ProductSummary } from "../types/product.types";
 export function ProductCard({ product }: { product: ProductSummary }) {
   const categoryEmoji: Record<string, string> = {
     "Living Room": "🛋️",
-    "Bedroom": "🛏️",
+    Bedroom: "🛏️",
     "Dining Room": "🍽️",
-    "Office": "💼",
-    "Storage": "📦",
+    Office: "💼",
+    Storage: "📦",
   };
   const emoji = categoryEmoji[product.category] ?? "🪑";
 
@@ -24,7 +24,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
         overflow: "hidden",
         textDecoration: "none",
         color: "inherit",
-        transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.3s ease",
+        transition:
+          "transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.3s ease",
         boxShadow: "var(--shadow-sm)",
         position: "relative",
       }}
@@ -67,7 +68,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to top, rgba(28,26,23,0.08), transparent)",
+            background:
+              "linear-gradient(to top, rgba(28,26,23,0.08), transparent)",
           }}
         />
 
@@ -99,9 +101,18 @@ export function ProductCard({ product }: { product: ProductSummary }) {
               gap: "0.375rem",
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
             Quick View
           </div>
