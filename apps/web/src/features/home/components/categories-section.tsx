@@ -1,11 +1,38 @@
 "use client";
 
+import Link from "next/link";
+
 const categories = [
-  { name: "Living Room", emoji: "🛋️", desc: "Sofas, armchairs & tables", bg: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)" },
-  { name: "Bedroom",     emoji: "🛏️", desc: "Beds, wardrobes & more",   bg: "linear-gradient(135deg, #EEF0F5 0%, #DDE1ED 100%)" },
-  { name: "Dining",      emoji: "🍽️", desc: "Tables, chairs & sets",    bg: "linear-gradient(135deg, #EFF5EE 0%, #DDECD9 100%)" },
-  { name: "Office",      emoji: "💼", desc: "Desks, chairs & storage",  bg: "linear-gradient(135deg, #F5F0EE 0%, #EDE0DC 100%)" },
-  { name: "Storage",     emoji: "📦", desc: "Shelves, cabinets & racks",bg: "linear-gradient(135deg, #F2EEF5 0%, #E2D9ED 100%)" },
+  {
+    name: "Living Room",
+    desc: "Sofas, armchairs & tables",
+    bg: "linear-gradient(145deg, #E8D0B0 0%, #C4966A 50%, #9A6A40 100%)",
+    emoji: "🛋️",
+  },
+  {
+    name: "Bedroom",
+    desc: "Beds, wardrobes & more",
+    bg: "linear-gradient(145deg, #D0D8E8 0%, #8A9EC4 50%, #5A6E9A 100%)",
+    emoji: "🛏️",
+  },
+  {
+    name: "Dining",
+    desc: "Tables, chairs & sets",
+    bg: "linear-gradient(145deg, #C8E0C0 0%, #7AAA6A 50%, #4A7A40 100%)",
+    emoji: "🍽️",
+  },
+  {
+    name: "Office",
+    desc: "Desks, chairs & storage",
+    bg: "linear-gradient(145deg, #E8D8C8 0%, #C4A07A 50%, #9A7050 100%)",
+    emoji: "💼",
+  },
+  {
+    name: "Storage",
+    desc: "Shelves, cabinets & racks",
+    bg: "linear-gradient(145deg, #DDD0E8 0%, #AA8ABE 50%, #7A5A9A 100%)",
+    emoji: "📦",
+  },
 ];
 
 export function CategoriesSection() {
@@ -13,30 +40,32 @@ export function CategoriesSection() {
     <section
       id="categories"
       style={{
-        background: "var(--bg-elevated)",
-        padding: "6rem 1.5rem",
-        position: "relative",
+        background: "var(--bg-base)",
+        padding: "7rem 0",
         overflow: "hidden",
       }}
     >
-      {/* Subtle top border */}
+      {/* Section header */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 1,
-          background: "var(--border)",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 2rem",
+          marginBottom: "3.5rem",
         }}
-      />
-
-      <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-        {/* Section header */}
-        <div style={{ marginBottom: "3.5rem" }}>
-          <div className="section-label animate-fade-up" style={{ marginBottom: "1rem" }}>
-            Shop by Room
-          </div>
+      >
+        <div className="section-label animate-fade-up" style={{ marginBottom: "1.125rem" }}>
+          Shop by Room
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: "1.5rem",
+            flexWrap: "wrap",
+          }}
+        >
           <h2
             className="font-display animate-fade-up delay-100"
             style={{
@@ -45,119 +74,177 @@ export function CategoriesSection() {
               letterSpacing: "-0.025em",
               color: "var(--fg-primary)",
               lineHeight: 1.15,
-              maxWidth: "28rem",
             }}
           >
-            Featured Categories
+            Explore Collections
           </h2>
-          <p
+          <Link
+            href="/products"
             className="animate-fade-up delay-200"
             style={{
-              marginTop: "0.75rem",
-              fontSize: "1rem",
+              fontSize: "0.85rem",
+              fontWeight: 500,
               color: "var(--fg-secondary)",
-              maxWidth: "26rem",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              transition: "color 0.2s ease, gap 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.color = "var(--fg-primary)";
+              el.style.gap = "0.75rem";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.color = "var(--fg-secondary)";
+              el.style.gap = "0.5rem";
             }}
           >
-            Find the perfect pieces for every room in your home.
-          </p>
-        </div>
-
-        {/* Category Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))",
-            gap: "1.25rem",
-          }}
-        >
-          {categories.map((cat, i) => (
-            <div
-              key={cat.name}
-              className={`card animate-fade-up delay-${(i + 1) * 100}`}
-              style={{
-                cursor: "pointer",
-                overflow: "hidden",
-                borderRadius: "var(--radius-lg)",
-                border: "1px solid var(--border)",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "var(--accent-light)";
-                el.style.transform = "translateY(-6px)";
-                el.style.boxShadow = "var(--shadow-lg)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "var(--border)";
-                el.style.transform = "translateY(0)";
-                el.style.boxShadow = "var(--shadow-sm)";
-              }}
-            >
-              {/* Image / Emoji area */}
-              <div
-                style={{
-                  height: "11rem",
-                  background: cat.bg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "3.5rem",
-                  position: "relative",
-                  transition: "font-size 0.3s ease",
-                }}
-              >
-                {cat.emoji}
-                {/* Subtle inner shadow */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "40%",
-                    background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.4))",
-                    pointerEvents: "none",
-                  }}
-                />
-              </div>
-
-              {/* Label */}
-              <div style={{ padding: "1.125rem 1.25rem 1.25rem" }}>
-                <div
-                  style={{
-                    fontSize: "0.9375rem",
-                    fontWeight: 600,
-                    color: "var(--fg-primary)",
-                    marginBottom: "0.25rem",
-                  }}
-                >
-                  {cat.name}
-                </div>
-                <div style={{ fontSize: "0.8125rem", color: "var(--fg-muted)" }}>
-                  {cat.desc}
-                </div>
-                <div
-                  style={{
-                    marginTop: "0.875rem",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.375rem",
-                    fontSize: "0.8125rem",
-                    fontWeight: 600,
-                    color: "var(--accent-dark)",
-                  }}
-                >
-                  Explore
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          ))}
+            View all
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </div>
+
+      {/* Horizontal photo card strip */}
+      <div
+        style={{
+          display: "flex",
+          gap: "1.25rem",
+          padding: "0 2rem",
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          maxWidth: "1280px",
+          margin: "0 auto",
+        }}
+      >
+        {categories.map((cat, i) => (
+          <Link
+            key={cat.name}
+            href="/products"
+            className={`animate-fade-up delay-${(i + 1) * 100}`}
+            style={{
+              flexShrink: 0,
+              width: "clamp(220px, 22vw, 280px)",
+              height: "380px",
+              borderRadius: "var(--radius-xl)",
+              overflow: "hidden",
+              position: "relative",
+              scrollSnapAlign: "start",
+              textDecoration: "none",
+              display: "block",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.transform = "translateY(-6px)";
+              el.style.boxShadow = "var(--shadow-lg)";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.transform = "translateY(0)";
+              el.style.boxShadow = "none";
+            }}
+          >
+            {/* Photo background */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: cat.bg,
+                transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+              }}
+            />
+
+            {/* Emoji centred */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "5rem",
+                opacity: 0.2,
+                userSelect: "none",
+              }}
+            >
+              {cat.emoji}
+            </div>
+
+            {/* Bottom gradient overlay */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to top, rgba(10,8,5,0.75) 0%, rgba(10,8,5,0.1) 55%, transparent 100%)",
+              }}
+            />
+
+            {/* Text content */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: "1.75rem 1.5rem",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--font-serif)",
+                  fontSize: "1.375rem",
+                  fontWeight: 600,
+                  color: "#FAF9F7",
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.2,
+                  marginBottom: "0.375rem",
+                }}
+              >
+                {cat.name}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.78rem",
+                  color: "rgba(250,249,247,0.6)",
+                  marginBottom: "1rem",
+                }}
+              >
+                {cat.desc}
+              </div>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.375rem",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "var(--accent-light)",
+                }}
+              >
+                Explore
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <style>{`
+        div::-webkit-scrollbar { display: none; }
+      `}</style>
     </section>
   );
 }

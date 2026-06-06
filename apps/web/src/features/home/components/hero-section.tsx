@@ -6,68 +6,109 @@ export function HeroSection() {
   return (
     <section
       style={{
-        background: "var(--bg-base)",
-        minHeight: "calc(100vh - 72px)",
-        display: "flex",
-        alignItems: "center",
         position: "relative",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "flex-end",
         overflow: "hidden",
       }}
     >
-      {/* Background decorative blobs */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-8rem",
-          right: "-6rem",
-          width: "42rem",
-          height: "42rem",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 65%)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-6rem",
-          left: "-8rem",
-          width: "36rem",
-          height: "36rem",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 65%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Dot grid pattern */}
+      {/* Background — warm interior gradient */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          backgroundImage: "radial-gradient(circle, rgba(28,26,23,0.06) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          pointerEvents: "none",
+          background:
+            "linear-gradient(145deg, #E8D5B8 0%, #D4B896 25%, #C4A078 50%, #B08060 75%, #906040 100%)",
         }}
       />
 
+      {/* Subtle texture layer */}
       <div
         style={{
-          maxWidth: "1280px",
-          margin: "0 auto",
-          padding: "5rem 1.5rem",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "4rem",
+          position: "absolute",
+          inset: 0,
+          backgroundImage:
+            "radial-gradient(ellipse at 70% 40%, rgba(255,240,220,0.35) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(100,60,20,0.25) 0%, transparent 50%)",
+        }}
+      />
+
+      {/* Large furniture silhouette — centred, very subtle */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
           alignItems: "center",
-          width: "100%",
-          position: "relative",
+          justifyContent: "center",
+          fontSize: "28rem",
+          opacity: 0.06,
+          userSelect: "none",
+          pointerEvents: "none",
         }}
       >
-        {/* Left: Text Content */}
+        🛋️
+      </div>
+
+      {/* Bottom gradient overlay — makes text readable */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to top, rgba(15,10,5,0.82) 0%, rgba(15,10,5,0.45) 40%, rgba(15,10,5,0.05) 75%, transparent 100%)",
+        }}
+      />
+
+      {/* Right-side vertical gradient for depth */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(to right, rgba(15,10,5,0.3) 0%, transparent 50%)",
+        }}
+      />
+
+      {/* Content — anchored bottom-left */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "0 2rem 4.5rem",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          alignItems: "flex-end",
+          gap: "3rem",
+        }}
+      >
+        {/* Left: headline + CTA */}
         <div>
           {/* Label */}
-          <div className="section-label animate-fade-up" style={{ marginBottom: "1.5rem" }}>
+          <div
+            className="animate-fade-up"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.625rem",
+              fontSize: "0.7rem",
+              fontWeight: 600,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "var(--accent-light)",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <span
+              style={{
+                display: "block",
+                width: "1.75rem",
+                height: "1px",
+                background: "var(--accent)",
+              }}
+            />
             One-Click Furniture Store
           </div>
 
@@ -75,54 +116,60 @@ export function HeroSection() {
           <h1
             className="font-display animate-fade-up delay-100"
             style={{
-              fontSize: "clamp(2.75rem, 5vw, 4.25rem)",
+              fontSize: "clamp(2.75rem, 5vw, 4.5rem)",
               fontWeight: 700,
-              lineHeight: 1.08,
+              lineHeight: 1.06,
               letterSpacing: "-0.03em",
-              color: "var(--fg-primary)",
-              marginBottom: "1.5rem",
+              color: "#FAF9F7",
+              marginBottom: "1.375rem",
             }}
           >
-            Transform Your
+            Crafted for
             <br />
-            Space with{" "}
+            the Way{" "}
             <em
-              className="text-gradient"
-              style={{ fontStyle: "italic", fontWeight: 600 }}
+              style={{
+                fontStyle: "italic",
+                fontWeight: 400,
+                color: "var(--accent-light)",
+              }}
             >
-              Smart
-            </em>
-            <br />
-            Furniture
+              You
+            </em>{" "}
+            Live.
           </h1>
 
-          {/* Description */}
+          {/* Subtext */}
           <p
             className="animate-fade-up delay-200"
             style={{
-              fontSize: "1.0625rem",
-              color: "var(--fg-secondary)",
+              fontSize: "1rem",
+              color: "rgba(250,249,247,0.65)",
               lineHeight: 1.75,
-              maxWidth: "34rem",
-              marginBottom: "2.5rem",
+              maxWidth: "30rem",
+              marginBottom: "2.25rem",
             }}
           >
-            Browse curated quality furniture, visualize pieces in your own
-            environment with AR, and make confident purchasing decisions — all
-            in one place.
+            Browse 2,400+ curated quality pieces — visualize them in your space
+            with AR and order in one click.
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTAs */}
           <div
             className="animate-fade-up delay-300"
-            style={{ display: "flex", flexWrap: "wrap", gap: "0.875rem", marginBottom: "3rem" }}
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "0.875rem",
+              marginBottom: "2.75rem",
+            }}
           >
             <Link
               href="/products"
               className="btn-shimmer"
               style={{
-                padding: "0.875rem 2rem",
-                fontSize: "0.9375rem",
+                padding: "0.9rem 2.25rem",
+                fontSize: "0.9rem",
                 fontWeight: 600,
                 color: "var(--fg-primary)",
                 textDecoration: "none",
@@ -130,60 +177,96 @@ export function HeroSection() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.5rem",
+                letterSpacing: "0.01em",
               }}
             >
-              Browse Products
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+              Browse Collection
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </Link>
             <a
-              href="#about"
-              className="btn-ghost"
+              href="#categories"
               style={{
-                padding: "0.875rem 2rem",
-                fontSize: "0.9375rem",
+                padding: "0.9rem 2.25rem",
+                fontSize: "0.9rem",
                 fontWeight: 500,
+                color: "rgba(250,249,247,0.85)",
                 textDecoration: "none",
                 borderRadius: "var(--radius-full)",
+                border: "1px solid rgba(250,249,247,0.25)",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.5rem",
-                color: "var(--fg-primary)",
+                transition: "border-color 0.2s ease, color 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "rgba(250,249,247,0.55)";
+                el.style.color = "#FAF9F7";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "rgba(250,249,247,0.25)";
+                el.style.color = "rgba(250,249,247,0.85)";
               }}
             >
-              Explore Features
+              Explore Rooms
             </a>
           </div>
 
-          {/* Stats Bar */}
+          {/* Stats */}
           <div
             className="animate-fade-up delay-400"
             style={{
               display: "flex",
-              gap: "2.5rem",
-              flexWrap: "wrap",
+              gap: "0",
+              alignItems: "center",
             }}
           >
             {[
-              { value: "2,400+", label: "Products" },
+              { value: "2,400+", label: "Pieces" },
               { value: "98%", label: "Happy Clients" },
               { value: "5★", label: "Avg Rating" },
-            ].map((stat) => (
-              <div key={stat.label}>
+            ].map((stat, i) => (
+              <div
+                key={stat.label}
+                style={{
+                  paddingRight: "1.5rem",
+                  marginRight: "1.5rem",
+                  borderRight:
+                    i < 2 ? "1px solid rgba(250,249,247,0.15)" : "none",
+                }}
+              >
                 <div
                   style={{
                     fontFamily: "var(--font-serif)",
-                    fontSize: "1.625rem",
+                    fontSize: "1.375rem",
                     fontWeight: 700,
-                    color: "var(--fg-primary)",
+                    color: "#FAF9F7",
                     letterSpacing: "-0.02em",
                     lineHeight: 1,
                   }}
                 >
                   {stat.value}
                 </div>
-                <div style={{ fontSize: "0.8125rem", color: "var(--fg-muted)", marginTop: "0.25rem" }}>
+                <div
+                  style={{
+                    fontSize: "0.72rem",
+                    color: "rgba(250,249,247,0.5)",
+                    marginTop: "0.25rem",
+                    letterSpacing: "0.05em",
+                  }}
+                >
                   {stat.label}
                 </div>
               </div>
@@ -191,164 +274,142 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Right: Visual Panel */}
+        {/* Right: minimal floating product card */}
         <div
-          className="animate-scale-in delay-200"
-          style={{ position: "relative" }}
+          className="animate-fade-up delay-300"
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          }}
         >
-          {/* Main image card */}
           <div
             style={{
-              background: "var(--bg-elevated)",
-              borderRadius: "var(--radius-xl)",
-              border: "1px solid var(--border)",
-              overflow: "hidden",
-              aspectRatio: "4/5",
-              position: "relative",
-              boxShadow: "var(--shadow-lg)",
+              background: "rgba(255,255,255,0.10)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              borderRadius: "var(--radius-lg)",
+              padding: "1.25rem 1.5rem",
+              minWidth: "220px",
             }}
           >
-            {/* Gradient placeholder */}
             <div
               style={{
-                position: "absolute",
-                inset: 0,
-                background: "linear-gradient(145deg, #F0EBE3 0%, #E8DDD0 40%, #D4C5B0 100%)",
-              }}
-            />
-            {/* Decorative furniture silhouette */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "9rem",
-                opacity: 0.18,
+                fontSize: "0.68rem",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "rgba(250,249,247,0.5)",
+                marginBottom: "0.5rem",
               }}
             >
-              🛋️
+              Featured Piece
             </div>
-            {/* Label overlay */}
             <div
               style={{
-                position: "absolute",
-                bottom: "1.5rem",
-                left: "1.5rem",
-                background: "rgba(255,255,255,0.92)",
-                backdropFilter: "blur(8px)",
-                borderRadius: "var(--radius-md)",
-                padding: "0.875rem 1.125rem",
-                border: "1px solid var(--border)",
-                boxShadow: "var(--shadow-md)",
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.125rem",
+                fontWeight: 600,
+                color: "#FAF9F7",
+                marginBottom: "0.375rem",
+                lineHeight: 1.3,
               }}
             >
-              <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", marginBottom: "0.25rem" }}>
-                Featured piece
-              </div>
-              <div style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)" }}>
-                Modern Lounge Sofa
-              </div>
-              <div
-                style={{
-                  fontSize: "0.875rem",
-                  color: "var(--accent-dark)",
-                  fontWeight: 600,
-                  marginTop: "0.25rem",
-                }}
+              Modern Lounge Sofa
+            </div>
+            <div
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--accent-light)",
+                fontWeight: 600,
+              }}
+            >
+              Rs. 45,000
+            </div>
+            <Link
+              href="/products/1"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.375rem",
+                marginTop: "1rem",
+                fontSize: "0.78rem",
+                fontWeight: 500,
+                color: "rgba(250,249,247,0.7)",
+                textDecoration: "none",
+                letterSpacing: "0.04em",
+                transition: "color 0.2s ease",
+              }}
+              onMouseEnter={(e) =>
+                ((e.currentTarget as HTMLElement).style.color = "#FAF9F7")
+              }
+              onMouseLeave={(e) =>
+                ((e.currentTarget as HTMLElement).style.color =
+                  "rgba(250,249,247,0.7)")
+              }
+            >
+              View product
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                Rs. 45,000
-              </div>
-            </div>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
-
-          {/* Floating badge 1 */}
-          <div
-            className="animate-float"
-            style={{
-              position: "absolute",
-              top: "-1.25rem",
-              left: "-2rem",
-              background: "var(--bg-surface)",
-              borderRadius: "var(--radius-md)",
-              padding: "0.75rem 1rem",
-              border: "1px solid var(--border)",
-              boxShadow: "var(--shadow-md)",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.625rem",
-            }}
-          >
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "var(--radius-sm)",
-                background: "rgba(201,169,110,0.15)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.25rem",
-              }}
-            >
-              🏠
-            </div>
-            <div>
-              <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)" }}>AR Preview</div>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-primary)" }}>Live</div>
-            </div>
-          </div>
-
-          {/* Floating badge 2 */}
-          <div
-            className="animate-float delay-300"
-            style={{
-              position: "absolute",
-              bottom: "3rem",
-              right: "-1.75rem",
-              background: "var(--bg-dark)",
-              color: "var(--fg-inverse)",
-              borderRadius: "var(--radius-md)",
-              padding: "0.75rem 1.125rem",
-              boxShadow: "var(--shadow-lg)",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-          >
-            <span style={{ fontSize: "1.125rem" }}>✨</span>
-            <div>
-              <div style={{ fontSize: "0.75rem", color: "rgba(250,249,247,0.55)" }}>AI Powered</div>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>Smart Match</div>
-            </div>
-          </div>
-
-          {/* Decorative corner brackets */}
-          {[
-            { top: -8, left: -8, borderTop: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)" },
-            { top: -8, right: -8, borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)" },
-            { bottom: -8, left: -8, borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)" },
-            { bottom: -8, right: -8, borderBottom: "2px solid var(--accent)", borderRight: "2px solid var(--accent)" },
-          ].map((style, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                width: 24,
-                height: 24,
-                ...style,
-              }}
-            />
-          ))}
         </div>
       </div>
 
-      {/* Responsive layout style */}
+      {/* Scroll indicator */}
+      <div
+        className="animate-fade-up delay-500"
+        style={{
+          position: "absolute",
+          bottom: "2rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "0.5rem",
+          opacity: 0.4,
+        }}
+      >
+        <div
+          style={{
+            fontSize: "0.65rem",
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "#FAF9F7",
+          }}
+        >
+          Scroll
+        </div>
+        <div
+          style={{
+            width: "1px",
+            height: "2.5rem",
+            background:
+              "linear-gradient(to bottom, rgba(250,249,247,0.6), transparent)",
+          }}
+        />
+      </div>
+
+      {/* Responsive */}
       <style>{`
         @media (max-width: 768px) {
           section > div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
+            padding-bottom: 3rem !important;
+          }
+          section > div[style*="grid-template-columns"] > div:last-child {
+            justify-content: flex-start !important;
           }
         }
       `}</style>
