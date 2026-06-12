@@ -1,5 +1,10 @@
 "use client";
 
+import Image from "next/image";
+
+const FEATURES_IMAGE_URL =
+  "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/banners/features-panel.png";
+
 const features = [
   {
     title: "Curated Quality",
@@ -127,34 +132,25 @@ export function FeaturesSection() {
               overflow: "hidden",
               aspectRatio: "4/5",
               position: "relative",
-              background:
-                "linear-gradient(145deg, #E8D0B0 0%, #C4966A 40%, #9A6A40 100%)",
               boxShadow: "var(--shadow-lg)",
             }}
           >
-            {/* Furniture silhouette */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "10rem",
-                opacity: 0.12,
-                userSelect: "none",
-              }}
-            >
-              🏠
-            </div>
+            {/* Real interior photo from R2 */}
+            <Image
+              src={FEATURES_IMAGE_URL}
+              alt="Premium leather armchair in a warm luxury interior"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: "cover", objectPosition: "center top" }}
+            />
 
-            {/* Gradient overlay */}
+            {/* Gradient overlay for quote readability */}
             <div
               style={{
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(to top, rgba(10,8,5,0.5) 0%, transparent 60%)",
+                  "linear-gradient(to top, rgba(8,5,2,0.72) 0%, rgba(8,5,2,0.05) 55%, transparent 100%)",
               }}
             />
 

@@ -1,39 +1,43 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+
+const R2 = "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev";
 
 const categories = [
   {
     name: "Living Room",
     desc: "Sofas, armchairs & tables",
-    bg: "linear-gradient(145deg, #E8D0B0 0%, #C4966A 50%, #9A6A40 100%)",
-    emoji: "🛋️",
+    image: `${R2}/categories/living-room.png`,
+    alt: "Modern Scandinavian living room with beige sofa",
   },
   {
     name: "Bedroom",
     desc: "Beds, wardrobes & more",
-    bg: "linear-gradient(145deg, #D0D8E8 0%, #8A9EC4 50%, #5A6E9A 100%)",
-    emoji: "🛏️",
+    image: `${R2}/categories/bedroom.png`,
+    alt: "Serene luxury bedroom with upholstered headboard",
   },
   {
     name: "Dining",
     desc: "Tables, chairs & sets",
-    bg: "linear-gradient(145deg, #C8E0C0 0%, #7AAA6A 50%, #4A7A40 100%)",
-    emoji: "🍽️",
+    image: `${R2}/categories/dining.png`,
+    alt: "Stylish modern dining room with walnut table",
   },
   {
     name: "Office",
     desc: "Desks, chairs & storage",
-    bg: "linear-gradient(145deg, #E8D8C8 0%, #C4A07A 50%, #9A7050 100%)",
-    emoji: "💼",
+    image: `${R2}/categories/office.png`,
+    alt: "Sleek modern home office with standing desk",
   },
   {
     name: "Storage",
     desc: "Shelves, cabinets & racks",
-    bg: "linear-gradient(145deg, #DDD0E8 0%, #AA8ABE 50%, #7A5A9A 100%)",
-    emoji: "📦",
+    image: `${R2}/categories/storage.png`,
+    alt: "Elegant floor-to-ceiling wooden bookshelves",
   },
 ];
+
 
 export function CategoriesSection() {
   return (
@@ -152,31 +156,18 @@ export function CategoriesSection() {
               el.style.boxShadow = "none";
             }}
           >
-            {/* Photo background */}
-            <div
+            {/* Photorealistic room background image from R2 */}
+            <Image
+              src={cat.image}
+              alt={cat.alt}
+              fill
+              sizes="(max-width: 768px) 80vw, 280px"
               style={{
-                position: "absolute",
-                inset: 0,
-                background: cat.bg,
+                objectFit: "cover",
+                objectPosition: "center",
                 transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
               }}
             />
-
-            {/* Emoji centred */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "5rem",
-                opacity: 0.2,
-                userSelect: "none",
-              }}
-            >
-              {cat.emoji}
-            </div>
 
             {/* Bottom gradient overlay */}
             <div
@@ -184,9 +175,10 @@ export function CategoriesSection() {
                 position: "absolute",
                 inset: 0,
                 background:
-                  "linear-gradient(to top, rgba(10,8,5,0.75) 0%, rgba(10,8,5,0.1) 55%, transparent 100%)",
+                  "linear-gradient(to top, rgba(8,5,3,0.82) 0%, rgba(8,5,3,0.15) 55%, transparent 100%)",
               }}
             />
+
 
             {/* Text content */}
             <div
