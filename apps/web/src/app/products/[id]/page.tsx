@@ -1,58 +1,69 @@
 "use client";
 
-import Image from "next/image";
+import { use } from "react";
 import { useRouter } from "next/navigation";
 import { useProduct } from "@/features/products/hooks/use-product";
-import { useEffect } from "react";
+import { MainLayout } from "@/components/layout/main-layout";
+import { ProductDetailsView } from "@/features/products/components/product-details-view";
+import { ProductDetailsSkeleton } from "@/features/products/components/product-details-skeleton";
 
-export default function ProductDetails({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const { data, isLoading, isError } = useProduct(id);
+export default function ProductDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const { data: product, isLoading, isError } = useProduct(id);
   const router = useRouter();
 
-  useEffect(() => {
-    if (isError) {
-      // no-op: could navigate back
-    }
-  }, [isError]);
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <ProductDetailsSkeleton />
+      </MainLayout>
+    );
+  }
 
-  if (isLoading) return <div className="p-6">Loading...</div>;
-  if (isError || !data)
-    return <div className="p-6">Product not found. <button onClick={() => router.push('/products')} className="ml-2 px-3 py-1 bg-gray-800 text-white rounded">Back</button></div>;
-
-  const main = data.images?.[0] ?? "/favicon.ico";
+  if (isError || !product) {
+    return (
+      <MainLayout>
+        <div style={{ background: "var(--bg-base)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "4rem 2rem" }}>
+          <div style={{ textAlign: "center", maxWidth: "400px" }}>
+            <div style={{ fontSize: "3.5rem", marginBottom: "1.5rem" }}>🛋️</div>
+            <h1 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.75rem" }}>
+              Product Not Found
+            </h1>
+            <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "2rem", lineHeight: 1.6 }}>
+              The furniture piece you are looking for might have been moved, sold out, or is temporarily unavailable.
+            </p>
+            <button
+              onClick={() => router.push("/products")}
+              style={{
+                background: "var(--bg-dark)",
+                color: "var(--fg-inverse)",
+                border: "none",
+                borderRadius: "var(--radius-full)",
+                padding: "0.75rem 2rem",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "opacity 0.2s",
+                outline: "none",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              Back To Products
+            </button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <div className="w-full h-96 relative mb-4 bg-gray-50 rounded overflow-hidden">
-            <Image src={main} alt={data.name} fill className="object-cover rounded" />
-          </div>
-          {/* thumbnails */}
-          <div className="flex gap-2">
-            {data.images.map((src) => (
-              <div key={src} className="w-20 h-20 bg-gray-100 rounded overflow-hidden relative">
-                <Image src={src} alt={data.name} fill className="object-cover" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h1 className="text-2xl font-bold">{data.name}</h1>
-          <div className="text-xl mt-2 text-gray-800">Rs. {data.price.toLocaleString()}</div>
-          <div className="mt-2 text-sm text-gray-600">Category: {data.category}</div>
-          <div className="mt-2 text-sm text-gray-600">Material: {data.material ?? "-"}</div>
-          <div className="mt-2 text-sm font-medium">Stock: {data.stock}</div>
-
-          <div className="mt-4">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded">Add To Cart</button>
-          </div>
-
-          <div className="mt-6 text-gray-700">{data.description}</div>
-        </div>
-      </div>
-    </div>
+    <MainLayout>
+      <ProductDetailsView product={product} />
+    </MainLayout>
   );
 }
