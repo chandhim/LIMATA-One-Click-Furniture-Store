@@ -1,6 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
+
+const HERO_IMAGE_URL =
+  "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/banners/hero-banner.png";
 
 export function HeroSection() {
   return (
@@ -13,42 +17,15 @@ export function HeroSection() {
         overflow: "hidden",
       }}
     >
-      {/* Background — warm interior gradient */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(145deg, #E8D5B8 0%, #D4B896 25%, #C4A078 50%, #B08060 75%, #906040 100%)",
-        }}
+      {/* Real photorealistic hero background image from R2 */}
+      <Image
+        src={HERO_IMAGE_URL}
+        alt="Luxury furniture showroom — warm modern living room"
+        fill
+        priority
+        sizes="100vw"
+        style={{ objectFit: "cover", objectPosition: "center" }}
       />
-
-      {/* Subtle texture layer */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "radial-gradient(ellipse at 70% 40%, rgba(255,240,220,0.35) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(100,60,20,0.25) 0%, transparent 50%)",
-        }}
-      />
-
-      {/* Large furniture silhouette — centred, very subtle */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: "28rem",
-          opacity: 0.06,
-          userSelect: "none",
-          pointerEvents: "none",
-        }}
-      >
-        🛋️
-      </div>
 
       {/* Bottom gradient overlay — makes text readable */}
       <div
@@ -56,17 +33,17 @@ export function HeroSection() {
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to top, rgba(15,10,5,0.82) 0%, rgba(15,10,5,0.45) 40%, rgba(15,10,5,0.05) 75%, transparent 100%)",
+            "linear-gradient(to top, rgba(10,7,3,0.88) 0%, rgba(10,7,3,0.50) 40%, rgba(10,7,3,0.10) 70%, transparent 100%)",
         }}
       />
 
-      {/* Right-side vertical gradient for depth */}
+      {/* Left-side vignette for depth */}
       <div
         style={{
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(to right, rgba(15,10,5,0.3) 0%, transparent 50%)",
+            "linear-gradient(to right, rgba(10,7,3,0.35) 0%, transparent 55%)",
         }}
       />
 
