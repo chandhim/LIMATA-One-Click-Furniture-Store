@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
+import type { Product } from "@/features/products/types/product.types";
 
 const quickActions = [
   {
@@ -392,7 +393,7 @@ export default function AdminOverviewPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.slice(0, 5).map((product: any, i: number) => (
+                {products.slice(0, 5).map((product: Product, i: number) => (
                   <tr
                     key={product.id}
                     style={{

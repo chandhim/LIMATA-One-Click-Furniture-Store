@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import type { Product } from "@/features/products/types/product.types";
 
 export interface AdminProductCreate {
   name: string;
@@ -7,33 +8,36 @@ export interface AdminProductCreate {
   stock: number;
   category: string;
   material?: string;
+  images?: string[];
+  model3dUrl?: string;
 }
 
-export interface AdminProductUpdate extends Partial<AdminProductCreate> {}
+// type alias avoids @typescript-eslint/no-empty-object-type
+export type AdminProductUpdate = Partial<AdminProductCreate>;
 
 export async function fetchAdminProducts() {
   const res = await api.get("/products");
-  return res.data.data as any[];
+  return res.data.data as Product[];
 }
 
 export async function fetchAdminProduct(id: string) {
   const res = await api.get(`/products/${id}`);
-  return res.data.data as any;
+  return res.data.data as Product;
 }
 
 export async function createProductService(data: AdminProductCreate) {
   const res = await api.post("/products", data);
-  return res.data.data as any;
+  return res.data.data as Product;
 }
 
 export async function updateProductService(id: string, data: AdminProductUpdate) {
   const res = await api.put(`/products/${id}`, data);
-  return res.data.data as any;
+  return res.data.data as Product;
 }
 
 export async function deleteProductService(id: string) {
   const res = await api.delete(`/products/${id}`);
-  return res.data.data as any;
+  return res.data.data as Product;
 }
 
 export async function uploadImages(files: File[]) {

@@ -1,9 +1,12 @@
 import bcrypt from "bcryptjs";
 import type { User } from "@prisma/client";
-import { Role } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/shared/errors/api-error";
-import { generateToken } from "@/utils/jwt";
+import { generateToken } from "@/lib/jwt";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "./auth.repository";
 import type { AuthPayload, AuthUser, LoginInput, RegisterInput } from "./auth.types";
 
 function mapUser(user: User): AuthUser {
@@ -19,7 +22,7 @@ function mapUser(user: User): AuthUser {
 
 export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
   const email = input.email.toLowerCase();
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
     throw new ApiError(409, "Email is already registered");
@@ -27,13 +30,10 @@ export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
 
   const hashedPassword = await bcrypt.hash(input.password, 10);
 
-  const user = await prisma.user.create({
-    data: {
-      name: input.name.trim(),
-      email,
-      password: hashedPassword,
-      role: Role.CUSTOMER,
-    },
+  const user = await createUser({
+    name: input.name.trim(),
+    email,
+    password: hashedPassword,
   });
 
   return {
@@ -44,7 +44,7 @@ export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
 
 export async function loginUser(input: LoginInput): Promise<AuthPayload> {
   const email = input.email.toLowerCase();
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await findUserByEmail(email);
 
   if (!user) {
     throw new ApiError(401, "Invalid credentials");
@@ -63,7 +63,7 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
 }
 
 export async function getProfile(userId: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await findUserById(userId);
 
   if (!user) {
     throw new ApiError(404, "User not found");

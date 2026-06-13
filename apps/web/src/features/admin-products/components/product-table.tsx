@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
 import { useDeleteProduct } from "@/features/admin-products/hooks/use-delete-product";
+import type { Product } from "@/features/products/types/product.types";
 
 export function ProductTable() {
   const { data: products, isLoading } = useAdminProducts();
@@ -112,7 +113,7 @@ export function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: any, i: number) => (
+            {products.map((product: Product, i: number) => (
               <tr
                 key={product.id}
                 style={{

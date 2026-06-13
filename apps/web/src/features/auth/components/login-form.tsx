@@ -168,7 +168,7 @@ export function LoginForm() {
             }}
           >
             <p style={{ fontSize: "0.9rem", color: "rgba(250,249,247,0.7)", lineHeight: 1.7, fontStyle: "italic", marginBottom: "1rem" }}>
-              "LIMATA made furnishing my apartment effortless. The AR feature is mind-blowing."
+              &quot;LIMATA made furnishing my apartment effortless. The AR feature is mind-blowing.&quot;
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <div
@@ -227,7 +227,7 @@ export function LoginForm() {
               Sign in
             </h1>
             <p style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/register"
                 style={{ color: "var(--accent-dark)", fontWeight: 600, textDecoration: "none" }}

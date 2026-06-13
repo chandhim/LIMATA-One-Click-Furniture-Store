@@ -36,7 +36,7 @@ export function FeaturedProducts() {
         >
           <div>
             <div className="section-label animate-fade-up" style={{ marginBottom: "1rem" }}>
-              Editor's Pick
+              Editor&apos;s Pick
             </div>
             <h2
               className="font-display animate-fade-up delay-100"
@@ -92,7 +92,6 @@ export function FeaturedProducts() {
           }}
         >
           {samples.map((p) => (
-            // @ts-ignore
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

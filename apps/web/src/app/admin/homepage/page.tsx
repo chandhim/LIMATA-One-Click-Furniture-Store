@@ -244,7 +244,7 @@ function FeaturedProductsEditor() {
         <a href="/admin/products" style={{ color: "var(--accent-dark)", textDecoration: "none" }}>
           Product Management
         </a>{" "}
-        and enable the "Show on Homepage" toggle per product.
+        and enable the &quot;Show on Homepage&quot; toggle per product.
       </p>
       <div style={{ padding: "2rem", textAlign: "center", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)", border: "1px dashed var(--border-strong)" }}>
         <div style={{ fontSize: "2rem", marginBottom: "0.75rem", opacity: 0.3 }}>◻</div>

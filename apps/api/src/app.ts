@@ -2,10 +2,10 @@ import cors from "cors";
 import express from "express";
 import { resolve } from "node:path";
 import { loadProjectEnv } from "./config/load-env";
-import { authRouter } from "./modules/auth/auth.routes";
-import { productsRouter } from "./modules/products/product.routes";
+import { authRouter } from "./modules/auth/auth.route";
+import { productsRouter } from "./modules/products/product.route";
 import { healthRouter } from "./modules/health/health.route";
-import { errorHandler } from "./shared/middleware/error-handler";
+import { errorHandler } from "./middleware/error-handler";
 
 loadProjectEnv();
 
