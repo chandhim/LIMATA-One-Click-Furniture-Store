@@ -178,7 +178,6 @@ export default function ProductsPage() {
               }}
             >
               {Array.from({ length: 8 }).map((_, i) => (
-                // @ts-ignore
                 <ProductSkeleton key={i} />
               ))}
             </div>

@@ -173,8 +173,8 @@ export function FeaturesSection() {
                   marginBottom: "0.75rem",
                 }}
               >
-                "Good design is not about how a product looks, but how it
-                makes you feel at home."
+                &quot;Good design is not about how a product looks, but how it
+                makes you feel at home.&quot;
               </p>
               <div
                 style={{

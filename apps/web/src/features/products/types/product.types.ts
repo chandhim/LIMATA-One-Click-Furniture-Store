@@ -10,6 +10,7 @@ export interface ProductSummary {
 export interface Product extends ProductSummary {
   description: string;
   material?: string;
+  model3dUrl?: string;
   createdAt?: string;
   updatedAt?: string;
 }

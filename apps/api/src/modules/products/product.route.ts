@@ -1,6 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
-import { listProductsController, getProductController, createProductController, updateProductController, deleteProductController, uploadImagesController, uploadModelController } from "./product.controller";
+import {
+  listProductsController,
+  getProductController,
+  createProductController,
+  updateProductController,
+  deleteProductController,
+  uploadImagesController,
+  uploadModelController,
+} from "./product.controller";
 import { authenticate } from "@/middleware/authenticate";
 import { authorize } from "@/middleware/authorize";
 import { Role } from "@prisma/client";
@@ -19,4 +27,3 @@ productsRouter.put("/:id", authenticate, authorize(Role.ADMIN), updateProductCon
 productsRouter.delete("/:id", authenticate, authorize(Role.ADMIN), deleteProductController);
 productsRouter.post("/upload-images", authenticate, authorize(Role.ADMIN), upload.array("images", 10), uploadImagesController);
 productsRouter.post("/upload-model", authenticate, authorize(Role.ADMIN), upload.single("model"), uploadModelController);
-

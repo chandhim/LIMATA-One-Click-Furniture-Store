@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "@/shared/errors/api-error";
-import { verifyToken } from "@/utils/jwt";
+import { verifyToken } from "@/lib/jwt";
 
 export function authenticate(req: Request, _res: Response, next: NextFunction) {
   const authorizationHeader = req.headers.authorization;
