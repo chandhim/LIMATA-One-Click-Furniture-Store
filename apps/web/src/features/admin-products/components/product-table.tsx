@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
 import { useDeleteProduct } from "@/features/admin-products/hooks/use-delete-product";
 import type { Product } from "@/features/products/types/product.types";
@@ -146,9 +147,12 @@ export function ProductTable() {
                     }}
                   >
                     {product.images?.[0] ? (
-                      <img
+                      <Image
                         src={product.images[0]}
                         alt={product.name}
+                        width={48}
+                        height={48}
+                        unoptimized
                         style={{ width: "100%", height: "100%", objectFit: "cover" }}
                       />
                     ) : (

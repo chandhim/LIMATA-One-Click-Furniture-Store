@@ -6,6 +6,8 @@ import { authRouter } from "./modules/auth/auth.route";
 import { productsRouter } from "./modules/products/product.route";
 import { healthRouter } from "./modules/health/health.route";
 import { errorHandler } from "./middleware/error-handler";
+import { chatRouter } from "./modules/chat/chat.route";
+import { notificationRouter } from "./modules/notifications/notification.route";
 
 loadProjectEnv();
 
@@ -25,6 +27,8 @@ app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
 app.use("/api/v1/health", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/chat", chatRouter);
+app.use("/api/notifications", notificationRouter);
 
 app.use(errorHandler);
 
