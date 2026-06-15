@@ -27,8 +27,9 @@ export async function startConversation(): Promise<Conversation> {
       data: StartConversationResponse;
     }>("/chat/conversations/start");
     return response.data.data.conversation;
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("409")) {
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { status?: number } };
+    if (axiosError?.response?.status === 409) {
       throw new Error("You already have an active conversation");
     }
     throw new Error(error instanceof Error ? error.message : "Failed to start conversation");

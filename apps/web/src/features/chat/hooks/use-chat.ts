@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "@/providers/socket-provider";
-import { getConversations, getConversation, getMessages } from "../api/chat.api";
-import type { Message } from "../types/chat.types";
+import {
+  getConversations,
+  getConversation,
+  getMessages,
+  startConversation,
+} from "../api/chat.api";
+import type { Conversation, Message } from "../types/chat.types";
 
 export function useConversations() {
   return useQuery({
@@ -88,7 +93,47 @@ export function useSendMessage() {
         }
       },
     );
+
+    // Fallback reset in case no ack comes
+    setTimeout(() => {
+      setIsSending(false);
+    }, 2000);
   };
 
   return { sendMessage, isSending, error };
+}
+
+export function useStartConversation() {
+  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const start = async (): Promise<Conversation | null> => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const conversation = await startConversation();
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      return conversation;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to start conversation";
+      // If user already has an active conversation, fetch existing ones instead
+      if (message.includes("already have")) {
+        try {
+          const convs = await getConversations();
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+          return convs[0] ?? null;
+        } catch {
+          setError("Failed to load existing conversation");
+          return null;
+        }
+      }
+      setError(message);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { start, isLoading, error };
 }

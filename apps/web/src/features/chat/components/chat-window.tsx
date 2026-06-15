@@ -1,7 +1,11 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useConversation, useConversationMessages, useSendMessage } from "../hooks/use-chat";
+import {
+  useConversation,
+  useConversationMessages,
+  useSendMessage,
+} from "../hooks/use-chat";
 import { MessageList } from "./message-list";
 import { MessageInput } from "./message-input";
 

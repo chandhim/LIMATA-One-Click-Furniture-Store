@@ -14,8 +14,6 @@ export function ConversationList({
   selectedId,
   isAdmin = false,
 }: ConversationListProps) {
-  
-
   if (conversations.length === 0) {
     return (
       <div className="p-4 text-center text-slate-400">
@@ -47,9 +45,7 @@ export function ConversationList({
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="font-medium text-slate-900">
-                  {isAdmin
-                    ? `Customer: ${conversation.customerId}`
-                    : "Seller"}
+                  {isAdmin ? `Customer: ${conversation.customerId}` : "Seller"}
                 </p>
                 {lastMessage && (
                   <p className="text-sm text-slate-500 truncate mt-1">

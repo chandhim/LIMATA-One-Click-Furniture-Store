@@ -29,8 +29,10 @@ interface ProductDetailsViewProps {
 export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<"description" | "specifications" | "shipping">("description");
-  
+  const [activeTab, setActiveTab] = useState<
+    "description" | "specifications" | "shipping"
+  >("description");
+
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
@@ -44,15 +46,16 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   // Fetch related products (same category)
   const { data: relatedProducts, isLoading: relatedLoading } = useProducts(
     undefined,
-    product.category
+    product.category,
   );
 
   const filteredRelated =
-    relatedProducts
-      ?.filter((p) => p.id !== product.id)
-      .slice(0, 4) ?? [];
+    relatedProducts?.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
 
-  const images = product.images && product.images.length > 0 ? product.images : ["/favicon.ico"];
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : ["/favicon.ico"];
   const currentImage = images[activeImageIndex] || "/favicon.ico";
 
   // Stock status styling helper
@@ -117,8 +120,13 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
   return (
     <div style={{ background: "var(--bg-base)", minHeight: "100vh" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "2rem 1.5rem 6rem" }}>
-        
+      <div
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          padding: "2rem 1.5rem 6rem",
+        }}
+      >
         {/* Breadcrumb */}
         <nav
           style={{
@@ -130,28 +138,63 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             marginBottom: "2.5rem",
           }}
         >
-          <Link href="/" style={{ textDecoration: "none", color: "inherit", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent-dark)")} onMouseLeave={(e) => (e.currentTarget.style.color = "inherit")}>
+          <Link
+            href="/"
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "var(--accent-dark)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.color = "inherit")}
+          >
             Home
           </Link>
           <ChevronRight size={14} style={{ opacity: 0.5 }} />
-          <Link href="/products" style={{ textDecoration: "none", color: "inherit", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent-dark)")} onMouseLeave={(e) => (e.currentTarget.style.color = "inherit")}>
+          <Link
+            href="/products"
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "var(--accent-dark)")
+            }
+            onMouseLeave={(e) => (e.currentTarget.style.color = "inherit")}
+          >
             Products
           </Link>
           <ChevronRight size={14} style={{ opacity: 0.5 }} />
-          <span style={{ color: "var(--fg-primary)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "200px" }}>
+          <span
+            style={{
+              color: "var(--fg-primary)",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "200px",
+            }}
+          >
             {product.name}
           </span>
         </nav>
 
         {/* Dynamic Two-Column Layout */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3.5rem" }} className="details-grid">
-          
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3.5rem" }}
+          className="details-grid"
+        >
           {/* Column 1: Image Gallery & AR Reserved Section */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
-            
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}
+          >
             {/* Gallery Wrapper */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+            >
               {/* Main Image Viewport with Hover Zoom */}
               <div
                 onMouseEnter={() => setIsZoomed(true)}
@@ -162,7 +205,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   position: "relative",
                   width: "100%",
                   aspectRatio: "4/3",
-                  background: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
+                  background:
+                    "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
                   borderRadius: "var(--radius-lg)",
                   overflow: "hidden",
                   cursor: "zoom-in",
@@ -177,7 +221,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     height: "100%",
                     transform: isZoomed ? "scale(1.8)" : "scale(1)",
                     transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                    transition: isZoomed ? "none" : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+                    transition: isZoomed
+                      ? "none"
+                      : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
                   }}
                 >
                   <Image
@@ -211,7 +257,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
               {/* Thumbnail Row */}
               {images.length > 0 && (
-                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                <div
+                  style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
+                >
                   {images.map((img, idx) => (
                     <button
                       key={`${img}-${idx}`}
@@ -222,13 +270,18 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         height: "80px",
                         borderRadius: "var(--radius-md)",
                         overflow: "hidden",
-                        border: activeImageIndex === idx ? "2.5px solid var(--accent)" : "1px solid var(--border)",
-                        background: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
+                        border:
+                          activeImageIndex === idx
+                            ? "2.5px solid var(--accent)"
+                            : "1px solid var(--border)",
+                        background:
+                          "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
                         cursor: "pointer",
                         padding: 0,
                         outline: "none",
                         transition: "all 0.2s ease",
-                        transform: activeImageIndex === idx ? "scale(1.03)" : "scale(1)",
+                        transform:
+                          activeImageIndex === idx ? "scale(1.03)" : "scale(1)",
                       }}
                     >
                       <Image
@@ -288,19 +341,39 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               >
                 Spatial Visualization
               </div>
-              <h4 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.375rem" }}>
+              <h4
+                style={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                  marginBottom: "0.375rem",
+                }}
+              >
                 Interactive Preview Coming Soon
               </h4>
-              <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", maxWidth: "24rem", lineHeight: 1.5 }}>
-                Advanced 3D viewing, WebXR, and AR placement features will be available in a future storefront update.
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--fg-secondary)",
+                  maxWidth: "24rem",
+                  lineHeight: 1.5,
+                }}
+              >
+                Advanced 3D viewing, WebXR, and AR placement features will be
+                available in a future storefront update.
               </p>
             </div>
-
           </div>
 
           {/* Column 2: Product Information & Purchase Area */}
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", gap: "2.5rem" }}>
-            
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              gap: "2.5rem",
+            }}
+          >
             {/* Header info */}
             <div>
               {/* Category */}
@@ -320,7 +393,15 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               </div>
 
               {/* Title & Stock Badge */}
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  gap: "1rem",
+                  marginBottom: "1rem",
+                }}
+              >
                 <h1
                   className="font-display"
                   style={{
@@ -332,7 +413,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 >
                   {product.name}
                 </h1>
-                
+
                 {/* Stock status badge */}
                 <div
                   style={{
@@ -375,22 +456,57 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               </div>
 
               {/* Short description */}
-              <p style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.6, marginBottom: "2rem" }}>
+              <p
+                style={{
+                  fontSize: "0.9375rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.6,
+                  marginBottom: "2rem",
+                }}
+              >
                 {product.description}
               </p>
             </div>
 
             {/* Divider */}
-            <div style={{ width: "100%", height: 1, background: "var(--border)" }} />
+            <div
+              style={{ width: "100%", height: 1, background: "var(--border)" }}
+            />
 
             {/* Purchase Section */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
-                
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.5rem",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1.5rem",
+                  flexWrap: "wrap",
+                }}
+              >
                 {/* Quantity Selector */}
                 {product.stock > 0 && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--fg-muted)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em",
+                        color: "var(--fg-muted)",
+                      }}
+                    >
                       Quantity
                     </span>
                     <div
@@ -422,7 +538,15 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                       >
                         <Minus size={14} />
                       </button>
-                      <span style={{ minWidth: "2rem", textAlign: "center", fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)" }}>
+                      <span
+                        style={{
+                          minWidth: "2rem",
+                          textAlign: "center",
+                          fontSize: "0.9375rem",
+                          fontWeight: 600,
+                          color: "var(--fg-primary)",
+                        }}
+                      >
                         {quantity}
                       </span>
                       <button
@@ -431,7 +555,10 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         style={{
                           background: "none",
                           border: "none",
-                          cursor: quantity >= product.stock ? "not-allowed" : "pointer",
+                          cursor:
+                            quantity >= product.stock
+                              ? "not-allowed"
+                              : "pointer",
                           padding: "0.5rem 0.75rem",
                           color: "var(--fg-primary)",
                           opacity: quantity >= product.stock ? 0.35 : 0.8,
@@ -448,8 +575,16 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 )}
 
                 {/* Add to Cart & Wishlist Actions */}
-                <div style={{ display: "flex", alignItems: "flex-end", gap: "0.75rem", flex: 1, minWidth: "240px", height: "100%" }}>
-                  
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    gap: "0.75rem",
+                    flex: 1,
+                    minWidth: "240px",
+                    height: "100%",
+                  }}
+                >
                   {/* Cart button */}
                   <button
                     disabled={product.stock <= 0}
@@ -457,8 +592,14 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     style={{
                       flex: 1,
                       height: "44px",
-                      background: product.stock <= 0 ? "var(--border-strong)" : "var(--accent)",
-                      color: product.stock <= 0 ? "var(--fg-muted)" : "var(--fg-primary)",
+                      background:
+                        product.stock <= 0
+                          ? "var(--border-strong)"
+                          : "var(--accent)",
+                      color:
+                        product.stock <= 0
+                          ? "var(--fg-muted)"
+                          : "var(--fg-primary)",
                       border: "none",
                       borderRadius: "var(--radius-full)",
                       fontSize: "0.875rem",
@@ -468,7 +609,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "0.5rem",
-                      boxShadow: product.stock > 0 ? "var(--shadow-sm)" : "none",
+                      boxShadow:
+                        product.stock > 0 ? "var(--shadow-sm)" : "none",
                       outline: "none",
                     }}
                   >
@@ -484,7 +626,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                       height: "44px",
                       borderRadius: "50%",
                       border: "1.5px solid var(--border-strong)",
-                      background: isWishlisted ? "rgba(239, 68, 68, 0.08)" : "var(--bg-surface)",
+                      background: isWishlisted
+                        ? "rgba(239, 68, 68, 0.08)"
+                        : "var(--bg-surface)",
                       color: isWishlisted ? "#ef4444" : "var(--fg-secondary)",
                       display: "flex",
                       alignItems: "center",
@@ -501,7 +645,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     }}
                     onMouseLeave={(e) => {
                       if (!isWishlisted) {
-                        e.currentTarget.style.borderColor = "var(--border-strong)";
+                        e.currentTarget.style.borderColor =
+                          "var(--border-strong)";
                         e.currentTarget.style.color = "var(--fg-secondary)";
                       }
                     }}
@@ -509,43 +654,114 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     <Heart size={18} fill={isWishlisted ? "#ef4444" : "none"} />
                   </button>
                 </div>
-
               </div>
             </div>
 
             {/* Divider */}
-            <div style={{ width: "100%", height: 1, background: "var(--border)" }} />
+            <div
+              style={{ width: "100%", height: 1, background: "var(--border)" }}
+            />
 
             {/* Product Value Badges */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                <div style={{ color: "var(--accent-dark)", background: "rgba(201, 169, 110, 0.08)", padding: "0.5rem", borderRadius: "var(--radius-md)" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.75rem",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "var(--accent-dark)",
+                    background: "rgba(201, 169, 110, 0.08)",
+                    padding: "0.5rem",
+                    borderRadius: "var(--radius-md)",
+                  }}
+                >
                   <Award size={18} />
                 </div>
                 <div>
-                  <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-primary)" }}>5-Year Warranty</div>
-                  <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}>Guaranteed quality</div>
+                  <div
+                    style={{
+                      fontSize: "0.8125rem",
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                    }}
+                  >
+                    5-Year Warranty
+                  </div>
+                  <div
+                    style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}
+                  >
+                    Guaranteed quality
+                  </div>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-                <div style={{ color: "var(--accent-dark)", background: "rgba(201, 169, 110, 0.08)", padding: "0.5rem", borderRadius: "var(--radius-md)" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.75rem",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    color: "var(--accent-dark)",
+                    background: "rgba(201, 169, 110, 0.08)",
+                    padding: "0.5rem",
+                    borderRadius: "var(--radius-md)",
+                  }}
+                >
                   <Truck size={18} />
                 </div>
                 <div>
-                  <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-primary)" }}>Free Assembly</div>
-                  <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}>On scheduled delivery</div>
+                  <div
+                    style={{
+                      fontSize: "0.8125rem",
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                    }}
+                  >
+                    Free Assembly
+                  </div>
+                  <div
+                    style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}
+                  >
+                    On scheduled delivery
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
         {/* Product Highlights Section */}
-        <section style={{ marginTop: "5rem", borderTop: "1px solid var(--border)", paddingTop: "4rem" }}>
+        <section
+          style={{
+            marginTop: "5rem",
+            borderTop: "1px solid var(--border)",
+            paddingTop: "4rem",
+          }}
+        >
           <div style={{ marginBottom: "2.5rem", textAlign: "center" }}>
-            <div className="section-label" style={{ marginBottom: "0.5rem" }}>Craftsmanship</div>
-            <h2 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)" }}>
+            <div className="section-label" style={{ marginBottom: "0.5rem" }}>
+              Craftsmanship
+            </div>
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                color: "var(--fg-primary)",
+              }}
+            >
               Product Features & Highlights
             </h2>
           </div>
@@ -567,14 +783,30 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 boxShadow: "var(--shadow-sm)",
               }}
             >
-              <div style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}>
+              <div
+                style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}
+              >
                 <Award size={24} />
               </div>
-              <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 Premium Quality
               </h3>
-              <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                Every piece is hand-selected and crafted with strict attention to structural integrity and aesthetic details.
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Every piece is hand-selected and crafted with strict attention
+                to structural integrity and aesthetic details.
               </p>
             </div>
 
@@ -588,14 +820,30 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 boxShadow: "var(--shadow-sm)",
               }}
             >
-              <div style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}>
+              <div
+                style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}
+              >
                 <ShieldCheck size={24} />
               </div>
-              <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 Durable Materials
               </h3>
-              <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                Built using resilient raw timbers, reinforced fabrics, and coatings that stand up to active daily wear and tear.
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Built using resilient raw timbers, reinforced fabrics, and
+                coatings that stand up to active daily wear and tear.
               </p>
             </div>
 
@@ -609,14 +857,30 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 boxShadow: "var(--shadow-sm)",
               }}
             >
-              <div style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}>
+              <div
+                style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}
+              >
                 <Sparkles size={24} />
               </div>
-              <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 Modern Design
               </h3>
-              <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                Clean lines, organic forms, and functional proportions design languages that seamlessly accent modern layouts.
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Clean lines, organic forms, and functional proportions design
+                languages that seamlessly accent modern layouts.
               </p>
             </div>
 
@@ -630,14 +894,30 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 boxShadow: "var(--shadow-sm)",
               }}
             >
-              <div style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}>
+              <div
+                style={{ color: "var(--accent-dark)", marginBottom: "1rem" }}
+              >
                 <Truck size={24} />
               </div>
-              <h3 style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+              <h3
+                style={{
+                  fontSize: "0.9375rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 Trusted Purchase
               </h3>
-              <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                Your order is processed securely. Includes transparent delivery updates and support for returns within 30 days.
+              <p
+                style={{
+                  fontSize: "0.8125rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.6,
+                }}
+              >
+                Your order is processed securely. Includes transparent delivery
+                updates and support for returns within 30 days.
               </p>
             </div>
           </div>
@@ -645,7 +925,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
         {/* Product Details Tabs Section */}
         <section style={{ marginTop: "5rem" }}>
-          
           {/* Tab Headers */}
           <div
             style={{
@@ -666,7 +945,11 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as "description" | "specifications" | "shipping")}
+                  onClick={() =>
+                    setActiveTab(
+                      tab.id as "description" | "specifications" | "shipping",
+                    )
+                  }
                   style={{
                     background: "none",
                     border: "none",
@@ -702,13 +985,23 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
           {/* Tab Panels */}
           <div style={{ minHeight: "180px" }}>
-            
             {/* Description Tab Panel */}
             {activeTab === "description" && (
-              <div className="animate-fade-in" style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.8 }}>
+              <div
+                className="animate-fade-in"
+                style={{
+                  fontSize: "0.9375rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.8,
+                }}
+              >
                 <p style={{ marginBottom: "1rem" }}>{product.description}</p>
                 <p>
-                  Built by local artisans adhering to LIMATA&apos;s standard simple, premium guidelines. Every corner and finish is carefully examined. This piece complements warm, woodsy environments, minimalist modern rooms, and eclectic configurations alike.
+                  Built by local artisans adhering to LIMATA&apos;s standard
+                  simple, premium guidelines. Every corner and finish is
+                  carefully examined. This piece complements warm, woodsy
+                  environments, minimalist modern rooms, and eclectic
+                  configurations alike.
                 </p>
               </div>
             )}
@@ -716,26 +1009,94 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             {/* Specifications Tab Panel */}
             {activeTab === "specifications" && (
               <div className="animate-fade-in" style={{ maxWidth: "600px" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: "0.9rem",
+                  }}
+                >
                   <tbody>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "0.75rem 0", fontWeight: 600, color: "var(--fg-secondary)", width: "180px" }}>Product ID</td>
-                      <td style={{ padding: "0.75rem 0", color: "var(--fg-primary)", fontFamily: "monospace" }}>{product.id}</td>
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          fontWeight: 600,
+                          color: "var(--fg-secondary)",
+                          width: "180px",
+                        }}
+                      >
+                        Product ID
+                      </td>
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          color: "var(--fg-primary)",
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        {product.id}
+                      </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "0.75rem 0", fontWeight: 600, color: "var(--fg-secondary)" }}>Category</td>
-                      <td style={{ padding: "0.75rem 0", color: "var(--fg-primary)" }}>{product.category}</td>
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          fontWeight: 600,
+                          color: "var(--fg-secondary)",
+                        }}
+                      >
+                        Category
+                      </td>
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          color: "var(--fg-primary)",
+                        }}
+                      >
+                        {product.category}
+                      </td>
                     </tr>
                     {product.material && (
                       <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                        <td style={{ padding: "0.75rem 0", fontWeight: 600, color: "var(--fg-secondary)" }}>Material</td>
-                        <td style={{ padding: "0.75rem 0", color: "var(--fg-primary)" }}>{product.material}</td>
+                        <td
+                          style={{
+                            padding: "0.75rem 0",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                          }}
+                        >
+                          Material
+                        </td>
+                        <td
+                          style={{
+                            padding: "0.75rem 0",
+                            color: "var(--fg-primary)",
+                          }}
+                        >
+                          {product.material}
+                        </td>
                       </tr>
                     )}
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "0.75rem 0", fontWeight: 600, color: "var(--fg-secondary)" }}>Availability</td>
-                      <td style={{ padding: "0.75rem 0", color: "var(--fg-primary)" }}>
-                        {product.stock > 0 ? `In Stock (${product.stock} units)` : "Out of Stock"}
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          fontWeight: 600,
+                          color: "var(--fg-secondary)",
+                        }}
+                      >
+                        Availability
+                      </td>
+                      <td
+                        style={{
+                          padding: "0.75rem 0",
+                          color: "var(--fg-primary)",
+                        }}
+                      >
+                        {product.stock > 0
+                          ? `In Stock (${product.stock} units)`
+                          : "Out of Stock"}
                       </td>
                     </tr>
                   </tbody>
@@ -745,44 +1106,108 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
             {/* Shipping Tab Panel */}
             {activeTab === "shipping" && (
-              <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.7 }}>
+              <div
+                className="animate-fade-in"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.25rem",
+                  fontSize: "0.9375rem",
+                  color: "var(--fg-secondary)",
+                  lineHeight: 1.7,
+                }}
+              >
                 <div>
-                  <h4 style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "0.9375rem", marginBottom: "0.25rem" }}>
+                  <h4
+                    style={{
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                      fontSize: "0.9375rem",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
                     Delivery Information
                   </h4>
                   <p>
-                    We offer premier white-glove shipping on all items. Our professional delivery crew will place the furniture in your preferred room, unwrap, inspect, and complete the physical assembly, carrying away all packing debris.
+                    We offer premier white-glove shipping on all items. Our
+                    professional delivery crew will place the furniture in your
+                    preferred room, unwrap, inspect, and complete the physical
+                    assembly, carrying away all packing debris.
                   </p>
                 </div>
                 <div>
-                  <h4 style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "0.9375rem", marginBottom: "0.25rem" }}>
+                  <h4
+                    style={{
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                      fontSize: "0.9375rem",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
                     Estimated Delivery
                   </h4>
                   <p>
-                    Standard processing takes 2-3 business days. Delivery dates range from 5 to 10 business days depending on location. You will receive a tracking link and a coordinator call to book a delivery timeframe.
+                    Standard processing takes 2-3 business days. Delivery dates
+                    range from 5 to 10 business days depending on location. You
+                    will receive a tracking link and a coordinator call to book
+                    a delivery timeframe.
                   </p>
                 </div>
                 <div>
-                  <h4 style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "0.9375rem", marginBottom: "0.25rem" }}>
+                  <h4
+                    style={{
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                      fontSize: "0.9375rem",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
                     Return Policy
                   </h4>
                   <p>
-                    We offer a 30-day return policy. If you aren&apos;t completely happy with your purchase, you can return it within 30 days of receipt. Items must be in new condition. Returns will incur delivery charges.
+                    We offer a 30-day return policy. If you aren&apos;t
+                    completely happy with your purchase, you can return it
+                    within 30 days of receipt. Items must be in new condition.
+                    Returns will incur delivery charges.
                   </p>
                 </div>
               </div>
             )}
-
           </div>
         </section>
 
         {/* Related Products Section */}
         {!relatedLoading && filteredRelated.length > 0 && (
-          <section style={{ marginTop: "6rem", borderTop: "1px solid var(--border)", paddingTop: "5rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "2.5rem" }}>
+          <section
+            style={{
+              marginTop: "6rem",
+              borderTop: "1px solid var(--border)",
+              paddingTop: "5rem",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginBottom: "2.5rem",
+              }}
+            >
               <div>
-                <div className="section-label" style={{ marginBottom: "0.5rem" }}>Suggestions</div>
-                <h2 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)" }}>
+                <div
+                  className="section-label"
+                  style={{ marginBottom: "0.5rem" }}
+                >
+                  Suggestions
+                </div>
+                <h2
+                  className="font-display"
+                  style={{
+                    fontSize: "1.75rem",
+                    fontWeight: 700,
+                    color: "var(--fg-primary)",
+                  }}
+                >
                   You May Also Like
                 </h2>
               </div>
@@ -815,7 +1240,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             </div>
           </section>
         )}
-
       </div>
 
       {/* Lightbox / Fullscreen Image Modal */}
@@ -855,8 +1279,12 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               transition: "background 0.2s",
               outline: "none",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")
+            }
           >
             <X size={20} />
           </button>
@@ -881,8 +1309,12 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 transition: "background 0.2s",
                 outline: "none",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)")
+              }
             >
               <ChevronLeft size={20} />
             </button>
@@ -929,8 +1361,12 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 transition: "background 0.2s",
                 outline: "none",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)")
+              }
             >
               <ChevronRight size={20} />
             </button>
@@ -965,7 +1401,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           }
         }
       `}</style>
-
     </div>
   );
 }

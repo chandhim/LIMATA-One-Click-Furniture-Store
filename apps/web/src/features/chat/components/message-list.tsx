@@ -19,7 +19,9 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
     <div className="flex-1 overflow-y-auto bg-white p-4 space-y-4">
       {messages.length === 0 ? (
         <div className="flex items-center justify-center h-full">
-          <p className="text-slate-400">No messages yet. Start the conversation!</p>
+          <p className="text-slate-400">
+            No messages yet. Start the conversation!
+          </p>
         </div>
       ) : (
         <>
@@ -27,7 +29,9 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
             <div
               key={message.id}
               className={`flex ${
-                message.senderId === currentUserId ? "justify-end" : "justify-start"
+                message.senderId === currentUserId
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div

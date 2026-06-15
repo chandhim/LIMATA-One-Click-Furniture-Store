@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useNotifications, useMarkNotificationAsRead } from "../hooks/use-notifications";
+import {
+  useNotifications,
+  useMarkNotificationAsRead,
+} from "../hooks/use-notifications";
 import type { Notification } from "../types/notification.types";
 
 interface NotificationDropdownProps {
@@ -9,7 +12,10 @@ interface NotificationDropdownProps {
   onClose: () => void;
 }
 
-function NotificationItem({ notification, onMarkAsRead }: {
+function NotificationItem({
+  notification,
+  onMarkAsRead,
+}: {
   notification: Notification;
   onMarkAsRead: (id: string) => void;
 }) {
@@ -21,7 +27,9 @@ function NotificationItem({ notification, onMarkAsRead }: {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
-          <h4 className="text-sm font-medium text-slate-900">{notification.title}</h4>
+          <h4 className="text-sm font-medium text-slate-900">
+            {notification.title}
+          </h4>
           <p className="text-sm text-slate-600 mt-1">{notification.message}</p>
           <span className="text-xs text-slate-400 mt-2 block">
             {new Date(notification.createdAt).toLocaleDateString()}
@@ -40,13 +48,18 @@ function NotificationItem({ notification, onMarkAsRead }: {
   );
 }
 
-export function NotificationDropdown({ isOpen, onClose }: NotificationDropdownProps) {
+export function NotificationDropdown({
+  isOpen,
+  onClose,
+}: NotificationDropdownProps) {
   const { data: notifications = [] } = useNotifications();
   const { markAsRead } = useMarkNotificationAsRead();
 
   if (!isOpen) return null;
 
-  const unreadNotifications = notifications.filter((n) => !n.isRead).slice(0, 5);
+  const unreadNotifications = notifications
+    .filter((n) => !n.isRead)
+    .slice(0, 5);
 
   return (
     <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-slate-200 z-50">

@@ -38,9 +38,7 @@ const navGroups: { group: string; items: NavItem[] }[] = [
       {
         label: "Catalog",
         icon: "⊹",
-        children: [
-          { label: "Products", href: "/admin/products", icon: "◻" },
-        ],
+        children: [{ label: "Products", href: "/admin/products", icon: "◻" }],
       },
     ],
   },
@@ -50,9 +48,7 @@ const navGroups: { group: string; items: NavItem[] }[] = [
       {
         label: "Sales",
         icon: "⊹",
-        children: [
-          { label: "Orders", href: "/admin/orders", icon: "◈" },
-        ],
+        children: [{ label: "Orders", href: "/admin/orders", icon: "◈" }],
       },
     ],
   },
@@ -119,7 +115,12 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
       >
         <Link
           href="/admin"
-          style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.625rem" }}
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.625rem",
+          }}
         >
           <span
             style={{
@@ -218,7 +219,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
               // Collapsible group
               const isOpen = openGroups[item.label];
               const anyChildActive = item.children?.some((c) =>
-                isActive(c.href)
+                isActive(c.href),
               );
 
               return (

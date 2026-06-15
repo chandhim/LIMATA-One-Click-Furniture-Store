@@ -26,88 +26,96 @@ export function registerChatSocket(io: SocketIOServer) {
     console.log(`User ${userId} connected to chat`);
 
     // Handle sending a message
-    socket.on("send_message", async (data: {
-      conversationId: string;
-      content: string;
-    }) => {
-      try {
-        const message = await sendMessage({
-          conversationId: data.conversationId,
-          senderId: userId,
-          content: data.content,
-        });
-
-        // Broadcast message to conversation room
-        chatNamespace.to(`conversation:${data.conversationId}`).emit("message_received", {
-          id: message.id,
-          conversationId: message.conversationId,
-          senderId: message.senderId,
-          content: message.content,
-          createdAt: message.createdAt,
-        });
-
-        // Emit confirmation back to sender
-        socket.emit("message_sent", {
-          id: message.id,
-          conversationId: message.conversationId,
-          senderId: message.senderId,
-          content: message.content,
-          createdAt: message.createdAt,
-        });
-
-        // Create notification
-        let notificationTitle = "New message";
-        let notificationMessage = "You have a new message";
-
-        if (userRole === Role.CUSTOMER) {
-          // Customer sent message to admin
-          notificationTitle = "New Customer Message";
-          notificationMessage = `Customer sent you a message`;
-
-          await createNotification({
-            userId: "admin", // Note: In a multi-admin system, this should be replaced with actual admin user IDs
-            type: "CHAT_MESSAGE",
-            title: notificationTitle,
-            message: notificationMessage,
+    socket.on(
+      "send_message",
+      async (data: { conversationId: string; content: string }) => {
+        try {
+          const message = await sendMessage({
+            conversationId: data.conversationId,
+            senderId: userId,
+            content: data.content,
           });
 
-          // Send notification to admin
-          chatNamespace.to("admin-room").emit("notification", {
-            type: "CHAT_MESSAGE",
-            title: notificationTitle,
-            message: notificationMessage,
-          });
-        } else if (userRole === Role.ADMIN) {
-          // Admin replied to customer
-          // Get conversation customer ID
-          const { getConversationDetail } = await import("@/modules/chat/chat.service");
-          const conversation = await getConversationDetail(data.conversationId);
+          // Broadcast message to conversation room
+          chatNamespace
+            .to(`conversation:${data.conversationId}`)
+            .emit("message_received", {
+              id: message.id,
+              conversationId: message.conversationId,
+              senderId: message.senderId,
+              content: message.content,
+              createdAt: message.createdAt,
+            });
 
-          if (conversation) {
-            notificationTitle = "Seller Replied";
-            notificationMessage = "The seller replied to your message";
+          // Emit confirmation back to sender
+          socket.emit("message_sent", {
+            id: message.id,
+            conversationId: message.conversationId,
+            senderId: message.senderId,
+            content: message.content,
+            createdAt: message.createdAt,
+          });
+
+          // Create notification
+          let notificationTitle = "New message";
+          let notificationMessage = "You have a new message";
+
+          if (userRole === Role.CUSTOMER) {
+            // Customer sent message to admin
+            notificationTitle = "New Customer Message";
+            notificationMessage = `Customer sent you a message`;
 
             await createNotification({
-              userId: conversation.customerId,
+              userId: "admin", // Note: In a multi-admin system, this should be replaced with actual admin user IDs
               type: "CHAT_MESSAGE",
               title: notificationTitle,
               message: notificationMessage,
             });
 
-            // Send notification to customer
-            chatNamespace.to(`user:${conversation.customerId}`).emit("notification", {
+            // Send notification to admin
+            chatNamespace.to("admin-room").emit("notification", {
               type: "CHAT_MESSAGE",
               title: notificationTitle,
               message: notificationMessage,
             });
+          } else if (userRole === Role.ADMIN) {
+            // Admin replied to customer
+            // Get conversation customer ID
+            const { getConversationDetail } =
+              await import("@/modules/chat/chat.service");
+            const conversation = await getConversationDetail(
+              data.conversationId,
+            );
+
+            if (conversation) {
+              notificationTitle = "Seller Replied";
+              notificationMessage = "The seller replied to your message";
+
+              await createNotification({
+                userId: conversation.customerId,
+                type: "CHAT_MESSAGE",
+                title: notificationTitle,
+                message: notificationMessage,
+              });
+
+              // Send notification to customer
+              chatNamespace
+                .to(`user:${conversation.customerId}`)
+                .emit("notification", {
+                  type: "CHAT_MESSAGE",
+                  title: notificationTitle,
+                  message: notificationMessage,
+                });
+            }
           }
+        } catch (error) {
+          socket.emit("error", {
+            message:
+              error instanceof Error ? error.message : "Failed to send message",
+          });
         }
-      } catch (error) {
-        socket.emit("error", {
-          message: error instanceof Error ? error.message : "Failed to send message",
-        });
-      }
-    });
+      },
+    );
 
     // Handle joining conversation room
     socket.on("join_conversation", (data: { conversationId: string }) => {
@@ -122,12 +130,15 @@ export function registerChatSocket(io: SocketIOServer) {
     });
 
     // Handle typing indicator (optional for future use)
-    socket.on("typing", (data: { conversationId: string; isTyping: boolean }) => {
-      socket.to(`conversation:${data.conversationId}`).emit("user_typing", {
-        userId,
-        isTyping: data.isTyping,
-      });
-    });
+    socket.on(
+      "typing",
+      (data: { conversationId: string; isTyping: boolean }) => {
+        socket.to(`conversation:${data.conversationId}`).emit("user_typing", {
+          userId,
+          isTyping: data.isTyping,
+        });
+      },
+    );
 
     // Handle disconnect
     socket.on("disconnect", () => {

@@ -9,7 +9,11 @@ interface MessageInputProps {
   disabled?: boolean;
 }
 
-export function MessageInput({ onSendMessage, isSending, disabled = false }: MessageInputProps) {
+export function MessageInput({
+  onSendMessage,
+  isSending,
+  disabled = false,
+}: MessageInputProps) {
   const [content, setContent] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,7 +26,10 @@ export function MessageInput({ onSendMessage, isSending, disabled = false }: Mes
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-slate-200 p-4 bg-slate-50">
+    <form
+      onSubmit={handleSubmit}
+      className="border-t border-slate-200 p-4 bg-slate-50"
+    >
       <div className="flex gap-2">
         <input
           type="text"
