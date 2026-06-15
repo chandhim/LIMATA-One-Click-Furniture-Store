@@ -12,6 +12,25 @@ import {
 import type { Conversation, Message } from "../types/chat.types";
 
 export function useConversations() {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    };
+
+    socket.on("message_received", handleUpdate);
+    socket.on("notification", handleUpdate);
+
+    return () => {
+      socket.off("message_received", handleUpdate);
+      socket.off("notification", handleUpdate);
+    };
+  }, [socket, queryClient]);
+
   return useQuery({
     queryKey: ["conversations"],
     queryFn: getConversations,
@@ -64,6 +83,7 @@ export function useConversationMessages(conversationId: string) {
 
 export function useSendMessage() {
   const { socket } = useSocket();
+  const queryClient = useQueryClient();
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -90,6 +110,10 @@ export function useSendMessage() {
         setIsSending(false);
         if (response?.error) {
           setError(response.error);
+        } else {
+          // Invalidate cache immediately on acknowledgment
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
+          queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
         }
       },
     );
