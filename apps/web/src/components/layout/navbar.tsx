@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { NotificationCenter } from "@/features/notifications/components/notification-center";
 import { MessageSquare } from "lucide-react";
+import { ChatDropdown } from "@/features/chat/components/chat-dropdown";
 
 export function Navbar() {
   const router = useRouter();
@@ -138,44 +139,8 @@ export function Navbar() {
                 {/* Notification Center */}
                 <NotificationCenter />
 
-                {/* Chat quick-link */}
-                <Link
-                  href="/messages"
-                  id="navbar-chat-link"
-                  title="Messages"
-                  style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "transparent",
-                    border: "1.5px solid transparent",
-                    cursor: "pointer",
-                    color: "var(--fg-secondary)",
-                    textDecoration: "none",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "var(--bg-elevated)";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "var(--border)";
-                    (e.currentTarget as HTMLElement).style.color =
-                      "var(--fg-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "transparent";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "transparent";
-                    (e.currentTarget as HTMLElement).style.color =
-                      "var(--fg-secondary)";
-                  }}
-                >
-                  <MessageSquare size={18} />
-                </Link>
+                {/* Chat quick-link (Dropdown) */}
+                <ChatDropdown />
 
                 {/* User avatar + name */}
                 <div
