@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import { NotificationCenter } from "@/features/notifications/components/notification-center";
+import { MessageSquare } from "lucide-react";
 
 export function Navbar() {
   const router = useRouter();
@@ -33,10 +35,13 @@ export function Navbar() {
           zIndex: 50,
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          backgroundColor: scrolled ? "rgba(250,249,247,0.92)" : "rgba(250,249,247,0.75)",
+          backgroundColor: scrolled
+            ? "rgba(250,249,247,0.92)"
+            : "rgba(250,249,247,0.75)",
           borderBottom: `1px solid ${scrolled ? "var(--border)" : "transparent"}`,
           boxShadow: scrolled ? "var(--shadow-md)" : "none",
-          transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
+          transition:
+            "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
         }}
       >
         <div
@@ -81,7 +86,10 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Nav Links */}
-            <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            <div
+              className="nav-links"
+              style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}
+            >
               {[
                 { label: "Home", href: "/" },
                 { label: "Products", href: "/products" },
@@ -102,12 +110,16 @@ export function Navbar() {
                     position: "relative",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--fg-primary)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.1)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-primary)";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "rgba(201,169,110,0.1)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "transparent";
                   }}
                 >
                   {item.label}
@@ -117,9 +129,55 @@ export function Navbar() {
           </div>
 
           {/* Desktop Auth */}
-          <div className="auth-buttons" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div
+            className="auth-buttons"
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
             {isAuthenticated ? (
               <>
+                {/* Notification Center */}
+                <NotificationCenter />
+
+                {/* Chat quick-link */}
+                <Link
+                  href="/messages"
+                  id="navbar-chat-link"
+                  title="Messages"
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "transparent",
+                    border: "1.5px solid transparent",
+                    cursor: "pointer",
+                    color: "var(--fg-secondary)",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "var(--bg-elevated)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--border)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)";
+                  }}
+                >
+                  <MessageSquare size={18} />
+                </Link>
+
+                {/* User avatar + name */}
                 <div
                   style={{
                     display: "flex",
@@ -136,7 +194,8 @@ export function Navbar() {
                       width: 28,
                       height: 28,
                       borderRadius: "50%",
-                      background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                      background:
+                        "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -148,10 +207,18 @@ export function Navbar() {
                   >
                     {user?.name?.[0]?.toUpperCase() ?? "U"}
                   </div>
-                  <span style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--fg-primary)" }}>
+                  <span
+                    style={{
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      color: "var(--fg-primary)",
+                    }}
+                  >
                     {user?.name}
                   </span>
                 </div>
+
+                {/* Sign out */}
                 <button
                   onClick={handleLogout}
                   style={{
@@ -166,12 +233,15 @@ export function Navbar() {
                     transition: "all 0.2s ease",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "#e74c3c";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "#e74c3c";
                     (e.currentTarget as HTMLElement).style.color = "#e74c3c";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                    (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--border)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)";
                   }}
                 >
                   Sign out
@@ -190,8 +260,14 @@ export function Navbar() {
                     borderRadius: "var(--radius-full)",
                     transition: "color 0.2s ease",
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-primary)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)")}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-primary)")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)")
+                  }
                 >
                   Sign in
                 </Link>
@@ -264,7 +340,9 @@ export function Navbar() {
                 background: "var(--fg-primary)",
                 borderRadius: 2,
                 transition: "transform 0.25s ease, opacity 0.25s ease",
-                transform: open ? "rotate(-45deg) translate(4px, -4px)" : "none",
+                transform: open
+                  ? "rotate(-45deg) translate(4px, -4px)"
+                  : "none",
               }}
             />
           </button>
@@ -281,7 +359,13 @@ export function Navbar() {
               padding: "1.25rem 1.5rem 1.5rem",
             }}
           >
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+              }}
+            >
               {[
                 { label: "Home", href: "/" },
                 { label: "Products", href: "/products" },
@@ -306,50 +390,98 @@ export function Navbar() {
                   {item.label}
                 </Link>
               ))}
-              <div
-                style={{
-                  marginTop: "1rem",
-                  paddingTop: "1rem",
-                  borderTop: "1px solid var(--border)",
-                  display: "flex",
-                  gap: "0.75rem",
-                }}
-              >
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
+
+              {isAuthenticated ? (
+                <div
                   style={{
-                    flex: 1,
-                    textAlign: "center",
-                    padding: "0.75rem",
-                    border: "1.5px solid var(--border)",
-                    borderRadius: "var(--radius-md)",
-                    fontSize: "0.9rem",
-                    fontWeight: 500,
-                    color: "var(--fg-primary)",
-                    textDecoration: "none",
+                    marginTop: "1rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid var(--border)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
                   }}
                 >
-                  Sign in
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setOpen(false)}
-                  className="btn-shimmer"
+                  <Link
+                    href="/messages"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.625rem",
+                      padding: "0.75rem 1rem",
+                      borderRadius: "var(--radius-md)",
+                      border: "1.5px solid var(--border)",
+                      fontSize: "0.9rem",
+                      fontWeight: 500,
+                      color: "var(--fg-primary)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <MessageSquare size={16} /> Messages
+                  </Link>
+                  <button
+                    onClick={() => { setOpen(false); handleLogout(); }}
+                    style={{
+                      padding: "0.75rem",
+                      borderRadius: "var(--radius-md)",
+                      border: "1.5px solid #e74c3c",
+                      background: "transparent",
+                      fontSize: "0.9rem",
+                      fontWeight: 500,
+                      color: "#e74c3c",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <div
                   style={{
-                    flex: 1,
-                    textAlign: "center",
-                    padding: "0.75rem",
-                    borderRadius: "var(--radius-md)",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    color: "var(--fg-primary)",
-                    textDecoration: "none",
+                    marginTop: "1rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid var(--border)",
+                    display: "flex",
+                    gap: "0.75rem",
                   }}
                 >
-                  Get started
-                </Link>
-              </div>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      padding: "0.75rem",
+                      border: "1.5px solid var(--border)",
+                      borderRadius: "var(--radius-md)",
+                      fontSize: "0.9rem",
+                      fontWeight: 500,
+                      color: "var(--fg-primary)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setOpen(false)}
+                    className="btn-shimmer"
+                    style={{
+                      flex: 1,
+                      textAlign: "center",
+                      padding: "0.75rem",
+                      borderRadius: "var(--radius-md)",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      color: "var(--fg-primary)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Get started
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}

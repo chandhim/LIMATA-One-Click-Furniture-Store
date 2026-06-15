@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 interface ImageUploadProps {
   onChange: (files: File[]) => void;
@@ -30,7 +31,14 @@ export function ImageUpload({ onChange, initialImages = [] }: ImageUploadProps) 
         <div className="mt-4 flex flex-wrap gap-2">
           {previews.map((src, i) => (
             <div key={i} className="relative">
-              <img src={src} alt={`preview-${i}`} className="h-20 w-20 object-cover rounded" />
+              <Image
+                src={src}
+                alt={`preview-${i}`}
+                width={80}
+                height={80}
+                unoptimized
+                className="h-20 w-20 object-cover rounded"
+              />
               <button
                 type="button"
                 onClick={() => removePreview(i)}

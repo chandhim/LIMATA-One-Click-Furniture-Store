@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
 import type { Product } from "@/features/products/types/product.types";
@@ -430,9 +431,12 @@ export default function AdminOverviewPage() {
                           }}
                         >
                           {product.images?.[0] ? (
-                            <img
+                            <Image
                               src={product.images[0]}
                               alt={product.name}
+                              width={40}
+                              height={40}
+                              unoptimized
                               style={{ width: "100%", height: "100%", objectFit: "cover" }}
                             />
                           ) : (

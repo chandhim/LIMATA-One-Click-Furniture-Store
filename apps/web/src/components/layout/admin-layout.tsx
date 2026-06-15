@@ -47,7 +47,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main content */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}
+      >
         {/* Mobile top bar */}
         <div
           className="admin-mobile-topbar"
