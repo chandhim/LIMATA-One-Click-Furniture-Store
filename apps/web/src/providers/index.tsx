@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { SocketProvider } from "./socket-provider";
 
 export function Providers({
   children,
@@ -12,7 +13,7 @@ export function Providers({
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <SocketProvider>{children}</SocketProvider>
     </QueryClientProvider>
   );
 }

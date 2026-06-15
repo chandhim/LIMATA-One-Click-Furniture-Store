@@ -1,6 +1,5 @@
 "use client";
 
-import { MainLayout } from "@/components/layout/main-layout";
 import { LoginForm } from "@/features/auth/components/login-form";
 import {
   useAuthBootstrap,
@@ -11,13 +10,5 @@ export default function LoginPage() {
   useAuthBootstrap();
   useRedirectIfAuthenticated();
 
-  return (
-    <MainLayout>
-      <section className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-7xl items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
-          <LoginForm />
-        </div>
-      </section>
-    </MainLayout>
-  );
+  return <LoginForm />;
 }

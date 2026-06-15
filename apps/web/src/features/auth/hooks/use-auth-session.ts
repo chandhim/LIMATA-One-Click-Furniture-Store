@@ -50,6 +50,7 @@ export function useRedirectIfAuthenticated(redirectTo = "/dashboard") {
   const router = useRouter();
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -57,7 +58,7 @@ export function useRedirectIfAuthenticated(redirectTo = "/dashboard") {
     }
 
     if (isAuthenticated) {
-      router.replace(redirectTo);
+      router.replace(user?.role === "ADMIN" ? "/admin" : redirectTo);
     }
-  }, [isHydrated, isAuthenticated, redirectTo, router]);
+  }, [isHydrated, isAuthenticated, redirectTo, router, user]);
 }

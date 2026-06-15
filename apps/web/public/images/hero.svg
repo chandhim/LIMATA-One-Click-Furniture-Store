@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="800" viewBox="0 0 1400 800">
+  <rect width="100%" height="100%" fill="#f3f4f6" />
+  <rect x="80" y="120" width="520" height="360" fill="#d1d5db" rx="12" />
+  <rect x="660" y="80" width="520" height="520" fill="#e9e9e9" rx="12" />
+  <text x="120" y="60" font-size="36" fill="#6b7280" font-family="Arial">Furniture Image Placeholder</text>
+</svg>
