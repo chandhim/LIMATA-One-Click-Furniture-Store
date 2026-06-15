@@ -1,10 +1,28 @@
 import type { Server as SocketIOServer } from "socket.io";
 import { Role } from "@prisma/client";
-import { sendMessage } from "@/modules/chat/chat.service";
+import { sendMessage, getConversationDetail } from "@/modules/chat/chat.service";
 import { createNotification } from "@/modules/notifications/notification.service";
+import { verifyToken } from "@/lib/jwt";
 
 export function registerChatSocket(io: SocketIOServer) {
   const chatNamespace = io.of("/chat");
+
+  // Authentication middleware for /chat namespace
+  chatNamespace.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+
+    if (!token) {
+      return next(new Error("Unauthorized"));
+    }
+
+    try {
+      const payload = verifyToken(token);
+      (socket as any).user = payload;
+      next();
+    } catch (error) {
+      next(new Error("Invalid or expired token"));
+    }
+  });
 
   chatNamespace.on("connection", (socket) => {
     const userId = (socket as any).user?.id;
@@ -81,8 +99,6 @@ export function registerChatSocket(io: SocketIOServer) {
           } else if (userRole === Role.ADMIN) {
             // Admin replied to customer
             // Get conversation customer ID
-            const { getConversationDetail } =
-              await import("@/modules/chat/chat.service");
             const conversation = await getConversationDetail(
               data.conversationId,
             );

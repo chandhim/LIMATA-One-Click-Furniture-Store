@@ -9,7 +9,10 @@ export function initializeSocket(token: string): Socket {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  socket = io(apiUrl, {
+  // Remove the trailing /api suffix if present to connect to the base socket server url
+  const baseSocketUrl = apiUrl.replace(/\/api$/, "");
+
+  socket = io(`${baseSocketUrl}/chat`, {
     auth: { token },
     reconnection: true,
     reconnectionDelay: 1000,
