@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { NotificationCenter } from "@/features/notifications/components/notification-center";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/store/use-cart-store";
+import { useCart } from "@/features/cart/hooks/use-cart";
 
 export function Navbar() {
   const router = useRouter();
@@ -14,6 +16,8 @@ export function Navbar() {
   const clearSession = useAuthStore((state) => state.clearSession);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const cartCount = useCartStore((s) => s.count);
+  useCart(); // keeps the Zustand cart count in sync
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -175,6 +179,70 @@ export function Navbar() {
                   }}
                 >
                   <MessageSquare size={18} />
+                </Link>
+
+                {/* Cart quick-link */}
+                <Link
+                  href="/cart"
+                  id="navbar-cart-link"
+                  title="Cart"
+                  style={{
+                    position: "relative",
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "transparent",
+                    border: "1.5px solid transparent",
+                    cursor: "pointer",
+                    color: "var(--fg-secondary)",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "var(--bg-elevated)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--border)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)";
+                  }}
+                >
+                  <ShoppingCart size={18} />
+                  {cartCount > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        minWidth: 17,
+                        height: 17,
+                        background: "var(--accent)",
+                        color: "var(--fg-primary)",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.6rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 4px",
+                        border: "2px solid var(--bg-base)",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
                 </Link>
 
                 {/* User avatar + name */}
@@ -419,6 +487,42 @@ export function Navbar() {
                     }}
                   >
                     <MessageSquare size={16} /> Messages
+                  </Link>
+
+                  <Link
+                    href="/cart"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "0.75rem 1rem",
+                      borderRadius: "var(--radius-md)",
+                      border: "1.5px solid var(--border)",
+                      fontSize: "0.9rem",
+                      fontWeight: 500,
+                      color: "var(--fg-primary)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                      <ShoppingCart size={16} /> Cart
+                    </span>
+                    {cartCount > 0 && (
+                      <span
+                        style={{
+                          background: "var(--accent)",
+                          color: "var(--fg-primary)",
+                          borderRadius: "var(--radius-full)",
+                          fontSize: "0.7rem",
+                          fontWeight: 700,
+                          padding: "0.1rem 0.45rem",
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {cartCount}
+                      </span>
+                    )}
                   </Link>
                   <button
                     onClick={() => { setOpen(false); handleLogout(); }}

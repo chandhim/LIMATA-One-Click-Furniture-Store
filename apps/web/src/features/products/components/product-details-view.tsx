@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "../hooks/use-products";
 import { ProductCard } from "./product-card";
 import type { Product } from "../types/product.types";
+import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import {
   Heart,
   ShoppingCart,
@@ -42,6 +45,35 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
   // Wishlist local state
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Cart
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const addToCartMutation = useAddToCart();
+  const [cartFeedback, setCartFeedback] = useState<
+    "idle" | "adding" | "added" | "error"
+  >("idle");
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    setCartFeedback("adding");
+    addToCartMutation.mutate(
+      { productId: product.id, quantity },
+      {
+        onSuccess: () => {
+          setCartFeedback("added");
+          setTimeout(() => setCartFeedback("idle"), 2500);
+        },
+        onError: () => {
+          setCartFeedback("error");
+          setTimeout(() => setCartFeedback("idle"), 2500);
+        },
+      },
+    );
+  };
 
   // Fetch related products (same category)
   const { data: relatedProducts, isLoading: relatedLoading } = useProducts(
@@ -587,35 +619,76 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 >
                   {/* Cart button */}
                   <button
-                    disabled={product.stock <= 0}
-                    className={product.stock > 0 ? "btn-shimmer" : ""}
+                    disabled={product.stock <= 0 || cartFeedback === "adding"}
+                    onClick={handleAddToCart}
+                    className={
+                      product.stock > 0 && cartFeedback !== "adding"
+                        ? "btn-shimmer"
+                        : ""
+                    }
                     style={{
                       flex: 1,
                       height: "44px",
                       background:
                         product.stock <= 0
                           ? "var(--border-strong)"
-                          : "var(--accent)",
+                          : cartFeedback === "added"
+                            ? "rgba(34,197,94,0.15)"
+                            : cartFeedback === "error"
+                              ? "rgba(239,68,68,0.12)"
+                              : "var(--accent)",
                       color:
                         product.stock <= 0
                           ? "var(--fg-muted)"
-                          : "var(--fg-primary)",
-                      border: "none",
+                          : cartFeedback === "added"
+                            ? "#16a34a"
+                            : cartFeedback === "error"
+                              ? "#dc2626"
+                              : "var(--fg-primary)",
+                      border:
+                        cartFeedback === "added"
+                          ? "1px solid rgba(34,197,94,0.3)"
+                          : cartFeedback === "error"
+                            ? "1px solid rgba(239,68,68,0.3)"
+                            : "none",
                       borderRadius: "var(--radius-full)",
                       fontSize: "0.875rem",
                       fontWeight: 600,
-                      cursor: product.stock <= 0 ? "not-allowed" : "pointer",
+                      cursor:
+                        product.stock <= 0 || cartFeedback === "adding"
+                          ? "not-allowed"
+                          : "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "0.5rem",
                       boxShadow:
-                        product.stock > 0 ? "var(--shadow-sm)" : "none",
+                        product.stock > 0 && cartFeedback === "idle"
+                          ? "var(--shadow-sm)"
+                          : "none",
                       outline: "none",
+                      transition:
+                        "background 0.3s ease, color 0.3s ease, border 0.3s ease",
                     }}
                   >
-                    <ShoppingCart size={16} />
-                    {product.stock <= 0 ? "Out of Stock" : "Add to Cart"}
+                    <ShoppingCart
+                      size={16}
+                      style={{
+                        animation:
+                          cartFeedback === "adding"
+                            ? "pulse 0.8s ease infinite"
+                            : "none",
+                      }}
+                    />
+                    {product.stock <= 0
+                      ? "Out of Stock"
+                      : cartFeedback === "adding"
+                        ? "Adding…"
+                        : cartFeedback === "added"
+                          ? "Added to Cart ✓"
+                          : cartFeedback === "error"
+                            ? "Try Again"
+                            : "Add to Cart"}
                   </button>
 
                   {/* Wishlist button */}
