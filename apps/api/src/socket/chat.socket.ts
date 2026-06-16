@@ -1,6 +1,6 @@
 import type { Server as SocketIOServer } from "socket.io";
 import { Role } from "@prisma/client";
-import { sendMessage } from "@/modules/chat/chat.service";
+import { sendMessage, getConversationDetail } from "@/modules/chat/chat.service";
 import { createNotification } from "@/modules/notifications/notification.service";
 
 export function registerChatSocket(io: SocketIOServer) {
@@ -78,14 +78,12 @@ export function registerChatSocket(io: SocketIOServer) {
               title: notificationTitle,
               message: notificationMessage,
             });
-          } else if (userRole === Role.ADMIN) {
-            // Admin replied to customer
-            // Get conversation customer ID
-            const { getConversationDetail } =
-              await import("@/modules/chat/chat.service");
-            const conversation = await getConversationDetail(
-              data.conversationId,
-            );
+            } else if (userRole === Role.ADMIN) {
+              // Admin replied to customer
+              // Get conversation customer ID
+              const conversation = await getConversationDetail(
+                data.conversationId,
+              );
 
             if (conversation) {
               notificationTitle = "Seller Replied";
