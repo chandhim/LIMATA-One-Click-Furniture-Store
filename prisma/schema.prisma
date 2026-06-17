@@ -16,6 +16,7 @@ model User {
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders    Order[]
 }
 
 enum Role {
@@ -45,6 +46,7 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   cartItems   CartItem[]
+  orderItems  OrderItem[]
 }
 
 model Conversation {
@@ -102,5 +104,65 @@ model CartItem {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([cartId])
+  @@index([productId])
+}
+
+enum PaymentMethod {
+  PAYHERE
+  COD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  UNPAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  CANCELLATION_REQUESTED
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  userId          String
+  paymentMethod   PaymentMethod
+  paymentStatus   PaymentStatus @default(PENDING)
+  orderStatus     OrderStatus   @default(PENDING)
+  totalAmount     Float
+  shippingName    String
+  shippingEmail   String
+  shippingPhone   String
+  shippingAddress String
+  shippingCity    String
+  deliveryMethod  String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  createdAt DateTime @default(now())
+
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
   @@index([productId])
 }
