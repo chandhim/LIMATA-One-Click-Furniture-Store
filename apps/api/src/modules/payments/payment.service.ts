@@ -36,16 +36,30 @@ async function notifyCustomer(userId: string, title: string, message: string) {
   }
 }
 
-export function generatePaymentHash(orderId: string, amount: number, currency: string) {
-  const merchantId = process.env.PAYHERE_MERCHANT_ID || "1223594";
-  const merchantSecret = process.env.PAYHERE_MERCHANT_SECRET || "MjgwOTIwNDg1MTIyODUwMjk3NDkyNTU4OTIyNzY4Mzg2MzY4ODA=";
-
+export function generatePaymentHash(
+  orderId: string,
+  amount: number,
+  currency: string,
+) {
+  const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
+  const merchantSecret =
+    process.env.PAYHERE_MERCHANT_SECRET ||
+    "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
+ 
   const formattedAmount = amount.toFixed(2);
-  const secretMd5 = crypto.createHash("md5").update(merchantSecret).digest("hex").toUpperCase();
-
+  const secretMd5 = crypto
+    .createHash("md5")
+    .update(merchantSecret)
+    .digest("hex")
+    .toUpperCase();
+ 
   const payload = merchantId + orderId + formattedAmount + currency + secretMd5;
-  const hash = crypto.createHash("md5").update(payload).digest("hex").toUpperCase();
-
+  const hash = crypto
+    .createHash("md5")
+    .update(payload)
+    .digest("hex")
+    .toUpperCase();
+ 
   return {
     merchantId,
     hash,
@@ -53,11 +67,13 @@ export function generatePaymentHash(orderId: string, amount: number, currency: s
     currency,
   };
 }
-
+ 
 export function verifyPayHereSignature(body: any): boolean {
-  const merchantId = process.env.PAYHERE_MERCHANT_ID || "1223594";
-  const merchantSecret = process.env.PAYHERE_MERCHANT_SECRET || "MjgwOTIwNDg1MTIyODUwMjk3NDkyNTU4OTIyNzY4Mzg2MzY4ODA=";
-
+  const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
+  const merchantSecret =
+    process.env.PAYHERE_MERCHANT_SECRET ||
+    "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
+ 
   const {
     merchant_id,
     order_id,
@@ -66,16 +82,32 @@ export function verifyPayHereSignature(body: any): boolean {
     status_code,
     md5sig,
   } = body;
-
+ 
   if (merchant_id !== merchantId) {
-    console.warn("PayHere notification verification failed: merchant_id mismatch.");
+    console.warn(
+      "PayHere notification verification failed: merchant_id mismatch.",
+    );
     return false;
   }
-
-  const secretMd5 = crypto.createHash("md5").update(merchantSecret).digest("hex").toUpperCase();
-  const payload = merchant_id + order_id + payhere_amount + payhere_currency + status_code + secretMd5;
-  const calculatedSig = crypto.createHash("md5").update(payload).digest("hex").toUpperCase();
-
+ 
+  const secretMd5 = crypto
+    .createHash("md5")
+    .update(merchantSecret)
+    .digest("hex")
+    .toUpperCase();
+  const payload =
+    merchant_id +
+    order_id +
+    payhere_amount +
+    payhere_currency +
+    status_code +
+    secretMd5;
+  const calculatedSig = crypto
+    .createHash("md5")
+    .update(payload)
+    .digest("hex")
+    .toUpperCase();
+ 
   return calculatedSig === md5sig?.toUpperCase();
 }
 
@@ -112,7 +144,7 @@ export async function processPayHereNotification(body: any) {
         if (!product || product.stock < item.quantity) {
           throw new ApiError(
             400,
-            `Stock check failed for "${product?.name || item.productId}" during payment settlement.`
+            `Stock check failed for "${product?.name || item.productId}" during payment settlement.`,
           );
         }
       }
@@ -154,20 +186,20 @@ export async function processPayHereNotification(body: any) {
     await notifyCustomer(
       order.userId,
       "Payment Successful",
-      `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.id} was successful.`
+      `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.id} was successful.`,
     );
     await notifyCustomer(
       order.userId,
       "Order Confirmed",
-      `Your order #${order.id} has been confirmed.`
+      `Your order #${order.id} has been confirmed.`,
     );
     await notifySellers(
       "Payment Received",
-      `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.id}.`
+      `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.id}.`,
     );
     await notifySellers(
       "Order Requires Processing",
-      `Order #${order.id} is confirmed and requires processing.`
+      `Order #${order.id} is confirmed and requires processing.`,
     );
 
     return { status: "processed", payment: "success" };
@@ -184,11 +216,11 @@ export async function processPayHereNotification(body: any) {
     await notifyCustomer(
       order.userId,
       "Payment Failed",
-      `Your payment for order #${order.id} failed or was cancelled.`
+      `Your payment for order #${order.id} failed or was cancelled.`,
     );
     await notifySellers(
       "Payment Failed",
-      `Payment failed for order #${order.id}.`
+      `Payment failed for order #${order.id}.`,
     );
 
     return { status: "processed", payment: "failed" };
