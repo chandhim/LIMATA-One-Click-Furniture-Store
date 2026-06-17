@@ -77,12 +77,11 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
   // Fetch related products (same category)
   const { data: relatedProducts, isLoading: relatedLoading } = useProducts(
-    undefined,
-    product.category,
+    { category: product.category },
   );
 
   const filteredRelated =
-    relatedProducts?.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
+    relatedProducts?.products?.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
 
   const images =
     product.images && product.images.length > 0
