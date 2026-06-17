@@ -60,22 +60,6 @@ export function generatePaymentHash(
     .digest("hex")
     .toUpperCase();
  
-  const maskSecret = (secret: string) => {
-    if (secret.length <= 8) return "****";
-    return secret.slice(0, 4) + "*".repeat(secret.length - 8) + secret.slice(-4);
-  };
- 
-  console.log("PAYHERE_HASH_GENERATION_DEBUG", JSON.stringify({
-    merchantId,
-    orderId,
-    amount: formattedAmount,
-    currency,
-    merchantSecretMasked: maskSecret(merchantSecret),
-    secretMd5,
-    hashPayload: payload,
-    hash,
-  }, null, 2));
- 
   return {
     merchantId,
     hash,
