@@ -55,6 +55,22 @@ export async function createPaymentParamsController(
       country: "Sri Lanka",
     };
 
+    console.log(
+      "PAYHERE_BACKEND_RESPONSE_DEBUG",
+      JSON.stringify(
+        {
+          merchant_id: checkoutParams.merchantId,
+          order_id: checkoutParams.orderId,
+          items: checkoutParams.items,
+          currency: checkoutParams.currency,
+          amount: checkoutParams.amount,
+          hash: checkoutParams.hash,
+        },
+        null,
+        2
+      )
+    );
+
     return sendResponse(res, 200, checkoutParams);
   } catch (error) {
     return next(error);

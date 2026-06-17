@@ -200,6 +200,11 @@ export default function OrderDetailsPage() {
           cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${payParams.orderId}` : "",
         };
 
+        console.log(
+          "PAYHERE FRONTEND PAYLOAD",
+          JSON.stringify(payment, null, 2)
+        );
+
         payhere.startPayment(payment);
       } else {
         setIsPaying(false);

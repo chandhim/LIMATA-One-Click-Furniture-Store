@@ -150,6 +150,11 @@ export function useCheckout() {
             cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
           };
 
+          console.log(
+            "PAYHERE FRONTEND PAYLOAD",
+            JSON.stringify(payment, null, 2)
+          );
+
           // Trigger PayHere checkout lightbox modal
           payhere.startPayment(payment);
         } else {
