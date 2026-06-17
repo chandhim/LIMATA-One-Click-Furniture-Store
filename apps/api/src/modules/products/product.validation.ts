@@ -1,8 +1,17 @@
 import { z } from "zod";
 
+const sortOptions = ["newest", "price_asc", "price_desc", "name_asc", "name_desc"] as const;
+
 export const listQuerySchema = z.object({
-  search: z.string().optional(),
+  search:   z.string().optional(),
   category: z.string().optional(),
+  material: z.string().optional(),
+  minPrice: z.coerce.number().nonnegative().optional(),
+  maxPrice: z.coerce.number().nonnegative().optional(),
+  inStock:  z.enum(["true", "false"]).optional(),
+  sort:     z.enum(sortOptions).optional().default("newest"),
+  page:     z.coerce.number().int().positive().optional().default(1),
+  limit:    z.coerce.number().int().positive().max(100).optional().default(12),
 });
 
 export const idParamSchema = z.object({

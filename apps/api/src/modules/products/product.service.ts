@@ -9,8 +9,15 @@ import {
 } from "./product.repository";
 
 export async function getProducts(opts: {
-  search?: string;
+  search?:   string;
   category?: string;
+  material?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?:  string;
+  sort?:     string;
+  page?:     number;
+  limit?:    number;
 }) {
   return findProducts(opts);
 }

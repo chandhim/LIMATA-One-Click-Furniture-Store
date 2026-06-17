@@ -1,43 +1,83 @@
-import type { Product } from "@prisma/client";
+import type { Product, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type { ProductCreate, ProductUpdate } from "./product.validation";
 
 /**
- * Fetch a filtered list of products (public catalogue).
- * Returns only the fields needed for the product card / list view.
+ * Fetch a filtered, sorted, paginated list of products (public catalogue).
+ * Returns { products, total } so the frontend can render pagination.
  */
 export async function findProducts(opts: {
-  search?: string;
+  search?:   string;
   category?: string;
+  material?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?:  string;
+  sort?:     string;
+  page?:     number;
+  limit?:    number;
 }) {
-  const { search, category } = opts;
+  const {
+    search,
+    category,
+    material,
+    minPrice,
+    maxPrice,
+    inStock,
+    sort    = "newest",
+    page    = 1,
+    limit   = 12,
+  } = opts;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.ProductWhereInput = {};
 
+  // Search across name AND description
   if (search) {
-    where.name = { contains: search, mode: "insensitive" };
+    where.OR = [
+      { name:        { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
   }
 
-  if (category) {
-    where.category = category;
+  if (category) where.category = { equals: category, mode: "insensitive" };
+  if (material) where.material = { equals: material, mode: "insensitive" };
+  if (inStock === "true")  where.stock = { gt: 0 };
+  if (inStock === "false") where.stock = { equals: 0 };
+
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    where.price = {};
+    if (minPrice !== undefined) (where.price as Prisma.FloatFilter).gte = minPrice;
+    if (maxPrice !== undefined) (where.price as Prisma.FloatFilter).lte = maxPrice;
   }
 
-  const products = await prisma.product.findMany({
-    where,
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      category: true,
-      images: true,
-      stock: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const orderBy: Prisma.ProductOrderByWithRelationInput =
+    sort === "price_asc"  ? { price: "asc" } :
+    sort === "price_desc" ? { price: "desc" } :
+    sort === "name_asc"   ? { name: "asc" } :
+    sort === "name_desc"  ? { name: "desc" } :
+    { createdAt: "desc" };                      // default: newest
 
-  return products as Array<
-    Pick<Product, "id" | "name" | "price" | "category" | "images" | "stock">
-  >;
+  const skip = (page - 1) * limit;
+
+  const [products, total] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        category: true,
+        images: true,
+        stock: true,
+      },
+      orderBy,
+      skip,
+      take: limit,
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  return { products, total };
 }
 
 /**
