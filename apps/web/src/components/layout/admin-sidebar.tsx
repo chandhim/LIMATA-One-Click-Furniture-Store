@@ -2,69 +2,74 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import {
+  LayoutDashboard,
+  Home,
+  FolderTree,
+  FileText,
+  Settings,
+  ShoppingBag,
+  ShoppingCart,
+  Users,
+  Star,
+  MessageSquare,
+  Bell,
+  ArrowUpRight,
+  LogOut
+} from "lucide-react";
 
-type NavItem = {
-  label: string;
-  href?: string;
-  icon: string;
-  children?: { label: string; href: string; icon: string }[];
+type NavGroup = {
+  group: string;
+  items: {
+    label: string;
+    href: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+  }[];
 };
 
-const navGroups: { group: string; items: NavItem[] }[] = [
+const navGroups: NavGroup[] = [
   {
-    group: "",
-    items: [{ label: "Overview", href: "/admin", icon: "◈" }],
-  },
-  {
-    group: "Storefront",
+    group: "Core",
     items: [
-      {
-        label: "Storefront",
-        icon: "⊹",
-        children: [
-          { label: "Homepage", href: "/admin/homepage", icon: "⌂" },
-          { label: "Categories", href: "/admin/categories", icon: "▤" },
-          { label: "Footer", href: "/admin/footer", icon: "▭" },
-          { label: "Site Settings", href: "/admin/settings", icon: "⚙" },
-        ],
-      },
-    ],
+      { label: "Overview", href: "/admin", icon: LayoutDashboard }
+    ]
   },
   {
     group: "Catalog",
     items: [
-      {
-        label: "Catalog",
-        icon: "⊹",
-        children: [{ label: "Products", href: "/admin/products", icon: "◻" }],
-      },
-    ],
+      { label: "Products", href: "/admin/products", icon: ShoppingBag },
+      { label: "Categories", href: "/admin/categories", icon: FolderTree }
+    ]
   },
   {
     group: "Sales",
     items: [
-      {
-        label: "Sales",
-        icon: "⊹",
-        children: [{ label: "Orders", href: "/admin/orders", icon: "◈" }],
-      },
-    ],
+      { label: "Orders", href: "/admin/orders", icon: ShoppingCart }
+    ]
   },
   {
     group: "Users",
     items: [
-      {
-        label: "Users",
-        icon: "⊹",
-        children: [
-          { label: "Customers", href: "/admin/customers", icon: "◯" },
-          { label: "Reviews", href: "/admin/reviews", icon: "◇" },
-        ],
-      },
-    ],
+      { label: "Customers", href: "/admin/customers", icon: Users },
+      { label: "Reviews", href: "/admin/reviews", icon: Star }
+    ]
   },
+  {
+    group: "Communication",
+    items: [
+      { label: "Chats", href: "/admin/chats", icon: MessageSquare },
+      { label: "Notifications", href: "/admin/notifications", icon: Bell }
+    ]
+  },
+  {
+    group: "Settings",
+    items: [
+      { label: "Homepage Content", href: "/admin/homepage", icon: Home },
+      { label: "Footer Links", href: "/admin/footer", icon: FileText },
+      { label: "Store Settings", href: "/admin/settings", icon: Settings }
+    ]
+  }
 ];
 
 export function AdminSidebar({ onClose }: { onClose?: () => void }) {
@@ -72,17 +77,6 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const clearSession = useAuthStore((s) => s.clearSession);
-
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    Storefront: true,
-    Catalog: true,
-    Sales: false,
-    Users: false,
-  });
-
-  function toggleGroup(group: string) {
-    setOpenGroups((prev) => ({ ...prev, [group]: !prev[group] }));
-  }
 
   function handleLogout() {
     clearSession();
@@ -96,20 +90,22 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <aside
+      className="texture-grain"
       style={{
-        width: 240,
+        width: 250,
         minHeight: "100vh",
         background: "var(--bg-dark)",
         display: "flex",
         flexDirection: "column",
         borderRight: "1px solid rgba(250,249,247,0.06)",
         flexShrink: 0,
+        position: "relative",
       }}
     >
-      {/* Logo */}
+      {/* Brand Logo Header */}
       <div
         style={{
-          padding: "1.5rem 1.25rem 1.25rem",
+          padding: "1.75rem 1.5rem 1.5rem",
           borderBottom: "1px solid rgba(250,249,247,0.06)",
         }}
       >
@@ -119,31 +115,31 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             textDecoration: "none",
             display: "flex",
             alignItems: "center",
-            gap: "0.625rem",
+            gap: "0.75rem",
           }}
         >
           <span
+            className="font-serif"
             style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "1.25rem",
+              fontSize: "1.4rem",
               fontWeight: 700,
               color: "#FAF9F7",
-              letterSpacing: "-0.02em",
+              letterSpacing: "-0.01em",
             }}
           >
             LIMATA
           </span>
           <span
             style={{
-              fontSize: "0.6rem",
+              fontSize: "0.625rem",
               fontWeight: 700,
-              letterSpacing: "0.12em",
+              letterSpacing: "0.14em",
               textTransform: "uppercase",
               color: "var(--accent)",
-              background: "rgba(201,169,110,0.15)",
+              background: "rgba(201,169,110,0.12)",
               border: "1px solid rgba(201,169,110,0.25)",
               borderRadius: "4px",
-              padding: "0.15rem 0.45rem",
+              padding: "0.15rem 0.5rem",
             }}
           >
             Admin
@@ -151,195 +147,138 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
         </Link>
       </div>
 
-      {/* Navigation */}
-      <nav style={{ flex: 1, padding: "1rem 0", overflowY: "auto" }}>
+      {/* Navigation Options */}
+      <nav 
+        style={{ 
+          flex: 1, 
+          padding: "1.25rem 0.75rem", 
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem"
+        }}
+      >
         {navGroups.map(({ group, items }) => (
-          <div key={group || "root"} style={{ marginBottom: "0.25rem" }}>
-            {/* Group label */}
-            {group && (
-              <div
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: 600,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "rgba(250,249,247,0.3)",
-                  padding: "0.75rem 1.25rem 0.35rem",
-                }}
-              >
-                {group}
-              </div>
-            )}
+          <div key={group} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+            {/* Group Label Title */}
+            <div
+              style={{
+                fontSize: "0.65rem",
+                fontWeight: 700,
+                letterSpacing: "0.16em",
+                textTransform: "uppercase",
+                color: "rgba(250,249,247,0.25)",
+                padding: "0.5rem 0.75rem 0.25rem",
+              }}
+            >
+              {group}
+            </div>
 
             {items.map((item) => {
-              // Simple link
-              if (item.href) {
-                const active = isActive(item.href);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.625rem",
-                      padding: "0.6rem 1.25rem",
-                      fontSize: "0.875rem",
-                      fontWeight: active ? 600 : 400,
-                      color: active ? "#FAF9F7" : "rgba(250,249,247,0.55)",
-                      textDecoration: "none",
-                      background: active
-                        ? "rgba(201,169,110,0.12)"
-                        : "transparent",
-                      borderLeft: active
-                        ? "2px solid var(--accent)"
-                        : "2px solid transparent",
-                      transition: "all 0.15s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active)
-                        (e.currentTarget as HTMLElement).style.color =
-                          "rgba(250,249,247,0.85)";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!active)
-                        (e.currentTarget as HTMLElement).style.color =
-                          "rgba(250,249,247,0.55)";
-                    }}
-                  >
-                    <span style={{ fontSize: "0.875rem", opacity: 0.7 }}>
-                      {item.icon}
-                    </span>
-                    {item.label}
-                  </Link>
-                );
-              }
-
-              // Collapsible group
-              const isOpen = openGroups[item.label];
-              const anyChildActive = item.children?.some((c) =>
-                isActive(c.href),
-              );
-
+              const Icon = item.icon;
+              const active = isActive(item.href);
               return (
-                <div key={item.label}>
-                  <button
-                    onClick={() => toggleGroup(item.label)}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.625rem 0.75rem",
+                    fontSize: "0.85rem",
+                    fontWeight: active ? 600 : 400,
+                    color: active ? "#FAF9F7" : "rgba(250,249,247,0.55)",
+                    textDecoration: "none",
+                    background: active
+                      ? "linear-gradient(90deg, rgba(201,169,110,0.08) 0%, rgba(201,169,110,0.02) 100%)"
+                      : "transparent",
+                    borderLeft: active ? "3px solid var(--accent)" : "3px solid transparent",
+                    borderRadius: "0 var(--radius-sm) var(--radius-sm) 0",
+                    transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                    position: "relative",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.color = "rgba(250,249,247,0.9)";
+                      el.style.background = "rgba(250,249,247,0.02)";
+                      const iconSpan = el.firstElementChild as HTMLElement;
+                      if (iconSpan) iconSpan.style.color = "rgba(250,249,247,0.7)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.color = "rgba(250,249,247,0.55)";
+                      el.style.background = "transparent";
+                      const iconSpan = el.firstElementChild as HTMLElement;
+                      if (iconSpan) iconSpan.style.color = "rgba(250,249,247,0.45)";
+                    }
+                  }}
+                >
+                  <span
                     style={{
-                      display: "flex",
+                      display: "inline-flex",
                       alignItems: "center",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      padding: "0.6rem 1.25rem",
-                      fontSize: "0.75rem",
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: anyChildActive
-                        ? "var(--accent)"
-                        : "rgba(250,249,247,0.4)",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      transition: "color 0.15s ease",
+                      color: active ? "var(--accent)" : "rgba(250,249,247,0.45)",
+                      transition: "color 0.2s ease",
                     }}
                   >
-                    {item.label}
+                    <Icon size={16} />
+                  </span>
+                  <span>{item.label}</span>
+                  {active && (
                     <span
                       style={{
-                        fontSize: "0.6rem",
-                        transition: "transform 0.2s ease",
-                        transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                        display: "inline-block",
+                        width: "5px",
+                        height: "5px",
+                        borderRadius: "50%",
+                        background: "var(--accent)",
+                        boxShadow: "0 0 8px var(--accent), 0 0 16px var(--accent)",
+                        marginLeft: "auto",
                       }}
-                    >
-                      ▾
-                    </span>
-                  </button>
-
-                  {isOpen &&
-                    item.children?.map((child) => {
-                      const childActive = isActive(child.href);
-                      return (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          onClick={onClose}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.5rem",
-                            padding: "0.55rem 1.25rem 0.55rem 2.25rem",
-                            fontSize: "0.855rem",
-                            fontWeight: childActive ? 600 : 400,
-                            color: childActive
-                              ? "#FAF9F7"
-                              : "rgba(250,249,247,0.5)",
-                            textDecoration: "none",
-                            background: childActive
-                              ? "rgba(201,169,110,0.1)"
-                              : "transparent",
-                            borderLeft: childActive
-                              ? "2px solid var(--accent)"
-                              : "2px solid transparent",
-                            transition: "all 0.15s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!childActive)
-                              (e.currentTarget as HTMLElement).style.color =
-                                "rgba(250,249,247,0.8)";
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!childActive)
-                              (e.currentTarget as HTMLElement).style.color =
-                                "rgba(250,249,247,0.5)";
-                          }}
-                        >
-                          <span style={{ fontSize: "0.75rem", opacity: 0.6 }}>
-                            {child.icon}
-                          </span>
-                          {child.label}
-                        </Link>
-                      );
-                    })}
-                </div>
+                    />
+                  )}
+                </Link>
               );
             })}
           </div>
         ))}
       </nav>
 
-      {/* User profile + sign out */}
+      {/* User Session & Profiles Summary Footer */}
       <div
         style={{
-          padding: "1rem 1.25rem",
+          padding: "1.25rem 1rem",
           borderTop: "1px solid rgba(250,249,247,0.06)",
+          background: "rgba(250,249,247,0.01)",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.625rem",
-            marginBottom: "0.75rem",
+            gap: "0.75rem",
+            marginBottom: "0.875rem",
           }}
         >
           <div
             style={{
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               borderRadius: "50%",
-              background:
-                "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "0.8rem",
+              fontSize: "0.875rem",
               fontWeight: 700,
-              color: "#fff",
+              color: "#1C1A17",
               flexShrink: 0,
+              border: "1px solid rgba(250,249,247,0.15)",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
             }}
           >
             {user?.name?.[0]?.toUpperCase() ?? "A"}
@@ -347,7 +286,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
           <div style={{ overflow: "hidden" }}>
             <div
               style={{
-                fontSize: "0.8rem",
+                fontSize: "0.85rem",
                 fontWeight: 600,
                 color: "#FAF9F7",
                 whiteSpace: "nowrap",
@@ -359,8 +298,8 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             </div>
             <div
               style={{
-                fontSize: "0.68rem",
-                color: "rgba(250,249,247,0.4)",
+                fontSize: "0.7rem",
+                color: "rgba(250,249,247,0.35)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -375,55 +314,56 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
           onClick={handleLogout}
           style={{
             width: "100%",
-            padding: "0.5rem 0.75rem",
+            padding: "0.5rem",
             fontSize: "0.8rem",
-            fontWeight: 500,
-            color: "rgba(250,249,247,0.5)",
+            fontWeight: 600,
+            color: "rgba(250,249,247,0.45)",
             background: "transparent",
             border: "1px solid rgba(250,249,247,0.08)",
-            borderRadius: "var(--radius-sm)",
+            borderRadius: "var(--radius-md)",
             cursor: "pointer",
-            textAlign: "center",
-            transition: "all 0.2s ease",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+            transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
           onMouseEnter={(e) => {
             const el = e.currentTarget as HTMLElement;
-            el.style.borderColor = "rgba(231,76,60,0.4)";
-            el.style.color = "#e74c3c";
+            el.style.borderColor = "rgba(239, 68, 68, 0.25)";
+            el.style.color = "#ef4444";
+            el.style.background = "rgba(239, 68, 68, 0.05)";
           }}
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLElement;
             el.style.borderColor = "rgba(250,249,247,0.08)";
-            el.style.color = "rgba(250,249,247,0.5)";
+            el.style.color = "rgba(250,249,247,0.45)";
+            el.style.background = "transparent";
           }}
         >
+          <LogOut size={13} />
           Sign out
         </button>
 
-        {/* View storefront link */}
         <Link
           href="/"
           target="_blank"
           style={{
-            display: "block",
-            marginTop: "0.5rem",
-            padding: "0.4rem 0.75rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.25rem",
+            marginTop: "0.625rem",
             fontSize: "0.75rem",
             color: "rgba(250,249,247,0.3)",
             textDecoration: "none",
-            textAlign: "center",
             transition: "color 0.2s ease",
           }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLElement).style.color =
-              "rgba(250,249,247,0.6)")
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLElement).style.color =
-              "rgba(250,249,247,0.3)")
-          }
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.3)")}
         >
-          ↗ View Storefront
+          <span>View Storefront</span>
+          <ArrowUpRight size={12} />
         </Link>
       </div>
     </aside>

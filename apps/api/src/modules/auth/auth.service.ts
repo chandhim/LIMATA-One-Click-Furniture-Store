@@ -50,6 +50,10 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
     throw new ApiError(401, "Invalid credentials");
   }
 
+  if (user.isActive === false) {
+    throw new ApiError(403, "Your account has been disabled. Please contact support.");
+  }
+
   const passwordMatches = await bcrypt.compare(input.password, user.password);
 
   if (!passwordMatches) {

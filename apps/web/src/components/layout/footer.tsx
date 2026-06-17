@@ -1,9 +1,39 @@
 "use client";
 
 import Link from "next/link";
+import { usePublicSetting } from "@/features/admin/hooks/use-admin";
+
+interface FooterLink {
+  label: string;
+  href: string;
+}
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const { data: footerCompany } = usePublicSetting("footer_company");
+  const { data: footerLinks } = usePublicSetting("footer_links");
+  const { data: footerSocial } = usePublicSetting("footer_social");
+
+  const company = footerCompany ?? {
+    name: "LIMATA",
+    desc: "One-click furniture shopping with AI visualization. Transform your space with curated, quality pieces.",
+    copyright: `© ${year} LIMATA. All rights reserved.`,
+  };
+
+  const links: FooterLink[] = (footerLinks as FooterLink[]) ?? [
+    { label: "Home", href: "/" },
+    { label: "Products", href: "/products" },
+    { label: "Categories", href: "/#categories" },
+    { label: "About", href: "/#about" },
+  ];
+
+  const defaultSocial = {
+    facebook: "https://facebook.com/limata",
+    instagram: "https://instagram.com/limata",
+    linkedin: "https://linkedin.com/company/limata",
+  };
+
+  const social = footerSocial || defaultSocial;
 
   return (
     <footer
@@ -66,7 +96,7 @@ export function Footer() {
                 marginBottom: "1rem",
               }}
             >
-              LIMATA
+              {company.name}
               <span
                 style={{
                   width: 6,
@@ -88,42 +118,57 @@ export function Footer() {
                 marginBottom: "1.5rem",
               }}
             >
-              One-click furniture shopping with AI visualization. Transform your space with curated, quality pieces.
+              {company.desc}
             </p>
             {/* Social Links */}
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              {["𝕏", "IG", "FB"].map((s) => (
-                <button
-                  key={s}
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "var(--radius-sm)",
-                    border: "1px solid rgba(250,249,247,0.12)",
-                    background: "rgba(250,249,247,0.05)",
-                    color: "rgba(250,249,247,0.5)",
-                    fontSize: "0.8rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "border-color 0.2s, color 0.2s, background 0.2s",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
-                    (e.currentTarget as HTMLElement).style.color = "var(--accent)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(250,249,247,0.12)";
-                    (e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.5)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.05)";
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
+              {Object.entries(social).map(([platform, url]) => {
+                if (!url) return null;
+                const labelMap: Record<string, string> = {
+                  facebook: "FB",
+                  instagram: "IG",
+                  linkedin: "LN",
+                  tiktok: "TT",
+                };
+                const label = labelMap[platform] || platform.slice(0, 2).toUpperCase();
+
+                return (
+                  <a
+                    key={platform}
+                    href={url as string}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: "var(--radius-sm)",
+                      border: "1px solid rgba(250,249,247,0.12)",
+                      background: "rgba(250,249,247,0.05)",
+                      color: "rgba(250,249,247,0.5)",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "border-color 0.2s, color 0.2s, background 0.2s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textDecoration: "none",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(250,249,247,0.12)";
+                      (e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.5)";
+                      (e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.05)";
+                    }}
+                  >
+                    {label}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -142,12 +187,7 @@ export function Footer() {
               Navigate
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {[
-                { label: "Home", href: "/" },
-                { label: "Products", href: "/products" },
-                { label: "Categories", href: "/#categories" },
-                { label: "About", href: "/#about" },
-              ].map((link) => (
+              {links.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
@@ -213,7 +253,7 @@ export function Footer() {
           }}
         >
           <p style={{ fontSize: "0.8125rem", color: "rgba(250,249,247,0.35)" }}>
-            © {year} LIMATA. All rights reserved.
+            {company.copyright}
           </p>
           <p style={{ fontSize: "0.8125rem", color: "rgba(250,249,247,0.25)" }}>
             Crafted with care for beautiful spaces

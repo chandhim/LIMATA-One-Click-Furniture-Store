@@ -161,6 +161,38 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
 }
 
 export async function getUserOrders(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (user?.role === "ADMIN") {
+    return prisma.order.findMany({
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                images: true,
+              },
+            },
+          },
+          orderBy: { id: "asc" },
+        },
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
   return findOrders(userId);
 }
 
