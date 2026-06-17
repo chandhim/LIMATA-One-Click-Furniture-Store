@@ -229,25 +229,34 @@ export default function OrderDetailsPage() {
         style={{
           background: "var(--bg-base)",
           minHeight: "100vh",
-          padding: "3rem 1.5rem",
+          padding: "4rem 1.5rem",
         }}
       >
         <div style={{ maxWidth: "1024px", margin: "0 auto" }}>
           {/* Back link */}
-          <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ marginBottom: "2rem" }}>
             <Link
               href="/account/orders"
               style={{
                 textDecoration: "none",
-                color: "var(--accent-dark)",
-                fontWeight: 600,
-                display: "flex",
+                color: "var(--fg-secondary)",
+                fontWeight: 500,
+                display: "inline-flex",
                 alignItems: "center",
-                gap: "0.25rem",
-                fontSize: "0.9rem",
+                gap: "0.5rem",
+                fontSize: "0.875rem",
+                transition: "color 0.2s ease, transform 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--accent-dark)";
+                e.currentTarget.style.transform = "translateX(-4px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--fg-secondary)";
+                e.currentTarget.style.transform = "translateX(0)";
               }}
             >
-              ← Back to My Orders
+              <span>←</span> Back to My Orders
             </Link>
           </div>
 
@@ -256,53 +265,80 @@ export default function OrderDetailsPage() {
             style={{
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "baseline",
               flexWrap: "wrap",
-              gap: "1rem",
+              gap: "1.5rem",
               borderBottom: "1px solid var(--border)",
-              paddingBottom: "1.5rem",
-              marginBottom: "2rem",
+              paddingBottom: "1.75rem",
+              marginBottom: "2.5rem",
             }}
           >
             <div>
+              <span className="section-label" style={{ marginBottom: "0.5rem" }}>Receipt</span>
               <h1
+                className="font-display"
                 style={{
-                  fontFamily: "var(--font-serif)",
-                  fontSize: "1.75rem",
+                  fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
                   fontWeight: 700,
                   color: "var(--fg-primary)",
                   margin: 0,
+                  letterSpacing: "-0.02em",
                 }}
               >
-                Order Detail
+                Order #{order.id.slice(-8).toUpperCase()}
               </h1>
-              <span style={{ fontSize: "0.9rem", color: "var(--fg-muted)" }}>
+              <p style={{ margin: "0.375rem 0 0", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
                 Placed on {formattedDate}
-              </span>
+              </p>
             </div>
             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
               {/* Order Status Badge */}
               <span
                 style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
                   fontWeight: 600,
                   color:
                     order.orderStatus === "DELIVERED"
                       ? "#166534"
                       : isCancelled
                         ? "#991b1b"
-                        : "#1e3a8a",
+                        : "#b45309",
                   background:
                     order.orderStatus === "DELIVERED"
-                      ? "rgba(34, 197, 94, 0.12)"
+                      ? "rgba(34, 197, 94, 0.08)"
                       : isCancelled
-                        ? "rgba(239, 68, 68, 0.12)"
-                        : "rgba(30, 58, 138, 0.12)",
-                  padding: "0.35rem 0.75rem",
+                        ? "rgba(239, 68, 68, 0.08)"
+                        : "rgba(245, 158, 11, 0.08)",
+                  border: `1px solid ${
+                    order.orderStatus === "DELIVERED"
+                      ? "rgba(34, 197, 94, 0.2)"
+                      : isCancelled
+                        ? "rgba(239, 68, 68, 0.2)"
+                        : "rgba(245, 158, 11, 0.2)"
+                  }`,
+                  padding: "0.5rem 1rem",
                   borderRadius: "var(--radius-full)",
-                  fontSize: "0.85rem",
+                  fontSize: "0.78rem",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
                 }}
               >
-                {order.orderStatus}
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background:
+                      order.orderStatus === "DELIVERED"
+                        ? "#22c55e"
+                        : isCancelled
+                          ? "#ef4444"
+                          : "#f59e0b",
+                  }}
+                />
+                {order.orderStatus.replace("_", " ")}
               </span>
             </div>
           </div>
@@ -314,20 +350,24 @@ export default function OrderDetailsPage() {
                 background: "var(--bg-surface)",
                 border: "1px solid var(--border)",
                 borderRadius: "var(--radius-lg)",
-                padding: "2rem",
-                marginBottom: "2rem",
+                padding: "2.5rem 2rem",
+                marginBottom: "3rem",
                 boxShadow: "var(--shadow-sm)",
+                position: "relative",
               }}
+              className="texture-grain"
             >
               <h3
                 style={{
-                  fontSize: "1rem",
+                  fontSize: "0.85rem",
                   fontWeight: 700,
-                  color: "var(--fg-primary)",
-                  marginBottom: "1.5rem",
+                  letterSpacing: "0.05em",
+                  textTransform: "uppercase",
+                  color: "var(--fg-secondary)",
+                  marginBottom: "2rem",
                 }}
               >
-                Delivery Progress
+                Delivery Journey
               </h3>
               <div
                 style={{
@@ -335,7 +375,6 @@ export default function OrderDetailsPage() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   position: "relative",
-                  padding: "0 1rem",
                 }}
               >
                 {/* Horizontal bar */}
@@ -344,8 +383,8 @@ export default function OrderDetailsPage() {
                     position: "absolute",
                     left: "2rem",
                     right: "2rem",
-                    top: "14px",
-                    height: "4px",
+                    top: "16px",
+                    height: "3px",
                     background: "var(--border)",
                     zIndex: 1,
                   }}
@@ -354,17 +393,18 @@ export default function OrderDetailsPage() {
                   style={{
                     position: "absolute",
                     left: "2rem",
-                    width: `${(currentStepIndex / (steps.length - 1)) * 100}%`,
-                    top: "14px",
-                    height: "4px",
+                    width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 4rem)`,
+                    top: "16px",
+                    height: "3px",
                     background: "var(--accent)",
                     zIndex: 2,
-                    transition: "width 0.4s ease",
+                    transition: "width 0.6s cubic-bezier(0.22,1,0.36,1)",
                   }}
                 />
 
                 {steps.map((step, idx) => {
                   const active = idx <= currentStepIndex;
+                  const current = idx === currentStepIndex;
                   return (
                     <div
                       key={step}
@@ -372,25 +412,39 @@ export default function OrderDetailsPage() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        gap: "0.5rem",
+                        gap: "0.75rem",
                         zIndex: 3,
+                        flex: 1,
                       }}
                     >
                       <div
                         style={{
-                          width: "32px",
-                          height: "32px",
+                          width: "34px",
+                          height: "34px",
                           borderRadius: "50%",
-                          background: active
-                            ? "var(--accent)"
-                            : "var(--bg-surface)",
-                          border: `2px solid ${active ? "var(--accent)" : "var(--border)"}`,
-                          color: active ? "white" : "var(--fg-muted)",
+                          background: current
+                            ? "var(--bg-dark)"
+                            : active
+                              ? "var(--accent)"
+                              : "var(--bg-surface)",
+                          border: `2px solid ${
+                            current
+                              ? "var(--bg-dark)"
+                              : active
+                                ? "var(--accent)"
+                                : "var(--border-strong)"
+                          }`,
+                          color: active ? "var(--fg-inverse)" : "var(--fg-muted)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: "0.85rem",
+                          fontSize: "0.8rem",
                           fontWeight: 700,
+                          boxShadow: current
+                            ? "0 0 0 4px var(--accent-glow)"
+                            : active
+                              ? "0 4px 10px rgba(201,169,110,0.2)"
+                              : "none",
                           transition: "all 0.3s ease",
                         }}
                       >
@@ -398,15 +452,15 @@ export default function OrderDetailsPage() {
                       </div>
                       <span
                         style={{
-                          fontSize: "0.75rem",
+                          fontSize: "0.72rem",
                           fontWeight: active ? 700 : 500,
-                          color: active
-                            ? "var(--fg-primary)"
-                            : "var(--fg-muted)",
-                          textTransform: "capitalize",
+                          color: active ? "var(--fg-primary)" : "var(--fg-muted)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          textAlign: "center",
                         }}
                       >
-                        {step.toLowerCase()}
+                        {step.toLowerCase().replace("_", " ")}
                       </span>
                     </div>
                   );
@@ -416,80 +470,68 @@ export default function OrderDetailsPage() {
           )}
 
           {/* Details split grid */}
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
             <div
               className="order-details-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1.8fr 1fr",
-                gap: "2rem",
+                gap: "2.5rem",
               }}
             >
               {/* Left Column: Items purchased */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2rem",
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
                 <div
                   style={{
                     background: "var(--bg-surface)",
                     border: "1px solid var(--border)",
                     borderRadius: "var(--radius-lg)",
-                    padding: "1.5rem",
+                    padding: "2rem",
                     boxShadow: "var(--shadow-sm)",
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: "1.1rem",
+                      fontSize: "0.85rem",
                       fontWeight: 700,
-                      color: "var(--fg-primary)",
-                      marginBottom: "1.25rem",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-secondary)",
+                      marginBottom: "1.5rem",
                       borderBottom: "1px solid var(--border)",
                       paddingBottom: "0.75rem",
                     }}
                   >
                     Items in Order
                   </h3>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "1rem",
-                    }}
-                  >
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {order.items.map((item) => (
                       <div
                         key={item.id}
                         style={{
                           display: "flex",
-                          gap: "1rem",
+                          gap: "1.5rem",
                           alignItems: "center",
-                          borderBottom: "1px solid rgba(0,0,0,0.03)",
-                          paddingBottom: "0.75rem",
+                          padding: "1rem 0",
+                          borderBottom: "1px solid var(--border)",
                         }}
                       >
                         <div
                           style={{
-                            width: "4.5rem",
-                            height: "4.5rem",
-                            background:
-                              "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
+                            width: "5rem",
+                            height: "5rem",
+                            background: "var(--bg-elevated)",
+                            border: "1px solid var(--border)",
                             borderRadius: "var(--radius-md)",
                             overflow: "hidden",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             flexShrink: 0,
+                            position: "relative",
                           }}
                         >
-                          {item.product.images &&
-                          item.product.images.length > 0 ? (
+                          {item.product.images && item.product.images.length > 0 ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={item.product.images[0]}
@@ -511,25 +553,25 @@ export default function OrderDetailsPage() {
                               fontWeight: 600,
                               color: "var(--fg-primary)",
                               margin: "0 0 0.25rem",
+                              letterSpacing: "-0.01em",
                             }}
                           >
                             {item.product.name}
                           </h4>
                           <span
                             style={{
-                              fontSize: "0.85rem",
+                              fontSize: "0.825rem",
                               color: "var(--fg-secondary)",
                             }}
                           >
-                            Price: Rs. {item.price.toLocaleString()} | Qty:{" "}
-                            {item.quantity}
+                            Rs. {item.price.toLocaleString()} × {item.quantity}
                           </span>
                         </div>
                         <div
                           style={{
-                            fontWeight: 700,
+                            fontWeight: 600,
                             color: "var(--fg-primary)",
-                            fontSize: "1rem",
+                            fontSize: "0.95rem",
                           }}
                         >
                           Rs. {(item.price * item.quantity).toLocaleString()}
@@ -543,22 +585,22 @@ export default function OrderDetailsPage() {
                     style={{
                       display: "flex",
                       flexDirection: "column",
-                      gap: "0.5rem",
+                      gap: "0.75rem",
                       marginTop: "1.5rem",
+                      paddingTop: "1.25rem",
                       borderTop: "1px solid var(--border)",
-                      paddingTop: "1rem",
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        fontSize: "0.9rem",
+                        fontSize: "0.85rem",
                         color: "var(--fg-secondary)",
                       }}
                     >
                       <span>Subtotal</span>
-                      <span>
+                      <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>
                         Rs.{" "}
                         {(
                           order.totalAmount -
@@ -570,65 +612,59 @@ export default function OrderDetailsPage() {
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        fontSize: "0.9rem",
+                        fontSize: "0.85rem",
                         color: "var(--fg-secondary)",
                       }}
                     >
                       <span>Shipping ({order.deliveryMethod})</span>
-                      <span>
-                        {order.deliveryMethod === "Express"
-                          ? "Rs. 1,000"
-                          : "Free"}
+                      <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>
+                        {order.deliveryMethod === "Express" ? "Rs. 1,000" : "Free"}
                       </span>
                     </div>
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        fontSize: "1.1rem",
+                        fontSize: "1.0625rem",
                         fontWeight: 700,
                         color: "var(--fg-primary)",
-                        marginTop: "0.5rem",
-                        borderTop: "1px solid var(--border)",
+                        marginTop: "0.75rem",
                         paddingTop: "0.75rem",
+                        borderTop: "1.5px solid var(--fg-primary)",
                       }}
                     >
                       <span>Total Amount</span>
-                      <span>Rs. {order.totalAmount.toLocaleString()}</span>
+                      <span className="text-gradient">Rs. {order.totalAmount.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Customer Shipping & Payment details */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2rem",
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
                 {/* Shipping Details */}
                 <div
                   style={{
                     background: "var(--bg-surface)",
                     border: "1px solid var(--border)",
                     borderRadius: "var(--radius-lg)",
-                    padding: "1.5rem",
+                    padding: "1.75rem",
                     boxShadow: "var(--shadow-sm)",
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: "1rem",
+                      fontSize: "0.85rem",
                       fontWeight: 700,
-                      color: "var(--fg-primary)",
-                      marginBottom: "1rem",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-secondary)",
+                      marginBottom: "1.25rem",
                       borderBottom: "1px solid var(--border)",
-                      paddingBottom: "0.5rem",
+                      paddingBottom: "0.75rem",
                     }}
                   >
-                    Shipping Details
+                    Delivery Location
                   </h3>
                   <div
                     style={{
@@ -636,46 +672,74 @@ export default function OrderDetailsPage() {
                       color: "var(--fg-secondary)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "0.5rem",
+                      gap: "1rem",
                     }}
                   >
                     <div>
                       <span
-                        style={{ color: "var(--fg-muted)", display: "block" }}
+                        style={{
+                          color: "var(--fg-muted)",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                          display: "block",
+                          marginBottom: "0.15rem",
+                        }}
                       >
-                        Recipient
+                        Recipient Name
                       </span>
-                      <strong style={{ color: "var(--fg-primary)" }}>
+                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
                         {order.shippingName}
                       </strong>
                     </div>
                     <div>
                       <span
-                        style={{ color: "var(--fg-muted)", display: "block" }}
+                        style={{
+                          color: "var(--fg-muted)",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                          display: "block",
+                          marginBottom: "0.15rem",
+                        }}
                       >
-                        Contact Phone
+                        Phone Number
                       </span>
-                      <strong style={{ color: "var(--fg-primary)" }}>
+                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
                         {order.shippingPhone}
                       </strong>
                     </div>
                     <div>
                       <span
-                        style={{ color: "var(--fg-muted)", display: "block" }}
+                        style={{
+                          color: "var(--fg-muted)",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                          display: "block",
+                          marginBottom: "0.15rem",
+                        }}
                       >
-                        Contact Email
+                        Email Address
                       </span>
-                      <strong style={{ color: "var(--fg-primary)" }}>
+                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
                         {order.shippingEmail}
                       </strong>
                     </div>
                     <div>
                       <span
-                        style={{ color: "var(--fg-muted)", display: "block" }}
+                        style={{
+                          color: "var(--fg-muted)",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em",
+                          display: "block",
+                          marginBottom: "0.15rem",
+                        }}
                       >
-                        Delivery Address
+                        Shipping Address
                       </span>
-                      <strong style={{ color: "var(--fg-primary)" }}>
+                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600, lineHeight: 1.4 }}>
                         {order.shippingAddress}, {order.shippingCity}
                       </strong>
                     </div>
@@ -688,21 +752,23 @@ export default function OrderDetailsPage() {
                     background: "var(--bg-surface)",
                     border: "1px solid var(--border)",
                     borderRadius: "var(--radius-lg)",
-                    padding: "1.5rem",
+                    padding: "1.75rem",
                     boxShadow: "var(--shadow-sm)",
                   }}
                 >
                   <h3
                     style={{
-                      fontSize: "1rem",
+                      fontSize: "0.85rem",
                       fontWeight: 700,
-                      color: "var(--fg-primary)",
-                      marginBottom: "1rem",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-secondary)",
+                      marginBottom: "1.25rem",
                       borderBottom: "1px solid var(--border)",
-                      paddingBottom: "0.5rem",
+                      paddingBottom: "0.75rem",
                     }}
                   >
-                    Payment Details
+                    Payment Overview
                   </h3>
                   <div
                     style={{
@@ -710,26 +776,42 @@ export default function OrderDetailsPage() {
                       color: "var(--fg-secondary)",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "0.5rem",
+                      gap: "0.875rem",
                     }}
                   >
-                    <div>
-                      <span style={{ color: "var(--fg-muted)" }}>Method: </span>
-                      <strong style={{ color: "var(--fg-primary)" }}>
-                        {order.paymentMethod}
-                      </strong>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "var(--fg-secondary)" }}>Payment Method</span>
+                      <strong style={{ color: "var(--fg-primary)" }}>{order.paymentMethod}</strong>
                     </div>
-                    <div>
-                      <span style={{ color: "var(--fg-muted)" }}>Status: </span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                      <span style={{ color: "var(--fg-secondary)" }}>Settlement Status</span>
                       <span
                         style={{
                           fontWeight: 700,
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em",
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "var(--radius-full)",
+                          background:
+                            order.paymentStatus === "PAID"
+                              ? "rgba(34, 197, 94, 0.08)"
+                              : order.paymentStatus === "FAILED"
+                                ? "rgba(239, 68, 68, 0.08)"
+                                : "rgba(245, 158, 11, 0.08)",
                           color:
                             order.paymentStatus === "PAID"
                               ? "#22c55e"
                               : order.paymentStatus === "FAILED"
                                 ? "#ef4444"
-                                : "#eab308",
+                                : "#f59e0b",
+                          border: `1px solid ${
+                            order.paymentStatus === "PAID"
+                              ? "rgba(34, 197, 94, 0.2)"
+                              : order.paymentStatus === "FAILED"
+                                ? "rgba(239, 68, 68, 0.2)"
+                                : "rgba(245, 158, 11, 0.2)"
+                          }`,
                         }}
                       >
                         {order.paymentStatus}
@@ -743,23 +825,21 @@ export default function OrderDetailsPage() {
                         <button
                           onClick={handlePayNow}
                           disabled={isPaying}
+                          className="btn-shimmer"
                           style={{
                             width: "100%",
                             padding: "0.75rem",
-                            background: "#22c55e",
-                            color: "white",
                             border: "none",
-                            borderRadius: "var(--radius-md)",
-                            fontWeight: 700,
+                            color: "var(--fg-inverse)",
+                            borderRadius: "var(--radius-full)",
+                            fontWeight: 600,
                             cursor: isPaying ? "not-allowed" : "pointer",
-                            marginTop: "1rem",
-                            fontSize: "0.85rem",
-                            boxShadow: "0 2px 4px rgba(34, 197, 94, 0.2)",
+                            marginTop: "1.25rem",
+                            fontSize: "0.825rem",
+                            letterSpacing: "0.02em",
                           }}
                         >
-                          {isPaying
-                            ? "Loading Payment..."
-                            : "Pay Now with PayHere"}
+                          {isPaying ? "Loading Checkout..." : "Pay Now with PayHere"}
                         </button>
                       )}
                   </div>
@@ -771,29 +851,27 @@ export default function OrderDetailsPage() {
                     onClick={handleCancelOrder}
                     disabled={cancelOrderMutation.isPending}
                     style={{
+                      width: "100%",
                       padding: "0.75rem",
                       background: "transparent",
-                      border: "1.5px solid red",
-                      color: "red",
-                      borderRadius: "var(--radius-md)",
+                      border: "1.5px solid rgba(220,80,80,0.3)",
+                      color: "rgba(220,80,80,0.9)",
+                      borderRadius: "var(--radius-full)",
                       fontWeight: 600,
-                      cursor: cancelOrderMutation.isPending
-                        ? "not-allowed"
-                        : "pointer",
-                      fontSize: "0.875rem",
+                      cursor: cancelOrderMutation.isPending ? "not-allowed" : "pointer",
+                      fontSize: "0.825rem",
                       transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(239, 68, 68, 0.05)";
+                      e.currentTarget.style.borderColor = "rgba(220,80,80,0.8)";
+                      e.currentTarget.style.background = "rgba(220,80,80,0.04)";
                     }}
                     onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(220,80,80,0.3)";
                       e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    {cancelOrderMutation.isPending
-                      ? "Requesting Cancellation..."
-                      : "Cancel Order"}
+                    {cancelOrderMutation.isPending ? "Cancelling Order..." : "Cancel Order"}
                   </button>
                 )}
               </div>

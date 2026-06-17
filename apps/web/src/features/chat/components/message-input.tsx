@@ -28,23 +28,47 @@ export function MessageInput({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-t border-slate-200 p-4 bg-slate-50"
+      style={{ 
+        borderTop: "1px solid var(--border)", 
+        padding: "1.25rem 1.5rem", 
+        background: "var(--bg-surface)" 
+      }}
     >
-      <div className="flex gap-2">
+      <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
         <input
           type="text"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Type your reply to the customer..."
           disabled={isSending || disabled}
-          className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-50"
+          className="input-base"
+          style={{ 
+            flex: 1, 
+            fontSize: "0.875rem",
+            padding: "0.625rem 1rem"
+          }}
         />
         <button
           type="submit"
           disabled={isSending || disabled || !content.trim()}
-          className="bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-700 disabled:opacity-50 transition flex items-center gap-2"
+          className="btn-shimmer"
+          style={{
+            padding: "0.625rem 1.25rem",
+            color: "var(--fg-primary)",
+            border: "none",
+            borderRadius: "var(--radius-full)",
+            cursor: (isSending || disabled || !content.trim()) ? "not-allowed" : "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.375rem",
+            transition: "all 0.2s ease",
+            opacity: (isSending || disabled || !content.trim()) ? 0.5 : 1,
+            boxShadow: (isSending || disabled || !content.trim()) ? "none" : "var(--shadow-accent)",
+          }}
         >
-          <Send size={16} />
+          <Send size={14} />
+          <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>Send</span>
         </button>
       </div>
     </form>

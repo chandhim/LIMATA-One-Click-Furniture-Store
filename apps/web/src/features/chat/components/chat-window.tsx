@@ -21,15 +21,33 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="animate-spin text-slate-400" size={32} />
+      <div 
+        style={{ 
+          flex: 1, 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center", 
+          minHeight: "100%",
+          color: "var(--fg-muted)"
+        }}
+      >
+        <Loader2 className="animate-spin" size={28} style={{ color: "var(--accent)" }} />
       </div>
     );
   }
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex items-center justify-center text-slate-400">
+      <div 
+        style={{ 
+          flex: 1, 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center", 
+          color: "var(--fg-muted)",
+          fontSize: "0.875rem"
+        }}
+      >
         <p>Conversation not found</p>
       </div>
     );
@@ -39,20 +57,35 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
     sendMessage(conversationId, content);
   };
 
+  const customerCode = conversation.customerId.slice(-6).toUpperCase();
+
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="border-b border-slate-200 p-4 bg-white">
-        <h2 className="font-semibold text-slate-900">
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
+      {/* Active Conversation Header */}
+      <div 
+        style={{ 
+          borderBottom: "1px solid var(--border)", 
+          padding: "1.25rem 1.5rem", 
+          background: "var(--bg-surface)",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.25rem"
+        }}
+      >
+        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--fg-primary)", margin: 0 }}>
           {conversation.customerId === currentUserId
-            ? "Seller"
-            : `Customer: ${conversation.customerId}`}
+            ? "Support Assistant"
+            : `Active Session: Customer #${customerCode}`}
         </h2>
-        <p className="text-sm text-slate-500">
-          Started {new Date(conversation.createdAt).toLocaleDateString()}
+        <p style={{ fontSize: "0.75rem", color: "var(--fg-muted)", margin: 0 }}>
+          Started {new Date(conversation.createdAt).toLocaleDateString([], { year: "numeric", month: "long", day: "numeric" })}
         </p>
       </div>
 
+      {/* Messages Feed */}
       <MessageList messages={messages} currentUserId={currentUserId} />
+      
+      {/* Input Form Bar */}
       <MessageInput onSendMessage={handleSendMessage} isSending={isSending} />
     </div>
   );
