@@ -60,7 +60,8 @@ export function useCheckout() {
       newErrors.shippingEmail = "Invalid email formatting";
     }
     if (!shippingPhone.trim()) newErrors.shippingPhone = "Phone is required";
-    if (!shippingAddress.trim()) newErrors.shippingAddress = "Address is required";
+    if (!shippingAddress.trim())
+      newErrors.shippingAddress = "Address is required";
     if (!shippingCity.trim()) newErrors.shippingCity = "City is required";
 
     setErrors(newErrors);
@@ -93,12 +94,16 @@ export function useCheckout() {
       } else {
         // PayHere workflow: get hash and launch checkout modal
         const params = await getPaymentParams(order.id);
-        const payhere = (window as unknown as { payhere?: {
-          onCompleted?: (completedOrderId: string) => void;
-          onDismissed?: () => void;
-          onError?: (error: string) => void;
-          startPayment: (payParams: unknown) => void;
-        } }).payhere;
+        const payhere = (
+          window as unknown as {
+            payhere?: {
+              onCompleted?: (completedOrderId: string) => void;
+              onDismissed?: () => void;
+              onError?: (error: string) => void;
+              startPayment: (payParams: unknown) => void;
+            };
+          }
+        ).payhere;
 
         if (typeof window !== "undefined" && payhere) {
           payhere.onCompleted = function (orderId: string) {
@@ -112,7 +117,9 @@ export function useCheckout() {
           payhere.onDismissed = function () {
             console.log("Payment dismissed");
             setIsProcessing(false);
-            alert("Payment dismissed. You can pay later from your order details page.");
+            alert(
+              "Payment dismissed. You can pay later from your order details page.",
+            );
             router.push(`/account/orders/${order.id}`);
           };
 
@@ -123,8 +130,28 @@ export function useCheckout() {
             router.push(`/account/orders/${order.id}`);
           };
 
+          const payment = {
+            sandbox: true,
+            merchant_id: params.merchantId,
+            order_id: params.orderId,
+            amount: params.amount,
+            currency: params.currency,
+            hash: params.hash,
+            items: params.items,
+            first_name: params.first_name,
+            last_name: params.last_name,
+            email: params.email,
+            phone: params.phone,
+            address: params.address,
+            city: params.city,
+            country: params.country,
+            notify_url: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}/api/payment/notify`,
+            return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?id=${params.orderId}` : "",
+            cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
+          };
+
           // Trigger PayHere checkout lightbox modal
-          payhere.startPayment(params);
+          payhere.startPayment(payment);
         } else {
           setIsProcessing(false);
           alert("PayHere SDK is not loaded yet. Please try again.");
@@ -133,7 +160,10 @@ export function useCheckout() {
     } catch (err: unknown) {
       setIsProcessing(false);
       console.error(err);
-      const message = err instanceof Error ? err.message : "An error occurred while placing your order.";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while placing your order.";
       alert(message);
     }
   };
