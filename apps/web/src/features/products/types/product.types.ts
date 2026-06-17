@@ -14,3 +14,21 @@ export interface Product extends ProductSummary {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type SortOption = "newest" | "price_asc" | "price_desc" | "name_asc" | "name_desc";
+
+export interface ProductFilters {
+  search:   string;
+  category: string;
+  material: string;
+  minPrice: string;
+  maxPrice: string;
+  inStock:  boolean;
+  sort:     SortOption;
+  page:     number;
+}
+
+export interface ProductListResponse {
+  products: ProductSummary[];
+  total:    number;
+}
