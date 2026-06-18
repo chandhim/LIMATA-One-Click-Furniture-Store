@@ -37,8 +37,8 @@ export function useAdminUsers(search?: string) {
 export function useUpdateUserRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, role }: { id: string; role: string }) =>
-      updateAdminUserRole(id, role),
+    mutationFn: ({ userId, role }: { userId: string; role: string }) =>
+      updateAdminUserRole(userId, role),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       void queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
@@ -49,8 +49,8 @@ export function useUpdateUserRole() {
 export function useToggleUserStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
-      toggleAdminUserStatus(id, isActive),
+    mutationFn: ({ userId, isActive }: { userId: string; isActive: boolean }) =>
+      toggleAdminUserStatus(userId, isActive),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
@@ -68,8 +68,8 @@ export function useAdminReviews() {
 export function useToggleReviewApproval() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, isApproved }: { id: string; isApproved: boolean }) =>
-      toggleReviewApproval(id, isApproved),
+    mutationFn: ({ reviewId, isApproved }: { reviewId: string; isApproved: boolean }) =>
+      toggleReviewApproval(reviewId, isApproved),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
@@ -79,7 +79,7 @@ export function useToggleReviewApproval() {
 export function useDeleteReview() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteAdminReview(id),
+    mutationFn: (reviewId: string) => deleteAdminReview(reviewId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
@@ -109,7 +109,7 @@ export function useCreateCategory() {
 export function useDeleteCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deleteAdminCategory(id),
+    mutationFn: (categoryId: string) => deleteAdminCategory(categoryId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-categories"] });
       void queryClient.invalidateQueries({ queryKey: ["public-categories"] });
@@ -163,8 +163,8 @@ export function useAdminOrders() {
 export function useUpdateOrderStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      updateOrderStatus(id, status),
+    mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
+      updateOrderStatus(orderId, status),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       void queryClient.invalidateQueries({ queryKey: ["admin-stats"] });

@@ -151,7 +151,7 @@ export default function CartPage() {
               }}
             >
               {cart!.items.map((item) => (
-                <CartItemCard key={item.id} item={item} />
+                <CartItemCard key={item.cartItemId} item={item} />
               ))}
             </div>
 

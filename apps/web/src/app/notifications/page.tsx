@@ -215,12 +215,11 @@ export default function NotificationsPage() {
               overflow: "hidden",
               boxShadow: "var(--shadow-sm)",
             }}
-          >
-            {notifications.map((n, index) => {
+          >            {notifications.map((n, index) => {
               const color = typeColor(n.type);
               return (
                 <div
-                  key={n.id}
+                  key={n.notificationId}
                   style={{
                     padding: "1rem 1.25rem",
                     borderBottom:
@@ -261,7 +260,7 @@ export default function NotificationsPage() {
                   >
                     <TypeIcon type={n.type} />
                   </div>
-
+ 
                   {/* Text */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -303,15 +302,15 @@ export default function NotificationsPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
                         <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", whiteSpace: "nowrap" }}>
                           {new Date(n.createdAt).toLocaleString([], {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
+                             month: "short",
+                             day: "numeric",
+                             hour: "2-digit",
+                             minute: "2-digit",
                           })}
                         </span>
                         {!n.isRead && (
                           <button
-                            onClick={() => markAsRead(n.id)}
+                            onClick={() => markAsRead(n.notificationId)}
                             title="Mark as read"
                             style={{
                               background: "none",

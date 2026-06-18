@@ -149,7 +149,7 @@ export function ProductTable() {
               
               return (
                 <tr
-                  key={product.id}
+                  key={product.productId}
                   style={{
                     borderBottom: idx < products.length - 1 ? "1px solid var(--border)" : "none",
                     transition: "background 0.2s ease",
@@ -274,7 +274,7 @@ export function ProductTable() {
                   <td style={{ padding: "1.125rem 1.5rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <Link
-                        href={`/admin/products/${product.id}/edit`}
+                        href={`/admin/products/${product.productId}/edit`}
                         style={{
                           fontSize: "0.78rem",
                           fontWeight: 700,
@@ -307,7 +307,7 @@ export function ProductTable() {
                       <button
                         onClick={() => {
                           if (confirm("Delete this product? This cannot be undone.")) {
-                            deleteProduct.mutate(product.id);
+                            deleteProduct.mutate(product.productId);
                           }
                         }}
                         style={{

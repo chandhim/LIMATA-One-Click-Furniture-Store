@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 interface DashboardRecentOrder {
-  id: string;
+  orderId: string;
   shippingName: string;
   user?: {
     email: string;
@@ -30,7 +30,7 @@ interface DashboardRecentOrder {
 }
 
 interface DashboardRecentMessage {
-  id: string;
+  messageId: string;
   content: string;
   createdAt: string;
   conversation?: {
@@ -39,7 +39,7 @@ interface DashboardRecentMessage {
 }
 
 interface DashboardRecentActivity {
-  id: string;
+  notificationId: string;
   title: string;
   message: string;
   createdAt: string;
@@ -434,13 +434,13 @@ export default function AdminOverviewPage() {
                       const isPending = order.orderStatus === "PENDING";
                       return (
                         <tr
-                          key={order.id}
+                          key={order.orderId}
                           style={{ borderBottom: idx < stats.recentOrders.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
                           onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
                           onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                         >
                           <td style={{ padding: "1.125rem 1.75rem", fontSize: "0.8rem", fontWeight: 700, color: "var(--fg-primary)", fontFamily: "monospace" }}>
-                            {order.id}
+                            {order.orderId}
                           </td>
                           <td style={{ padding: "1.125rem 1.75rem" }}>
                             <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>{order.shippingName}</div>
@@ -508,7 +508,7 @@ export default function AdminOverviewPage() {
                 </p>
               ) : (
                 stats.recentMessages.map((msg: DashboardRecentMessage, index: number) => (
-                  <Link key={msg.id} href="/admin/chats" style={{ textDecoration: "none" }}>
+                  <Link key={msg.messageId} href="/admin/chats" style={{ textDecoration: "none" }}>
                     <div
                       style={{
                         padding: "1rem 0",
@@ -557,7 +557,7 @@ export default function AdminOverviewPage() {
               ) : (
                 stats.lowStockProducts.map((p: Product, idx: number) => (
                   <div 
-                    key={p.id} 
+                    key={p.productId} 
                     style={{ 
                       display: "flex", 
                       alignItems: "center", 
@@ -608,7 +608,7 @@ export default function AdminOverviewPage() {
               ) : (
                 stats.recentActivity.map((act: DashboardRecentActivity, index: number) => (
                   <div 
-                    key={act.id} 
+                    key={act.notificationId} 
                     style={{ 
                       padding: "0.875rem 0", 
                       borderBottom: index < stats.recentActivity.length - 1 ? "1px solid var(--border)" : "none", 

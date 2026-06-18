@@ -5,13 +5,13 @@ import Image from "next/image";
 import { Star, MessageSquare, Check, EyeOff, Trash2 } from "lucide-react";
 
 interface AdminReview {
-  id: string;
+  reviewId: string;
   rating: number;
   comment: string;
   isApproved?: boolean;
   createdAt: string;
   product?: {
-    id: string;
+    productId: string;
     name: string;
     images?: string[];
   };
@@ -26,18 +26,18 @@ export default function AdminReviewsPage() {
   const toggleApprovalMutation = useToggleReviewApproval();
   const deleteReviewMutation = useDeleteReview();
 
-  async function handleToggleApproval(id: string, currentApproval: boolean) {
+  async function handleToggleApproval(reviewId: string, currentApproval: boolean) {
     try {
-      await toggleApprovalMutation.mutateAsync({ id, isApproved: !currentApproval });
+      await toggleApprovalMutation.mutateAsync({ reviewId, isApproved: !currentApproval });
     } catch (err) {
       console.error("Failed to toggle review approval:", err);
     }
   }
 
-  async function handleDelete(id: string) {
+  async function handleDelete(reviewId: string) {
     if (confirm("Are you sure you want to delete this review? This action is permanent.")) {
       try {
-        await deleteReviewMutation.mutateAsync(id);
+        await deleteReviewMutation.mutateAsync(reviewId);
       } catch (err) {
         console.error("Failed to delete review:", err);
       }
@@ -120,7 +120,7 @@ export default function AdminReviewsPage() {
 
                   return (
                     <tr
-                      key={item.id}
+                      key={item.reviewId}
                       style={{ borderBottom: idx < reviews.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
@@ -151,7 +151,7 @@ export default function AdminReviewsPage() {
                           </div>
                           <div>
                             <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>{item.product?.name}</div>
-                            <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)", marginTop: "0.125rem" }}>ID: {item.product?.id.slice(-8).toUpperCase()}</div>
+                            <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)", marginTop: "0.125rem" }}>ID: {item.product?.productId.slice(-8).toUpperCase()}</div>
                           </div>
                         </div>
                       </td>
@@ -236,7 +236,7 @@ export default function AdminReviewsPage() {
                       <td style={{ padding: "1.25rem 1.5rem" }}>
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                           <button
-                            onClick={() => handleToggleApproval(item.id, isApproved)}
+                            onClick={() => handleToggleApproval(item.reviewId, isApproved)}
                             style={{
                               padding: "0.4rem 0.875rem",
                               fontSize: "0.78rem",
@@ -282,7 +282,7 @@ export default function AdminReviewsPage() {
                           </button>
                           
                           <button
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => handleDelete(item.reviewId)}
                             style={{
                               padding: "0.4rem 0.875rem",
                               fontSize: "0.78rem",

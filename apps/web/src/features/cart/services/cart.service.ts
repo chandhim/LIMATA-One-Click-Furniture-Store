@@ -17,13 +17,13 @@ export async function addToCart(productId: string, quantity: number): Promise<Ca
   return res.data.data;
 }
 
-export async function updateCartItem(itemId: string, quantity: number): Promise<CartItem> {
-  const res = await api.patch<ApiResponse<CartItem>>(`/cart/items/${itemId}`, { quantity });
+export async function updateCartItem(cartItemId: string, quantity: number): Promise<CartItem> {
+  const res = await api.patch<ApiResponse<CartItem>>(`/cart/items/${cartItemId}`, { quantity });
   return res.data.data;
 }
 
-export async function removeCartItem(itemId: string): Promise<void> {
-  await api.delete(`/cart/items/${itemId}`);
+export async function removeCartItem(cartItemId: string): Promise<void> {
+  await api.delete(`/cart/items/${cartItemId}`);
 }
 
 export async function clearCart(): Promise<void> {

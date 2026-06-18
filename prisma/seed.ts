@@ -66,7 +66,7 @@ async function main() {
     });
     if (existing) {
       await prisma.product.update({
-        where: { id: existing.id },
+        where: { productId: existing.productId },
         data: p,
       });
     } else {

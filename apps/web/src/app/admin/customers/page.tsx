@@ -5,7 +5,7 @@ import { useAdminUsers, useUpdateUserRole, useToggleUserStatus } from "@/feature
 import { Search, Shield, Calendar, UserCheck, UserX } from "lucide-react";
 
 interface AdminUser {
-  id: string;
+  userId: string;
   name: string;
   email: string;
   role: string;
@@ -19,19 +19,19 @@ export default function AdminCustomersPage() {
   const updateUserRoleMutation = useUpdateUserRole();
   const toggleUserStatusMutation = useToggleUserStatus();
 
-  async function handleRoleChange(id: string, role: string) {
+  async function handleRoleChange(userId: string, role: string) {
     try {
-      await updateUserRoleMutation.mutateAsync({ id, role });
+      await updateUserRoleMutation.mutateAsync({ userId, role });
     } catch (err) {
       console.error("Failed to update user role:", err);
     }
   }
 
-  async function handleStatusToggle(id: string, currentStatus: boolean) {
+  async function handleStatusToggle(userId: string, currentStatus: boolean) {
     const actionLabel = currentStatus ? "disable" : "enable";
     if (confirm(`Are you sure you want to ${actionLabel} this user's account?`)) {
       try {
-        await toggleUserStatusMutation.mutateAsync({ id, isActive: !currentStatus });
+        await toggleUserStatusMutation.mutateAsync({ userId, isActive: !currentStatus });
       } catch (err) {
         console.error("Failed to toggle user status:", err);
       }
@@ -135,7 +135,7 @@ export default function AdminCustomersPage() {
 
                   return (
                     <tr
-                      key={item.id}
+                      key={item.userId}
                       style={{ borderBottom: idx < users.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
@@ -178,7 +178,7 @@ export default function AdminCustomersPage() {
                           <Shield size={13} style={{ color: item.role === "ADMIN" ? "var(--accent)" : "var(--fg-muted)" }} />
                           <select
                             value={item.role}
-                            onChange={(e) => handleRoleChange(item.id, e.target.value)}
+                            onChange={(e) => handleRoleChange(item.userId, e.target.value)}
                             className="input-base"
                             style={{ 
                               padding: "0.375rem 1.5rem 0.375rem 0.5rem", 
@@ -225,7 +225,7 @@ export default function AdminCustomersPage() {
                       {/* Toggle Button Actions */}
                       <td style={{ padding: "1.125rem 1.5rem" }}>
                         <button
-                          onClick={() => handleStatusToggle(item.id, isActive)}
+                          onClick={() => handleStatusToggle(item.userId, isActive)}
                           style={{
                             padding: "0.4rem 1rem",
                             fontSize: "0.78rem",

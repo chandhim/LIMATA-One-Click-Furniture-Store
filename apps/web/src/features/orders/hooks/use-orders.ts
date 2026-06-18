@@ -32,11 +32,11 @@ export function useOrderHistory() {
   });
 }
 
-export function useOrderDetails(id: string) {
+export function useOrderDetails(orderId: string) {
   return useQuery<Order, Error>({
-    queryKey: ["order", id],
-    queryFn: () => fetchOrderDetails(id),
-    enabled: !!id,
+    queryKey: ["order", orderId],
+    queryFn: () => fetchOrderDetails(orderId),
+    enabled: !!orderId,
   });
 }
 
@@ -47,7 +47,7 @@ export function useCancelOrder() {
     mutationFn: cancelOrder,
     onSuccess: (updatedOrder) => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ["order", updatedOrder.id] });
+      queryClient.invalidateQueries({ queryKey: ["order", updatedOrder.orderId] });
     },
   });
 }

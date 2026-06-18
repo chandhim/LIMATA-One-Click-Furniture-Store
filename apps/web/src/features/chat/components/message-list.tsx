@@ -39,7 +39,7 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
             const isMe = message.senderId === currentUserId;
             return (
               <div
-                key={message.id}
+                key={message.messageId}
                 style={{
                   display: "flex",
                   justifyContent: isMe ? "flex-end" : "flex-start",

@@ -7,7 +7,7 @@ import type { Product } from "@prisma/client";
  */
 export type ProductListItem = Pick<
   Product,
-  "id" | "name" | "price" | "category" | "images" | "stock"
+  "productId" | "name" | "price" | "category" | "images" | "stock"
 >;
 
 /**

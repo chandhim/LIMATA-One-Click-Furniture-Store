@@ -269,7 +269,7 @@ export default function CheckoutPage() {
                   {/* Item List */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxHeight: "250px", overflowY: "auto", marginBottom: "1.5rem", paddingRight: "0.5rem" }}>
                     {items.map((item) => (
-                      <div key={item.id} style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                      <div key={item.cartItemId} style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
                         <div style={{ width: "4rem", height: "4rem", background: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)", borderRadius: "var(--radius-md)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           {item.product.images && item.product.images.length > 0 ? (
                             // eslint-disable-next-line @next/next/no-img-element

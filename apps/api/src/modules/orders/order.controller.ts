@@ -56,8 +56,8 @@ export async function getOrderController(
     if (!req.user) {
       throw new ApiError(401, "Unauthorized");
     }
-    const { id } = req.params;
-    const order = await getOrderById(id, req.user.id);
+    const { orderId } = req.params;
+    const order = await getOrderById(orderId, req.user.id);
     return sendResponse(res, 200, order);
   } catch (error) {
     return next(error);
@@ -73,8 +73,8 @@ export async function cancelOrderController(
     if (!req.user) {
       throw new ApiError(401, "Unauthorized");
     }
-    const { id } = req.params;
-    const order = await cancelOrder(id, req.user.id);
+    const { orderId } = req.params;
+    const order = await cancelOrder(orderId, req.user.id);
     return sendResponse(res, 200, order);
   } catch (error) {
     return next(error);
@@ -90,13 +90,13 @@ export async function updateOrderStatusController(
     if (!req.user) {
       throw new ApiError(401, "Unauthorized");
     }
-    const { id } = req.params;
+    const { orderId } = req.params;
     const { orderStatus } = req.body;
     if (!orderStatus) {
       throw new ApiError(400, "Missing orderStatus parameter");
     }
 
-    const order = await updateOrderStatusByAdmin(id, orderStatus, req.user.id);
+    const order = await updateOrderStatusByAdmin(orderId, orderStatus, req.user.id);
     return sendResponse(res, 200, order);
   } catch (error) {
     return next(error);

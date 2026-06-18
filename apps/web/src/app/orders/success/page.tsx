@@ -8,7 +8,7 @@ import { Suspense } from "react";
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("id") || "";
+  const orderId = searchParams.get("orderId") || "";
 
   const { data: order, isLoading } = useOrderDetails(orderId);
 
@@ -32,7 +32,7 @@ function OrderSuccessContent() {
           <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "1.5rem", background: "var(--bg-base)", textAlign: "left", marginBottom: "2.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", borderBottom: "1px solid var(--border)", paddingBottom: "0.75rem" }}>
               <span style={{ fontWeight: 600, color: "var(--fg-secondary)" }}>Order Reference</span>
-              <span style={{ fontFamily: "monospace", color: "var(--fg-primary)", fontWeight: 700 }}>{order.id}</span>
+              <span style={{ fontFamily: "monospace", color: "var(--fg-primary)", fontWeight: 700 }}>{order.orderId}</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.9rem" }}>
               <span style={{ color: "var(--fg-secondary)" }}>Payment Status</span>

@@ -12,13 +12,13 @@ export async function getAdminUsers(search?: string) {
   return res.data.data;
 }
 
-export async function updateAdminUserRole(id: string, role: string) {
-  const res = await api.patch(`/admin/users/${id}/role`, { role });
+export async function updateAdminUserRole(userId: string, role: string) {
+  const res = await api.patch(`/admin/users/${userId}/role`, { role });
   return res.data.data;
 }
 
-export async function toggleAdminUserStatus(id: string, isActive: boolean) {
-  const res = await api.patch(`/admin/users/${id}/status`, { isActive });
+export async function toggleAdminUserStatus(userId: string, isActive: boolean) {
+  const res = await api.patch(`/admin/users/${userId}/status`, { isActive });
   return res.data.data;
 }
 
@@ -28,13 +28,13 @@ export async function getAdminReviews() {
   return res.data.data;
 }
 
-export async function toggleReviewApproval(id: string, isApproved: boolean) {
-  const res = await api.patch(`/admin/reviews/${id}/approve`, { isApproved });
+export async function toggleReviewApproval(reviewId: string, isApproved: boolean) {
+  const res = await api.patch(`/admin/reviews/${reviewId}/approve`, { isApproved });
   return res.data.data;
 }
 
-export async function deleteAdminReview(id: string) {
-  const res = await api.delete(`/admin/reviews/${id}`);
+export async function deleteAdminReview(reviewId: string) {
+  const res = await api.delete(`/admin/reviews/${reviewId}`);
   return res.data.data;
 }
 
@@ -49,8 +49,8 @@ export async function createAdminCategory(data: { name: string; desc: string; im
   return res.data.data;
 }
 
-export async function deleteAdminCategory(id: string) {
-  const res = await api.delete(`/admin/categories/${id}`);
+export async function deleteAdminCategory(categoryId: string) {
+  const res = await api.delete(`/admin/categories/${categoryId}`);
   return res.data.data;
 }
 
@@ -77,8 +77,8 @@ export async function getPublicCategories() {
 }
 
 // 7. Orders Integration (Helper)
-export async function updateOrderStatus(id: string, orderStatus: string) {
-  const res = await api.patch(`/orders/${id}/status`, { orderStatus });
+export async function updateOrderStatus(orderId: string, orderStatus: string) {
+  const res = await api.patch(`/orders/${orderId}/status`, { orderStatus });
   return res.data.data;
 }
 

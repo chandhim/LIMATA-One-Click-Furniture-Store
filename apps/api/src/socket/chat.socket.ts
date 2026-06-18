@@ -40,7 +40,7 @@ export function registerChatSocket(io: SocketIOServer) {
           chatNamespace
             .to(`conversation:${data.conversationId}`)
             .emit("message_received", {
-              id: message.id,
+              messageId: message.messageId,
               conversationId: message.conversationId,
               senderId: message.senderId,
               content: message.content,
@@ -49,7 +49,7 @@ export function registerChatSocket(io: SocketIOServer) {
 
           // Emit confirmation back to sender
           socket.emit("message_sent", {
-            id: message.id,
+            messageId: message.messageId,
             conversationId: message.conversationId,
             senderId: message.senderId,
             content: message.content,

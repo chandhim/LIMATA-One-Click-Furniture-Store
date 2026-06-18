@@ -90,10 +90,10 @@ export function useCheckout() {
         queryClient.invalidateQueries({ queryKey: ["cart"] });
         queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
         setIsProcessing(false);
-        router.push(`/orders/success?id=${order.id}`);
+        router.push(`/orders/success?orderId=${order.orderId}`);
       } else {
         // PayHere workflow: get hash and launch checkout modal
-        const params = await getPaymentParams(order.id);
+        const params = await getPaymentParams(order.orderId);
         const payhere = (
           window as unknown as {
             payhere?: {
@@ -111,7 +111,7 @@ export function useCheckout() {
             resetCartCount();
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
-            router.push(`/orders/success?id=${orderId}`);
+            router.push(`/orders/success?orderId=${orderId}`);
           };
 
           payhere.onDismissed = function () {
@@ -120,14 +120,14 @@ export function useCheckout() {
             alert(
               "Payment dismissed. You can pay later from your order details page.",
             );
-            router.push(`/account/orders/${order.id}`);
+            router.push(`/account/orders/${order.orderId}`);
           };
 
           payhere.onError = function (error: string) {
             console.error("PayHere Error:", error);
             setIsProcessing(false);
             alert(`Payment error: ${error}`);
-            router.push(`/account/orders/${order.id}`);
+            router.push(`/account/orders/${order.orderId}`);
           };
 
           const payment = {
@@ -146,7 +146,7 @@ export function useCheckout() {
             city: params.city,
             country: params.country,
             notify_url: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}/api/payment/notify`,
-            return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?id=${params.orderId}` : "",
+            return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${params.orderId}` : "",
             cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
           };
 

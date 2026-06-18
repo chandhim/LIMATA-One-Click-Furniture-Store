@@ -17,7 +17,7 @@ function NotificationItem({
   onMarkAsRead,
 }: {
   notification: Notification;
-  onMarkAsRead: (id: string) => void;
+  onMarkAsRead: (notificationId: string) => void;
 }) {
   return (
     <div
@@ -37,7 +37,7 @@ function NotificationItem({
         </div>
         {!notification.isRead && (
           <button
-            onClick={() => onMarkAsRead(notification.id)}
+            onClick={() => onMarkAsRead(notification.notificationId)}
             className="text-xs text-blue-600 hover:text-blue-700 whitespace-nowrap"
           >
             Mark as read
@@ -75,7 +75,7 @@ export function NotificationDropdown({
         ) : (
           unreadNotifications.map((notification) => (
             <NotificationItem
-              key={notification.id}
+              key={notification.notificationId}
               notification={notification}
               onMarkAsRead={markAsRead}
             />

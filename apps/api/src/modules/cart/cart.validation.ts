@@ -10,7 +10,7 @@ export const updateCartItemSchema = z.object({
 });
 
 export const cartItemParamSchema = z.object({
-  itemId: z.string().min(1, "Item ID is required"),
+  cartItemId: z.string().min(1, "Item ID is required"),
 });
 
 export type AddToCartInput = z.infer<typeof addToCartSchema>;

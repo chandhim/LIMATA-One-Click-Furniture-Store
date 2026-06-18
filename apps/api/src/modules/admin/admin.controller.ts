@@ -160,7 +160,7 @@ export async function updateAdminUserRoleController(
   next: NextFunction
 ) {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
     const { role } = req.body;
 
     if (role !== Role.ADMIN && role !== Role.CUSTOMER) {
@@ -168,7 +168,7 @@ export async function updateAdminUserRoleController(
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { userId },
       data: { role },
     });
 
@@ -185,7 +185,7 @@ export async function toggleAdminUserStatusController(
   next: NextFunction
 ) {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
     const { isActive } = req.body;
 
     if (typeof isActive !== "boolean") {
@@ -193,7 +193,7 @@ export async function toggleAdminUserStatusController(
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { userId },
       data: { isActive },
     });
 
@@ -214,8 +214,8 @@ export async function listAdminReviewsController(
     const reviews = await prisma.review.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        product: { select: { id: true, name: true, images: true } },
-        user: { select: { id: true, name: true, email: true } },
+        product: { select: { productId: true, name: true, images: true } },
+        user: { select: { userId: true, name: true, email: true } },
       },
     });
 
@@ -231,7 +231,7 @@ export async function toggleReviewApprovalController(
   next: NextFunction
 ) {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const { isApproved } = req.body;
 
     if (typeof isApproved !== "boolean") {
@@ -239,7 +239,7 @@ export async function toggleReviewApprovalController(
     }
 
     const updatedReview = await prisma.review.update({
-      where: { id },
+      where: { reviewId },
       data: { isApproved },
     });
 
@@ -255,13 +255,13 @@ export async function deleteAdminReviewController(
   next: NextFunction
 ) {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
 
     await prisma.review.delete({
-      where: { id },
+      where: { reviewId },
     });
 
-    return sendResponse(res, 200, { id });
+    return sendResponse(res, 200, { reviewId });
   } catch (error) {
     return next(error);
   }
@@ -316,13 +316,13 @@ export async function deleteAdminCategoryController(
   next: NextFunction
 ) {
   try {
-    const { id } = req.params;
+    const { categoryId } = req.params;
 
     await prisma.category.delete({
-      where: { id },
+      where: { categoryId },
     });
 
-    return sendResponse(res, 200, { id });
+    return sendResponse(res, 200, { categoryId });
   } catch (error) {
     return next(error);
   }

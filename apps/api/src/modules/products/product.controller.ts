@@ -30,7 +30,7 @@ export async function getProductController(
 ) {
   try {
     const params = idParamSchema.parse(req.params);
-    const product = await getProductById(params.id);
+    const product = await getProductById(params.productId);
 
     if (!product) {
       throw new ApiError(404, "Product not found");
@@ -66,7 +66,7 @@ export async function updateProductController(
     const params = idParamSchema.parse(req.params);
     const data = productUpdateSchema.parse(req.body);
 
-    const product = await updateProduct(params.id, data);
+    const product = await updateProduct(params.productId, data);
 
     return sendResponse(res, 200, product);
   } catch (error) {
@@ -82,9 +82,9 @@ export async function deleteProductController(
   try {
     const params = idParamSchema.parse(req.params);
 
-    await deleteProduct(params.id);
+    await deleteProduct(params.productId);
 
-    return sendResponse(res, 200, { id: params.id });
+    return sendResponse(res, 200, { productId: params.productId });
   } catch (error) {
     return next(error);
   }

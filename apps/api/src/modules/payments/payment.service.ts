@@ -8,11 +8,11 @@ async function notifySellers(title: string, message: string) {
   try {
     const admins = await prisma.user.findMany({
       where: { role: "ADMIN" },
-      select: { id: true },
+      select: { userId: true },
     });
     for (const admin of admins) {
       await createNotification({
-        userId: admin.id,
+        userId: admin.userId,
         type: "SELLER_PAYMENT_ALERT",
         title,
         message,
@@ -138,7 +138,7 @@ export async function processPayHereNotification(body: any) {
       // 1. Double check stock for final checkout
       for (const item of order.items) {
         const product = await tx.product.findUnique({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           select: { stock: true, name: true },
         });
         if (!product || product.stock < item.quantity) {
@@ -151,7 +151,7 @@ export async function processPayHereNotification(body: any) {
 
       // 2. Update order statuses
       await tx.order.update({
-        where: { id: order.id },
+        where: { orderId: order.orderId },
         data: {
           paymentStatus: "PAID",
           orderStatus: "CONFIRMED",
@@ -161,7 +161,7 @@ export async function processPayHereNotification(body: any) {
       // 3. Decrement product stocks
       for (const item of order.items) {
         await tx.product.update({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           data: {
             stock: {
               decrement: item.quantity,
@@ -173,11 +173,11 @@ export async function processPayHereNotification(body: any) {
       // 4. Clear User Cart
       const cart = await tx.cart.findUnique({
         where: { userId: order.userId },
-        select: { id: true },
+        select: { cartId: true },
       });
       if (cart) {
         await tx.cartItem.deleteMany({
-          where: { cartId: cart.id },
+          where: { cartId: cart.cartId },
         });
       }
     });
@@ -186,27 +186,27 @@ export async function processPayHereNotification(body: any) {
     await notifyCustomer(
       order.userId,
       "Payment Successful",
-      `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.id} was successful.`,
+      `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
     );
     await notifyCustomer(
       order.userId,
       "Order Confirmed",
-      `Your order #${order.id} has been confirmed.`,
+      `Your order #${order.orderId} has been confirmed.`,
     );
     await notifySellers(
       "Payment Received",
-      `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.id}.`,
+      `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
     );
     await notifySellers(
       "Order Requires Processing",
-      `Order #${order.id} is confirmed and requires processing.`,
+      `Order #${order.orderId} is confirmed and requires processing.`,
     );
 
     return { status: "processed", payment: "success" };
   } else {
     // Payment Failed/Canceled/Failed processing
     await prisma.order.update({
-      where: { id: order.id },
+      where: { orderId: order.orderId },
       data: {
         paymentStatus: "FAILED",
       },
@@ -216,11 +216,11 @@ export async function processPayHereNotification(body: any) {
     await notifyCustomer(
       order.userId,
       "Payment Failed",
-      `Your payment for order #${order.id} failed or was cancelled.`,
+      `Your payment for order #${order.orderId} failed or was cancelled.`,
     );
     await notifySellers(
       "Payment Failed",
-      `Payment failed for order #${order.id}.`,
+      `Payment failed for order #${order.orderId}.`,
     );
 
     return { status: "processed", payment: "failed" };

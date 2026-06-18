@@ -23,7 +23,7 @@ export async function getUserNotifications(userId: string): Promise<Notification
 
 export async function markNotificationAsRead(notificationId: string): Promise<Notification> {
   return prisma.notification.update({
-    where: { id: notificationId },
+    where: { notificationId },
     data: { isRead: true },
   });
 }
@@ -45,12 +45,12 @@ export async function getUnreadCount(userId: string): Promise<number> {
 
 export async function deleteNotification(notificationId: string): Promise<Notification> {
   return prisma.notification.delete({
-    where: { id: notificationId },
+    where: { notificationId },
   });
 }
 
 export async function getNotificationById(notificationId: string): Promise<Notification | null> {
   return prisma.notification.findUnique({
-    where: { id: notificationId },
+    where: { notificationId },
   });
 }

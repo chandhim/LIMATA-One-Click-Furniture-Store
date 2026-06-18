@@ -53,9 +53,9 @@ export async function updateCartItemController(
 ) {
   try {
     if (!req.user) throw new ApiError(401, "Unauthorized");
-    const { itemId } = cartItemParamSchema.parse(req.params);
+    const { cartItemId } = cartItemParamSchema.parse(req.params);
     const input = updateCartItemSchema.parse(req.body);
-    const item = await updateCartItem(req.user.id, itemId, input);
+    const item = await updateCartItem(req.user.id, cartItemId, input);
     return sendResponse(res, 200, item);
   } catch (error) {
     return next(error);
@@ -69,9 +69,9 @@ export async function removeCartItemController(
 ) {
   try {
     if (!req.user) throw new ApiError(401, "Unauthorized");
-    const { itemId } = cartItemParamSchema.parse(req.params);
-    await removeCartItem(req.user.id, itemId);
-    return sendResponse(res, 200, { itemId });
+    const { cartItemId } = cartItemParamSchema.parse(req.params);
+    await removeCartItem(req.user.id, cartItemId);
+    return sendResponse(res, 200, { cartItemId });
   } catch (error) {
     return next(error);
   }

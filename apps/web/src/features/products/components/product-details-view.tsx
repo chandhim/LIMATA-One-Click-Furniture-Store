@@ -61,7 +61,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
     }
     setCartFeedback("adding");
     addToCartMutation.mutate(
-      { productId: product.id, quantity },
+      { productId: product.productId, quantity },
       {
         onSuccess: () => {
           setCartFeedback("added");
@@ -82,7 +82,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   );
 
   const filteredRelated =
-    relatedProducts?.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
+    relatedProducts?.filter((p) => p.productId !== product.productId).slice(0, 4) ?? [];
 
   const images =
     product.images && product.images.length > 0
@@ -1108,7 +1108,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           fontFamily: "monospace",
                         }}
                       >
-                        {product.id}
+                        {product.productId}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
@@ -1308,7 +1308,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               }}
             >
               {filteredRelated.map((relatedProd) => (
-                <ProductCard key={relatedProd.id} product={relatedProd} />
+                <ProductCard key={relatedProd.productId} product={relatedProd} />
               ))}
             </div>
           </section>

@@ -20,8 +20,8 @@ export async function fetchAdminProducts() {
   return res.data.data as Product[];
 }
 
-export async function fetchAdminProduct(id: string) {
-  const res = await api.get(`/products/${id}`);
+export async function fetchAdminProduct(productId: string) {
+  const res = await api.get(`/products/${productId}`);
   return res.data.data as Product;
 }
 
@@ -30,13 +30,13 @@ export async function createProductService(data: AdminProductCreate) {
   return res.data.data as Product;
 }
 
-export async function updateProductService(id: string, data: AdminProductUpdate) {
-  const res = await api.put(`/products/${id}`, data);
+export async function updateProductService(productId: string, data: AdminProductUpdate) {
+  const res = await api.put(`/products/${productId}`, data);
   return res.data.data as Product;
 }
 
-export async function deleteProductService(id: string) {
-  const res = await api.delete(`/products/${id}`);
+export async function deleteProductService(productId: string) {
+  const res = await api.delete(`/products/${productId}`);
   return res.data.data as Product;
 }
 

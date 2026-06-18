@@ -27,18 +27,18 @@ adminRouter.get("/stats", getAdminStatsController);
 
 // User/Customer management
 adminRouter.get("/users", listAdminUsersController);
-adminRouter.patch("/users/:id/role", updateAdminUserRoleController);
-adminRouter.patch("/users/:id/status", toggleAdminUserStatusController);
+adminRouter.patch("/users/:userId/role", updateAdminUserRoleController);
+adminRouter.patch("/users/:userId/status", toggleAdminUserStatusController);
 
 // Reviews management
 adminRouter.get("/reviews", listAdminReviewsController);
-adminRouter.patch("/reviews/:id/approve", toggleReviewApprovalController);
-adminRouter.delete("/reviews/:id", deleteAdminReviewController);
+adminRouter.patch("/reviews/:reviewId/approve", toggleReviewApprovalController);
+adminRouter.delete("/reviews/:reviewId", deleteAdminReviewController);
 
 // Categories CRUD
 adminRouter.get("/categories", listAdminCategoriesController);
 adminRouter.post("/categories", createAdminCategoryController);
-adminRouter.delete("/categories/:id", deleteAdminCategoryController);
+adminRouter.delete("/categories/:categoryId", deleteAdminCategoryController);
 
 // CMS store settings
 adminRouter.get("/settings", getAdminSettingsController);
