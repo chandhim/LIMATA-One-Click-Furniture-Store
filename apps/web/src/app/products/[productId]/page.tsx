@@ -10,10 +10,10 @@ import { ProductDetailsSkeleton } from "@/features/products/components/product-d
 export default function ProductDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ productId: string }>;
 }) {
-  const { id } = use(params);
-  const { data: product, isLoading, isError } = useProduct(id);
+  const { productId } = use(params);
+  const { data: product, isLoading, isError } = useProduct(productId);
   const router = useRouter();
 
   if (isLoading) {

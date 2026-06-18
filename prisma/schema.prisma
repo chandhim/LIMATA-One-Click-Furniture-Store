@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  userId    String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String
@@ -27,7 +27,7 @@ enum Role {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  productId   String   @id @default(cuid())
 
   name        String
   description String
@@ -53,7 +53,7 @@ model Product {
 }
 
 model Conversation {
-  id        String   @id @default(cuid())
+  conversationId String   @id @default(cuid())
   customerId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,34 +62,34 @@ model Conversation {
 }
 
 model Message {
-  id             String   @id @default(cuid())
+  messageId      String   @id @default(cuid())
   conversationId String
   senderId       String
   content        String
   createdAt      DateTime @default(now())
 
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([senderId])
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  notificationId String   @id @default(cuid())
+  userId         String
+  type           String
+  title          String
+  message        String
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([userId])
   @@index([isRead])
 }
 
 model Cart {
-  id        String     @id @default(cuid())
+  cartId    String     @id @default(cuid())
   userId    String     @unique
   items     CartItem[]
   createdAt DateTime   @default(now())
@@ -97,14 +97,14 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(cuid())
-  cartId    String
-  productId String
-  quantity  Int
-  createdAt DateTime @default(now())
+  cartItemId String   @id @default(cuid())
+  cartId     String
+  productId  String
+  quantity   Int
+  createdAt  DateTime @default(now())
 
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart      Cart     @relation(fields: [cartId], references: [cartId], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@index([cartId])
   @@index([productId])
@@ -134,7 +134,7 @@ enum OrderStatus {
 }
 
 model Order {
-  id              String        @id @default(cuid())
+  orderId         String        @id @default(cuid())
   userId          String
   paymentMethod   PaymentMethod
   paymentStatus   PaymentStatus @default(PENDING)
@@ -149,29 +149,29 @@ model Order {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
   items           OrderItem[]
 
   @@index([userId])
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
+  orderItemId String   @id @default(cuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  price       Float
+  createdAt   DateTime @default(now())
 
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order     Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@index([orderId])
   @@index([productId])
 }
 
 model Review {
-  id          String   @id @default(cuid())
+  reviewId    String   @id @default(cuid())
   productId   String
   userId      String
   rating      Int
@@ -180,21 +180,21 @@ model Review {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@index([productId])
   @@index([userId])
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  desc      String
-  image     String?
-  alt       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  categoryId String   @id @default(cuid())
+  name       String   @unique
+  desc       String
+  image      String?
+  alt        String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model StoreSetting {

@@ -39,13 +39,13 @@ export async function createPaymentParamsController(
     // Generate initiation hash
     // PayHere uses LKR currency by default in Sri Lanka
     const currency = "LKR";
-    const paymentParams = generatePaymentHash(order.id, order.totalAmount, currency);
+    const paymentParams = generatePaymentHash(order.orderId, order.totalAmount, currency);
 
     // Fetch buyer details from the order to prefill the checkout form
     const checkoutParams = {
       ...paymentParams,
-      orderId: order.id,
-      items: `Order #${order.id} Checkout`,
+      orderId: order.orderId,
+      items: `Order #${order.orderId} Checkout`,
       first_name: order.shippingName.split(" ")[0] || "Customer",
       last_name: order.shippingName.split(" ").slice(1).join(" ") || "User",
       email: order.shippingEmail,

@@ -15,7 +15,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
 
   return (
     <Link
-      href={`/products/${product.id}`}
+      href={`/products/${product.productId}`}
       style={{
         display: "block",
         background: "var(--bg-surface)",

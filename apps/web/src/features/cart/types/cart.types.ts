@@ -1,6 +1,6 @@
 /** Product snapshot embedded in each cart item. */
 export interface CartProduct {
-  id: string;
+  productId: string;
   name: string;
   price: number;
   images: string[];
@@ -9,7 +9,7 @@ export interface CartProduct {
 
 /** A single line item in the cart. */
 export interface CartItem {
-  id: string;
+  cartItemId: string;
   cartId: string;
   productId: string;
   quantity: number;
@@ -19,7 +19,7 @@ export interface CartItem {
 
 /** Full cart response from GET /api/cart */
 export interface Cart {
-  id: string | null;
+  cartId: string | null;
   userId: string;
   items: CartItem[];
 }

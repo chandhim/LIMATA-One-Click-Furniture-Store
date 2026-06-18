@@ -215,10 +215,10 @@ export default function ConversationPage() {
           ) : (
             <>
               {messages.map((msg) => {
-                const isMine = msg.senderId === user?.id;
+                const isMine = msg.senderId === user?.userId;
                 return (
                   <div
-                    key={msg.id}
+                    key={msg.messageId}
                     style={{
                       display: "flex",
                       justifyContent: isMine ? "flex-end" : "flex-start",

@@ -24,7 +24,7 @@ const statusColors: Record<OrderStatus, { bg: string; color: string; border: str
 };
 
 interface AdminOrderItem {
-  id: string;
+  orderItemId: string;
   quantity: number;
   product?: {
     name: string;
@@ -32,7 +32,7 @@ interface AdminOrderItem {
 }
 
 interface AdminOrder {
-  id: string;
+  orderId: string;
   shippingName: string;
   shippingEmail: string;
   shippingPhone?: string;
@@ -50,9 +50,9 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
-  async function handleStatusChange(id: string, status: string) {
+  async function handleStatusChange(orderId: string, status: string) {
     try {
-      await updateStatusMutation.mutateAsync({ id, status });
+      await updateStatusMutation.mutateAsync({ orderId, status });
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -61,7 +61,7 @@ export default function AdminOrdersPage() {
   // Filter orders
   const filteredOrders = orders.filter((o: AdminOrder) => {
     const matchesSearch =
-      o.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       o.shippingName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       o.shippingEmail.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -252,14 +252,14 @@ export default function AdminOrdersPage() {
                   
                   return (
                     <tr
-                      key={order.id}
+                      key={order.orderId}
                       style={{ borderBottom: idx < filteredOrders.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
                       onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
                       onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                     >
                       {/* ID */}
                       <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.825rem", fontWeight: 700, color: "var(--fg-primary)", fontFamily: "monospace" }}>
-                        {order.id}
+                        {order.orderId}
                       </td>
 
                       {/* Customer Details */}
@@ -302,7 +302,7 @@ export default function AdminOrdersPage() {
                       <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.825rem", color: "var(--fg-secondary)", minWidth: 200 }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
                           {order.items?.map((item: AdminOrderItem) => (
-                            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem" }}>
+                            <div key={item.orderItemId} style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem" }}>
                               <span style={{ color: "var(--fg-primary)", fontWeight: 500 }}>{item.product?.name}</span>
                               <span style={{ color: "var(--fg-muted)", fontSize: "0.75rem" }}>x{item.quantity}</span>
                             </div>
@@ -363,7 +363,7 @@ export default function AdminOrdersPage() {
                         <div style={{ position: "relative", display: "inline-block" }}>
                           <select
                             value={order.orderStatus}
-                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
                             className="input-base"
                             style={{ 
                               padding: "0.4rem 1.75rem 0.4rem 0.75rem", 

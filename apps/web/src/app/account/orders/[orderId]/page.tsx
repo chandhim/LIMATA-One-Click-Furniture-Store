@@ -16,7 +16,7 @@ import Link from "next/link";
 export default function OrderDetailsPage() {
   const params = useParams();
   const queryClient = useQueryClient();
-  const orderId = (params?.id as string) || "";
+  const orderId = (params?.orderId as string) || "";
 
   // 1. Authenticate user
   const { isAuthenticated, isHydrated } = useAuthGuard();
@@ -137,7 +137,7 @@ export default function OrderDetailsPage() {
     if (!confirm("Are you sure you want to cancel this order?")) return;
 
     try {
-      await cancelOrderMutation.mutateAsync(order.id);
+      await cancelOrderMutation.mutateAsync(order.orderId);
       alert("Order status updated.");
     } catch (err: unknown) {
       const message =
@@ -149,7 +149,7 @@ export default function OrderDetailsPage() {
   const handlePayNow = async () => {
     setIsPaying(true);
     try {
-      const payParams = await getPaymentParams(order.id);
+      const payParams = await getPaymentParams(order.orderId);
       const payhere = (
         window as unknown as {
           payhere?: {
@@ -196,7 +196,7 @@ export default function OrderDetailsPage() {
           city: payParams.city,
           country: payParams.country,
           notify_url: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}/api/payment/notify`,
-          return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?id=${payParams.orderId}` : "",
+          return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${payParams.orderId}` : "",
           cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${payParams.orderId}` : "",
         };
 
@@ -285,7 +285,7 @@ export default function OrderDetailsPage() {
                   letterSpacing: "-0.02em",
                 }}
               >
-                Order #{order.id.slice(-8).toUpperCase()}
+                Order #{order.orderId.slice(-8).toUpperCase()}
               </h1>
               <p style={{ margin: "0.375rem 0 0", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
                 Placed on {formattedDate}
@@ -507,7 +507,7 @@ export default function OrderDetailsPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {order.items.map((item) => (
                       <div
-                        key={item.id}
+                        key={item.orderItemId}
                         style={{
                           display: "flex",
                           gap: "1.5rem",

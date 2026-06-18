@@ -6,14 +6,14 @@ const orderInclude = {
     include: {
       product: {
         select: {
-          id: true,
+          productId: true,
           name: true,
           price: true,
           images: true,
         },
       },
     },
-    orderBy: { id: "asc" as const },
+    orderBy: { orderItemId: "asc" as const },
   },
 };
 
@@ -25,22 +25,22 @@ export async function findOrders(userId: string) {
   });
 }
 
-export async function findOrder(id: string) {
+export async function findOrder(orderId: string) {
   return prisma.order.findUnique({
-    where: { id },
+    where: { orderId },
     include: orderInclude,
   });
 }
 
 export async function updateOrder(
-  id: string,
+  orderId: string,
   data: {
     orderStatus?: OrderStatus;
     paymentStatus?: PaymentStatus;
   }
 ) {
   return prisma.order.update({
-    where: { id },
+    where: { orderId },
     data,
     include: orderInclude,
   });

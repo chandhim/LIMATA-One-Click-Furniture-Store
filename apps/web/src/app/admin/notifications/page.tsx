@@ -186,7 +186,7 @@ export default function AdminNotificationsPage() {
             
             return (
               <div
-                key={n.id}
+                key={n.notificationId}
                 style={{
                   padding: "1.375rem 1.5rem",
                   borderBottom: idx < notifications.length - 1 ? "1px solid var(--border)" : "none",
@@ -247,7 +247,7 @@ export default function AdminNotificationsPage() {
                       </span>
                       {isUnread && (
                         <button
-                          onClick={() => markAsRead(n.id)}
+                          onClick={() => markAsRead(n.notificationId)}
                           style={{
                             background: "var(--bg-surface)",
                             border: "1px solid var(--border)",

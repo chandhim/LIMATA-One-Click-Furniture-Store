@@ -15,6 +15,6 @@ ordersRouter.use(authenticate);
 
 ordersRouter.post("/", createOrderController);
 ordersRouter.get("/", listOrdersController);
-ordersRouter.get("/:id", getOrderController);
-ordersRouter.patch("/:id/cancel", cancelOrderController);
-ordersRouter.patch("/:id/status", updateOrderStatusController);
+ordersRouter.get("/:orderId", getOrderController);
+ordersRouter.patch("/:orderId/cancel", cancelOrderController);
+ordersRouter.patch("/:orderId/status", updateOrderStatusController);

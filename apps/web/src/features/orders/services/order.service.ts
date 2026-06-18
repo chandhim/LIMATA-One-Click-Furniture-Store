@@ -1,13 +1,13 @@
 import api from "@/lib/axios";
 
 export interface OrderItem {
-  id: string;
+  orderItemId: string;
   orderId: string;
   productId: string;
   quantity: number;
   price: number;
   product: {
-    id: string;
+    productId: string;
     name: string;
     price: number;
     images: string[];
@@ -15,7 +15,7 @@ export interface OrderItem {
 }
 
 export interface Order {
-  id: string;
+  orderId: string;
   userId: string;
   paymentMethod: "PAYHERE" | "COD";
   paymentStatus: "PENDING" | "PAID" | "UNPAID" | "FAILED" | "REFUNDED";
@@ -81,13 +81,13 @@ export async function fetchOrders(): Promise<Order[]> {
   return res.data.data;
 }
 
-export async function fetchOrderDetails(id: string): Promise<Order> {
-  const res = await api.get<ApiResponse<Order>>(`/orders/${id}`);
+export async function fetchOrderDetails(orderId: string): Promise<Order> {
+  const res = await api.get<ApiResponse<Order>>(`/orders/${orderId}`);
   return res.data.data;
 }
 
-export async function cancelOrder(id: string): Promise<Order> {
-  const res = await api.patch<ApiResponse<Order>>(`/orders/${id}/cancel`);
+export async function cancelOrder(orderId: string): Promise<Order> {
+  const res = await api.patch<ApiResponse<Order>>(`/orders/${orderId}/cancel`);
   return res.data.data;
 }
 

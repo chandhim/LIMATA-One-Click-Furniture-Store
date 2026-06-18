@@ -12,7 +12,7 @@ export type LoginInput = {
 };
 
 export type AuthUser = {
-  id: string;
+  userId: string;
   name: string;
   email: string;
   role: Role;

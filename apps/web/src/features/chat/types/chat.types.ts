@@ -1,5 +1,5 @@
 export type Conversation = {
-  id: string;
+  conversationId: string;
   customerId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -7,7 +7,7 @@ export type Conversation = {
 };
 
 export type Message = {
-  id: string;
+  messageId: string;
   conversationId: string;
   senderId: string;
   content: string;

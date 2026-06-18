@@ -25,7 +25,7 @@ export async function findProducts(opts: {
   const products = await prisma.product.findMany({
     where,
     select: {
-      id: true,
+      productId: true,
       name: true,
       price: true,
       category: true,
@@ -36,7 +36,7 @@ export async function findProducts(opts: {
   });
 
   return products as Array<
-    Pick<Product, "id" | "name" | "price" | "category" | "images" | "stock">
+    Pick<Product, "productId" | "name" | "price" | "category" | "images" | "stock">
   >;
 }
 
@@ -44,8 +44,8 @@ export async function findProducts(opts: {
  * Fetch a single product by its primary key (cuid).
  * Returns the full Product record.
  */
-export async function findProductById(id: string) {
-  const product = await prisma.product.findUnique({ where: { id } });
+export async function findProductById(productId: string) {
+  const product = await prisma.product.findUnique({ where: { productId } });
   return product as Product | null;
 }
 
@@ -70,13 +70,13 @@ export async function insertProduct(data: ProductCreate) {
 /**
  * Update an existing product by id.
  */
-export async function updateProductById(id: string, data: ProductUpdate) {
-  return prisma.product.update({ where: { id }, data });
+export async function updateProductById(productId: string, data: ProductUpdate) {
+  return prisma.product.update({ where: { productId }, data });
 }
 
 /**
  * Hard-delete a product by id.
  */
-export async function deleteProductById(id: string) {
-  return prisma.product.delete({ where: { id } });
+export async function deleteProductById(productId: string) {
+  return prisma.product.delete({ where: { productId } });
 }

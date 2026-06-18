@@ -10,10 +10,10 @@ export function useAdminProducts() {
   });
 }
 
-export function useAdminProduct(id: string) {
+export function useAdminProduct(productId: string) {
   return useQuery({
-    queryKey: ["admin-product", id],
-    queryFn: () => fetchAdminProduct(id),
-    enabled: !!id,
+    queryKey: ["admin-product", productId],
+    queryFn: () => fetchAdminProduct(productId),
+    enabled: !!productId,
   });
 }

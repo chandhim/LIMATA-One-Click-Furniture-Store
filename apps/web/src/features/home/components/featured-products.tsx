@@ -9,10 +9,10 @@ import { useProducts } from "@/features/products/hooks/use-products";
 import type { Product } from "@/features/products/types/product.types";
 
 const samples: Product[] = [
-  { id: "1", name: "Modern Sofa",         price: 45000, category: "Living Room", images: [`${R2}/products/modern-sofa.png`],   stock: 10, description: "", createdAt: "", updatedAt: "" },
-  { id: "2", name: "Wooden Dining Table", price: 30000, category: "Dining Room", images: [`${R2}/products/dining-table.png`],  stock: 5,  description: "", createdAt: "", updatedAt: ""  },
-  { id: "3", name: "Office Chair",        price: 8000,  category: "Office",      images: [`${R2}/products/office-chair.png`],  stock: 20, description: "", createdAt: "", updatedAt: "" },
-  { id: "4", name: "Queen Bed Frame",     price: 40000, category: "Bedroom",     images: [`${R2}/products/queen-bed.png`],     stock: 3,  description: "", createdAt: "", updatedAt: ""  },
+  { productId: "1", name: "Modern Sofa",         price: 45000, category: "Living Room", images: [`${R2}/products/modern-sofa.png`],   stock: 10, description: "", createdAt: "", updatedAt: "" },
+  { productId: "2", name: "Wooden Dining Table", price: 30000, category: "Dining Room", images: [`${R2}/products/dining-table.png`],  stock: 5,  description: "", createdAt: "", updatedAt: ""  },
+  { productId: "3", name: "Office Chair",        price: 8000,  category: "Office",      images: [`${R2}/products/office-chair.png`],  stock: 20, description: "", createdAt: "", updatedAt: "" },
+  { productId: "4", name: "Queen Bed Frame",     price: 40000, category: "Bedroom",     images: [`${R2}/products/queen-bed.png`],     stock: 3,  description: "", createdAt: "", updatedAt: ""  },
 ];
 
 export function FeaturedProducts() {
@@ -97,7 +97,7 @@ export function FeaturedProducts() {
           }}
         >
           {products.map((p: Product) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p.productId} product={p} />
           ))}
         </div>
       </div>

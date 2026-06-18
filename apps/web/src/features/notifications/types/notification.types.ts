@@ -1,7 +1,7 @@
 export type NotificationType = "CHAT_MESSAGE" | "ORDER_STATUS" | "PAYMENT_STATUS" | "REVIEW_STATUS" | "SYSTEM" | "AI_RECOMMENDATION";
 
 export type Notification = {
-  id: string;
+  notificationId: string;
   userId: string;
   type: NotificationType;
   title: string;

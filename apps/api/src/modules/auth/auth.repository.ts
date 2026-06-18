@@ -12,7 +12,7 @@ export async function findUserByEmail(email: string) {
  * Find a user by their primary key (cuid).
  */
 export async function findUserById(id: string) {
-  return prisma.user.findUnique({ where: { id } });
+  return prisma.user.findUnique({ where: { userId: id } });
 }
 
 /**

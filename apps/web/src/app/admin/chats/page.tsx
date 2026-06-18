@@ -102,7 +102,7 @@ export default function AdminChatsPage() {
           ) : (
             filteredConversations.map((conv: Conversation) => {
               const lastMsg = conv.messages?.[0];
-              const isSelected = selectedConversationId === conv.id;
+              const isSelected = selectedConversationId === conv.conversationId;
               const formattedDate = lastMsg
                 ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                 : new Date(conv.createdAt).toLocaleDateString([], { month: "short", day: "numeric" });
@@ -110,8 +110,8 @@ export default function AdminChatsPage() {
 
               return (
                 <div
-                  key={conv.id}
-                  onClick={() => setSelectedConversationId(conv.id)}
+                  key={conv.conversationId}
+                  onClick={() => setSelectedConversationId(conv.conversationId)}
                   style={{
                     padding: "1.125rem 1.5rem",
                     borderBottom: "1px solid var(--border)",
@@ -184,9 +184,9 @@ export default function AdminChatsPage() {
 
       {/* Main chat window container */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg-elevated)" }}>
-        {selectedConversationId && user?.id ? (
+        {selectedConversationId && user?.userId ? (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg-surface)" }}>
-            <ChatWindow conversationId={selectedConversationId} currentUserId={user.id} />
+            <ChatWindow conversationId={selectedConversationId} currentUserId={user.userId} />
           </div>
         ) : (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--fg-muted)" }}>

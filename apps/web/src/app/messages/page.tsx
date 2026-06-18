@@ -125,7 +125,7 @@ export default function MessagesPage() {
   const handleStartConversation = async () => {
     const conv = await start();
     if (conv) {
-      router.push(`/messages/${conv.id}`);
+      router.push(`/messages/${conv.conversationId}`);
     }
   };
 
@@ -316,10 +316,10 @@ export default function MessagesPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {conversations.map((conv) => (
               <ConversationCard
-                key={conv.id}
+                key={conv.conversationId}
                 conversation={conv}
                 isAdmin={isAdmin}
-                onClick={() => router.push(`/messages/${conv.id}`)}
+                onClick={() => router.push(`/messages/${conv.conversationId}`)}
               />
             ))}
           </div>

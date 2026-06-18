@@ -199,7 +199,7 @@ function ChatThread({
         ) : (
           messages.map((msg) => (
             <MessageBubble
-              key={msg.id}
+              key={msg.messageId}
               content={msg.content}
               createdAt={msg.createdAt}
               isMine={msg.senderId === currentUserId}
@@ -318,7 +318,7 @@ function ConversationListView({
           conv.messages && conv.messages.length > 0 ? conv.messages[0] : null;
         return (
           <button
-            key={conv.id}
+            key={conv.conversationId}
             onClick={() => onSelect(conv)}
             style={{
               width: "100%",
@@ -579,8 +579,8 @@ export function ChatWidget() {
             ) : selectedConversation ? (
               // Show the conversation thread
               <ChatThread
-                conversationId={selectedConversation.id}
-                currentUserId={user.id}
+                conversationId={selectedConversation.conversationId}
+                currentUserId={user.userId}
                 title={
                   isAdmin
                     ? `Customer #${selectedConversation.customerId.slice(-4)}`

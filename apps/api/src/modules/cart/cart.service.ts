@@ -17,7 +17,7 @@ import {
 export async function getCart(userId: string) {
   const cart = await findCartByUserId(userId);
   if (!cart) {
-    return { id: null, userId, items: [] };
+    return { cartId: null, userId, items: [] };
   }
   return cart;
 }
@@ -29,7 +29,7 @@ export async function getCart(userId: string) {
  */
 export async function addItemToCart(userId: string, input: AddToCartInput) {
   const product = await prisma.product.findUnique({
-    where: { id: input.productId },
+    where: { productId: input.productId },
     select: { stock: true },
   });
 
@@ -42,16 +42,16 @@ export async function addItemToCart(userId: string, input: AddToCartInput) {
   }
 
   const cart = await findOrCreateCart(userId);
-  const existing = await findCartItemByProductId(cart.id, input.productId);
+  const existing = await findCartItemByProductId(cart.cartId, input.productId);
 
   if (existing) {
     const newQty = existing.quantity + input.quantity;
     if (product.stock < newQty) {
       throw new ApiError(400, "Insufficient stock for requested quantity");
     }
-    await incrementCartItemQuantity(existing.id, input.quantity);
+    await incrementCartItemQuantity(existing.cartItemId, input.quantity);
   } else {
-    await insertCartItem(cart.id, input);
+    await insertCartItem(cart.cartId, input);
   }
 
   return findOrCreateCart(userId);
@@ -63,21 +63,21 @@ export async function addItemToCart(userId: string, input: AddToCartInput) {
  */
 export async function updateCartItem(
   userId: string,
-  itemId: string,
+  cartItemId: string,
   input: UpdateCartItemInput,
 ) {
-  const item = await findCartItemById(itemId);
+  const item = await findCartItemById(cartItemId);
   if (!item) {
     throw new ApiError(404, "Cart item not found");
   }
 
   const cart = await findCartByUserId(userId);
-  if (!cart || item.cartId !== cart.id) {
+  if (!cart || item.cartId !== cart.cartId) {
     throw new ApiError(403, "Forbidden");
   }
 
   const product = await prisma.product.findUnique({
-    where: { id: item.productId },
+    where: { productId: item.productId },
     select: { stock: true },
   });
 
@@ -85,25 +85,25 @@ export async function updateCartItem(
     throw new ApiError(400, "Insufficient stock");
   }
 
-  return updateCartItemQuantity(itemId, input);
+  return updateCartItemQuantity(cartItemId, input);
 }
 
 /**
  * Remove a single item from the cart.
  * Verifies the item belongs to the requesting user's cart.
  */
-export async function removeCartItem(userId: string, itemId: string) {
-  const item = await findCartItemById(itemId);
+export async function removeCartItem(userId: string, cartItemId: string) {
+  const item = await findCartItemById(cartItemId);
   if (!item) {
     throw new ApiError(404, "Cart item not found");
   }
 
   const cart = await findCartByUserId(userId);
-  if (!cart || item.cartId !== cart.id) {
+  if (!cart || item.cartId !== cart.cartId) {
     throw new ApiError(403, "Forbidden");
   }
 
-  return deleteCartItem(itemId);
+  return deleteCartItem(cartItemId);
 }
 
 /** Delete all items from the user's cart. */

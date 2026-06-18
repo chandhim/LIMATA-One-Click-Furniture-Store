@@ -45,7 +45,7 @@ function NotificationItem({
   onMarkAsRead,
 }: {
   notification: Notification;
-  onMarkAsRead: (id: string) => void;
+  onMarkAsRead: (notificationId: string) => void;
 }) {
   const color = typeColor(notification.type);
 
@@ -105,7 +105,7 @@ function NotificationItem({
           </p>
           {!notification.isRead && (
             <button
-              onClick={() => onMarkAsRead(notification.id)}
+              onClick={() => onMarkAsRead(notification.notificationId)}
               title="Mark as read"
               style={{
                 background: "none",
@@ -388,7 +388,7 @@ export function NotificationCenter() {
               </div>
             ) : (
               displayed.map((n) => (
-                <NotificationItem key={n.id} notification={n} onMarkAsRead={markAsRead} />
+                <NotificationItem key={n.notificationId} notification={n} onMarkAsRead={markAsRead} />
               ))
             )}
           </div>

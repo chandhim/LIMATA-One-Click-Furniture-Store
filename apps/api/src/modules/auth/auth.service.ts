@@ -11,7 +11,7 @@ import type { AuthPayload, AuthUser, LoginInput, RegisterInput } from "./auth.ty
 
 function mapUser(user: User): AuthUser {
   return {
-    id: user.id,
+    userId: user.userId,
     name: user.name,
     email: user.email,
     role: user.role,
@@ -38,7 +38,7 @@ export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
 
   return {
     user: mapUser(user),
-    token: generateToken({ id: user.id, role: user.role }),
+    token: generateToken({ id: user.userId, role: user.role }),
   };
 }
 
@@ -62,7 +62,7 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
 
   return {
     user: mapUser(user),
-    token: generateToken({ id: user.id, role: user.role }),
+    token: generateToken({ id: user.userId, role: user.role }),
   };
 }
 

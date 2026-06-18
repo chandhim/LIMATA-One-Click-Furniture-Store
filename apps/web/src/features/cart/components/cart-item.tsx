@@ -15,12 +15,12 @@ export function CartItemCard({ item }: CartItemCardProps) {
   const updateItem = useUpdateCartItem();
   const removeItem = useRemoveCartItem();
 
-  const { product, quantity, id: itemId } = item;
+  const { product, quantity, cartItemId: itemId } = item;
   const subtotal = product.price * quantity;
   const isUpdating = updateItem.isPending || removeItem.isPending;
 
   const handleQuantityChange = (newQty: number) => {
-    updateItem.mutate({ itemId, quantity: newQty });
+    updateItem.mutate({ cartItemId: itemId, quantity: newQty });
   };
 
   const handleRemove = () => {

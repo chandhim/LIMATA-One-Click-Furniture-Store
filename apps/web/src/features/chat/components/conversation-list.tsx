@@ -5,13 +5,13 @@ import type { Conversation } from "../types/chat.types";
 
 interface ConversationListProps {
   conversations: Conversation[];
-  selectedId?: string;
+  selectedConversationId?: string;
   isAdmin?: boolean;
 }
 
 export function ConversationList({
   conversations,
-  selectedId,
+  selectedConversationId,
   isAdmin = false,
 }: ConversationListProps) {
   if (conversations.length === 0) {
@@ -32,14 +32,14 @@ export function ConversationList({
 
         return (
           <Link
-            key={conversation.id}
+            key={conversation.conversationId}
             href={
               isAdmin
-                ? `/admin/messages/${conversation.id}`
-                : `/messages/${conversation.id}`
+                ? `/admin/messages/${conversation.conversationId}`
+                : `/messages/${conversation.conversationId}`
             }
             className={`block p-4 hover:bg-slate-50 transition ${
-              selectedId === conversation.id ? "bg-slate-100" : ""
+              selectedConversationId === conversation.conversationId ? "bg-slate-100" : ""
             }`}
           >
             <div className="flex items-start justify-between">

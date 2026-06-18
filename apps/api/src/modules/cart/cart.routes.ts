@@ -13,6 +13,6 @@ export const cartRouter = Router();
 // All cart routes require authentication
 cartRouter.get("/", authenticate, getCartController);
 cartRouter.post("/items", authenticate, addToCartController);
-cartRouter.patch("/items/:itemId", authenticate, updateCartItemController);
-cartRouter.delete("/items/:itemId", authenticate, removeCartItemController);
+cartRouter.patch("/items/:cartItemId", authenticate, updateCartItemController);
+cartRouter.delete("/items/:cartItemId", authenticate, removeCartItemController);
 cartRouter.delete("/", authenticate, clearCartController);

@@ -61,7 +61,7 @@ export default function OrdersHistoryPage() {
 
                 return (
                   <div
-                    key={order.id}
+                    key={order.orderId}
                     style={{
                       background: "var(--bg-surface)",
                       border: "1px solid var(--border)",
@@ -78,7 +78,7 @@ export default function OrdersHistoryPage() {
                   >
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-                        <span style={{ fontWeight: 700, color: "var(--fg-primary)", fontSize: "1rem" }}>Order #{order.id}</span>
+                        <span style={{ fontWeight: 700, color: "var(--fg-primary)", fontSize: "1rem" }}>Order #{order.orderId}</span>
                         <span style={{ fontSize: "0.85rem", color: "var(--fg-muted)" }}>| {formattedDate}</span>
                       </div>
 
@@ -147,7 +147,7 @@ export default function OrdersHistoryPage() {
 
                       {/* Action trigger */}
                       <Link
-                        href={`/account/orders/${order.id}`}
+                        href={`/account/orders/${order.orderId}`}
                         style={{
                           padding: "0.5rem 1rem",
                           border: "1.5px solid var(--border)",

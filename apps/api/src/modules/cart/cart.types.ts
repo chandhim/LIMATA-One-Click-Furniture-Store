@@ -3,13 +3,13 @@
  * Includes a nested product snapshot for display purposes.
  */
 export type CartItemWithProduct = {
-  id: string;
+  cartItemId: string;
   cartId: string;
   productId: string;
   quantity: number;
   createdAt: Date;
   product: {
-    id: string;
+    productId: string;
     name: string;
     price: number;
     images: string[];
@@ -21,7 +21,7 @@ export type CartItemWithProduct = {
  * Full cart response — includes the resolved item list.
  */
 export type CartWithItems = {
-  id: string | null;
+  cartId: string | null;
   userId: string;
   items: CartItemWithProduct[];
 };

@@ -9,11 +9,11 @@ async function notifySellers(title: string, message: string) {
   try {
     const admins = await prisma.user.findMany({
       where: { role: "ADMIN" },
-      select: { id: true },
+      select: { userId: true },
     });
     for (const admin of admins) {
       await createNotification({
-        userId: admin.id,
+        userId: admin.userId,
         type: "SELLER_ORDER_ALERT",
         title,
         message,
@@ -93,7 +93,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     for (const item of cart.items) {
       await tx.orderItem.create({
         data: {
-          orderId: createdOrder.id,
+          orderId: createdOrder.orderId,
           productId: item.productId,
           quantity: item.quantity,
           price: item.product.price,
@@ -106,7 +106,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
       // Reduce stock
       for (const item of cart.items) {
         await tx.product.update({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           data: {
             stock: {
               decrement: item.quantity,
@@ -117,7 +117,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
 
       // Clear cart
       await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
+        where: { cartId: cart.cartId },
       });
     }
 
@@ -129,31 +129,31 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your COD order #${order.id} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your COD order #${order.orderId} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`
     );
     await notifySellers(
       "New Order",
-      `New COD order #${order.id} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
     );
     await notifySellers(
       "Order Requires Processing",
-      `COD order #${order.id} is pending processing.`
+      `COD order #${order.orderId} is pending processing.`
     );
   } else {
     // PayHere
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your order #${order.id} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`
     );
     await notifyCustomer(
       userId,
       "Payment Initiated",
-      `Payment checkout page loaded for order #${order.id}.`
+      `Payment checkout page loaded for order #${order.orderId}.`
     );
     await notifySellers(
       "New Order",
-      `New order #${order.id} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
     );
   }
 
@@ -162,7 +162,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
 
 export async function getUserOrders(userId: string) {
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { userId },
     select: { role: true },
   });
 
@@ -173,14 +173,14 @@ export async function getUserOrders(userId: string) {
           include: {
             product: {
               select: {
-                id: true,
+                productId: true,
                 name: true,
                 price: true,
                 images: true,
               },
             },
           },
-          orderBy: { id: "asc" },
+          orderBy: { orderItemId: "asc" },
         },
         user: {
           select: {
@@ -196,8 +196,8 @@ export async function getUserOrders(userId: string) {
   return findOrders(userId);
 }
 
-export async function getOrderById(id: string, userId: string) {
-  const order = await findOrder(id);
+export async function getOrderById(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
   if (!order) {
     throw new ApiError(404, "Order not found");
   }
@@ -205,7 +205,7 @@ export async function getOrderById(id: string, userId: string) {
   // Authorization check: Only owner or admin can view order
   if (order.userId !== userId) {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { userId },
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
@@ -216,8 +216,8 @@ export async function getOrderById(id: string, userId: string) {
   return order;
 }
 
-export async function cancelOrder(id: string, userId: string) {
-  const order = await findOrder(id);
+export async function cancelOrder(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
   if (!order) {
     throw new ApiError(404, "Order not found");
   }
@@ -225,7 +225,7 @@ export async function cancelOrder(id: string, userId: string) {
   // Authorization check
   if (order.userId !== userId) {
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { userId },
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
@@ -246,7 +246,7 @@ export async function cancelOrder(id: string, userId: string) {
     // COD -> CANCELLED
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
-        where: { id },
+        where: { orderId },
         data: {
           orderStatus: "CANCELLED",
         },
@@ -255,7 +255,7 @@ export async function cancelOrder(id: string, userId: string) {
       // Restore stock (since COD decs stock at checkout)
       for (const item of order.items) {
         await tx.product.update({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           data: {
             stock: {
               increment: item.quantity,
@@ -268,52 +268,52 @@ export async function cancelOrder(id: string, userId: string) {
     await notifyCustomer(
       order.userId,
       "Order Cancelled",
-      `Your COD order #${order.id} has been cancelled.`
+      `Your COD order #${order.orderId} has been cancelled.`
     );
     await notifySellers(
       "Order Cancelled",
-      `COD order #${order.id} has been cancelled by the user.`
+      `COD order #${order.orderId} has been cancelled by the user.`
     );
   } else {
     // PayHere -> CANCELLATION_REQUESTED
-    await updateOrder(id, {
+    await updateOrder(orderId, {
       orderStatus: "CANCELLATION_REQUESTED",
     });
 
     await notifyCustomer(
       order.userId,
       "Cancellation Requested",
-      `Cancellation request received for PayHere order #${order.id}.`
+      `Cancellation request received for PayHere order #${order.orderId}.`
     );
     await notifySellers(
       "Cancellation Requested",
-      `Customer requested cancellation for PayHere order #${order.id}.`
+      `Customer requested cancellation for PayHere order #${order.orderId}.`
     );
   }
 
-  return findOrder(id);
+  return findOrder(orderId);
 }
 
 export async function updateOrderStatusByAdmin(
-  id: string,
+  orderId: string,
   newStatus: any,
   adminUserId: string
 ) {
   // Confirm user is Admin
   const admin = await prisma.user.findUnique({
-    where: { id: adminUserId },
+    where: { userId: adminUserId },
     select: { role: true },
   });
   if (admin?.role !== "ADMIN") {
     throw new ApiError(403, "Only admins can update order states");
   }
 
-  const order = await findOrder(id);
+  const order = await findOrder(orderId);
   if (!order) {
     throw new ApiError(404, "Order not found");
   }
 
-  const updatedOrder = await updateOrder(id, { orderStatus: newStatus });
+  const updatedOrder = await updateOrder(orderId, { orderStatus: newStatus });
 
   // Custom status notifications mapping
   const statusLabels: Record<string, string> = {
@@ -328,7 +328,7 @@ export async function updateOrderStatusByAdmin(
   await notifyCustomer(
     order.userId,
     statusLabel,
-    `Your order #${order.id} status is now ${newStatus}.`
+    `Your order #${order.orderId} status is now ${newStatus}.`
   );
 
   return updatedOrder;

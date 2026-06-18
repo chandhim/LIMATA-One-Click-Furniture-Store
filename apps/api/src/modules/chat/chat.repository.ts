@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import type { Conversation, Message } from "@prisma/client";
 
-export async function findConversationById(id: string): Promise<Conversation | null> {
+export async function findConversationById(conversationId: string): Promise<Conversation | null> {
   return prisma.conversation.findUnique({
-    where: { id },
+    where: { conversationId },
     include: { messages: { orderBy: { createdAt: "asc" } } },
   });
 }
@@ -38,7 +38,7 @@ export async function createMessage(data: {
 
   // Update conversation's updatedAt timestamp
   await prisma.conversation.update({
-    where: { id: data.conversationId },
+    where: { conversationId: data.conversationId },
     data: { updatedAt: new Date() },
   });
 
@@ -72,7 +72,7 @@ export async function getAllConversations(): Promise<Conversation[]> {
 
 export async function getConversationWithMessages(conversationId: string) {
   return prisma.conversation.findUnique({
-    where: { id: conversationId },
+    where: { conversationId },
     include: {
       messages: {
         orderBy: { createdAt: "asc" },
