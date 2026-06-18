@@ -246,7 +246,8 @@ export function Navbar() {
                 </Link>
 
                 {/* User avatar + name */}
-                <div
+                <Link
+                  href={user?.role === "ADMIN" ? "/admin" : "/profile"}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -255,6 +256,21 @@ export function Navbar() {
                     background: "var(--bg-elevated)",
                     borderRadius: "var(--radius-full)",
                     border: "1px solid var(--border)",
+                    textDecoration: "none",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "rgba(201,169,110,0.08)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "var(--bg-elevated)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--border)";
                   }}
                 >
                   <div
@@ -284,7 +300,7 @@ export function Navbar() {
                   >
                     {user?.name}
                   </span>
-                </div>
+                </Link>
 
                 {/* Sign out */}
                 <button
@@ -470,6 +486,47 @@ export function Navbar() {
                     gap: "0.5rem",
                   }}
                 >
+                  {user?.role === "ADMIN" ? (
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "var(--radius-md)",
+                        border: "1.5px solid var(--border)",
+                        fontSize: "0.9rem",
+                        fontWeight: 500,
+                        color: "var(--fg-primary)",
+                        textDecoration: "none",
+                        background: "rgba(201,169,110,0.05)",
+                        borderColor: "var(--accent)",
+                      }}
+                    >
+                      🛡️ Admin Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/profile"
+                      onClick={() => setOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "var(--radius-md)",
+                        border: "1.5px solid var(--border)",
+                        fontSize: "0.9rem",
+                        fontWeight: 500,
+                        color: "var(--fg-primary)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      👤 Profile
+                    </Link>
+                  )}
                   <Link
                     href="/messages"
                     onClick={() => setOpen(false)}
