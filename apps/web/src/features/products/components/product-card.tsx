@@ -4,14 +4,7 @@ import Link from "next/link";
 import type { ProductSummary } from "../types/product.types";
 
 export function ProductCard({ product }: { product: ProductSummary }) {
-  const categoryEmoji: Record<string, string> = {
-    "Living Room": "🛋️",
-    Bedroom: "🛏️",
-    "Dining Room": "🍽️",
-    Office: "💼",
-    Storage: "📦",
-  };
-  const emoji = categoryEmoji[product.category] ?? "🪑";
+  const inStock = product.stock > 0;
 
   return (
     <Link
@@ -25,42 +18,54 @@ export function ProductCard({ product }: { product: ProductSummary }) {
         textDecoration: "none",
         color: "inherit",
         transition:
-          "transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease, border-color 0.3s ease",
+          "transform 0.32s cubic-bezier(0.22,1,0.36,1), box-shadow 0.32s ease, border-color 0.28s ease",
         boxShadow: "var(--shadow-sm)",
         position: "relative",
+        cursor: "pointer",
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.transform = "translateY(-6px)";
+        el.style.transform = "translateY(-7px)";
         el.style.boxShadow = "var(--shadow-lg)";
         el.style.borderColor = "var(--accent-light)";
-        const overlay = el.querySelector(".quick-view-overlay") as HTMLElement;
+        const overlay = el.querySelector(".card-overlay") as HTMLElement;
         if (overlay) overlay.style.opacity = "1";
-        const img = el.querySelector(".product-card-image") as HTMLElement;
-        if (img) img.style.transform = "scale(1.05)";
+        const img = el.querySelector(".card-img") as HTMLElement;
+        if (img) img.style.transform = "scale(1.06)";
+        const arrow = el.querySelector(".card-arrow") as HTMLElement;
+        if (arrow) {
+          arrow.style.background = "var(--accent)";
+          arrow.style.borderColor = "var(--accent)";
+          arrow.style.color = "#fff";
+        }
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
         el.style.transform = "translateY(0)";
         el.style.boxShadow = "var(--shadow-sm)";
         el.style.borderColor = "var(--border)";
-        const overlay = el.querySelector(".quick-view-overlay") as HTMLElement;
+        const overlay = el.querySelector(".card-overlay") as HTMLElement;
         if (overlay) overlay.style.opacity = "0";
-        const img = el.querySelector(".product-card-image") as HTMLElement;
+        const img = el.querySelector(".card-img") as HTMLElement;
         if (img) img.style.transform = "scale(1)";
+        const arrow = el.querySelector(".card-arrow") as HTMLElement;
+        if (arrow) {
+          arrow.style.background = "transparent";
+          arrow.style.borderColor = "var(--border)";
+          arrow.style.color = "var(--fg-muted)";
+        }
       }}
     >
-      {/* Image / Visual Area */}
+      {/* Image Area */}
       <div
         style={{
-          height: "13rem",
-          background: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
+          height: "15rem",
+          background: "linear-gradient(145deg, #F7F2EA 0%, #EDE0CC 100%)",
           position: "relative",
+          overflow: "hidden",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "4rem",
-          overflow: "hidden",
         }}
       >
         {product.images && product.images.length > 0 ? (
@@ -68,37 +73,45 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           <img
             src={product.images[0]}
             alt={product.name}
-            className="product-card-image"
+            className="card-img"
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              transition: "transform 0.4s ease",
+              transition: "transform 0.45s cubic-bezier(0.22,1,0.36,1)",
             }}
           />
         ) : (
-          <span style={{ opacity: 0.45, transition: "transform 0.4s ease" }}>
-            {emoji}
+          <span
+            className="card-img"
+            style={{
+              fontSize: "4rem",
+              opacity: 0.35,
+              transition: "transform 0.45s ease",
+              display: "block",
+            }}
+          >
+            🪑
           </span>
         )}
 
-        {/* Gradient overlay on hover */}
+        {/* Bottom gradient */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background:
-              "linear-gradient(to top, rgba(28,26,23,0.08), transparent)",
+            background: "linear-gradient(to top, rgba(28,26,23,0.14) 0%, transparent 50%)",
+            pointerEvents: "none",
           }}
         />
 
-        {/* Quick View Overlay */}
+        {/* Hover overlay CTA */}
         <div
-          className="quick-view-overlay"
+          className="card-overlay"
           style={{
             position: "absolute",
             inset: 0,
-            background: "rgba(28,26,23,0.45)",
+            background: "rgba(28,26,23,0.42)",
             backdropFilter: "blur(3px)",
             display: "flex",
             alignItems: "center",
@@ -107,37 +120,29 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             transition: "opacity 0.25s ease",
           }}
         >
-          <div
+          <span
             style={{
               background: "var(--bg-surface)",
               borderRadius: "var(--radius-full)",
-              padding: "0.625rem 1.375rem",
-              fontSize: "0.8125rem",
-              fontWeight: 600,
+              padding: "0.6rem 1.375rem",
+              fontSize: "0.8rem",
+              fontWeight: 700,
               color: "var(--fg-primary)",
+              letterSpacing: "0.03em",
               display: "flex",
               alignItems: "center",
-              gap: "0.375rem",
+              gap: "0.4rem",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
             }}
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
-            Quick View
-          </div>
+            View Details
+          </span>
         </div>
 
-        {/* Stock badge */}
+        {/* Stock chip */}
         <div
           style={{
             position: "absolute",
@@ -145,13 +150,13 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             left: "0.75rem",
             display: "flex",
             alignItems: "center",
-            gap: "0.375rem",
-            background: "rgba(255,255,255,0.92)",
-            backdropFilter: "blur(6px)",
+            gap: "0.35rem",
+            background: "rgba(255,255,255,0.94)",
+            backdropFilter: "blur(8px)",
             borderRadius: "var(--radius-full)",
-            padding: "0.3rem 0.625rem",
-            fontSize: "0.7rem",
-            fontWeight: 600,
+            padding: "0.28rem 0.65rem",
+            fontSize: "0.68rem",
+            fontWeight: 700,
           }}
         >
           <span
@@ -159,48 +164,29 @@ export function ProductCard({ product }: { product: ProductSummary }) {
               width: 6,
               height: 6,
               borderRadius: "50%",
-              background: product.stock > 0 ? "#22c55e" : "#ef4444",
+              background: inStock ? "#22c55e" : "#ef4444",
               display: "inline-block",
+              boxShadow: inStock ? "0 0 0 2px rgba(34,197,94,0.2)" : "none",
             }}
           />
-          <span style={{ color: product.stock > 0 ? "#166534" : "#991b1b" }}>
-            {product.stock > 0 ? "In Stock" : "Out of Stock"}
+          <span style={{ color: inStock ? "#166534" : "#991b1b" }}>
+            {inStock ? "In Stock" : "Out of Stock"}
           </span>
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: "1.125rem 1.25rem 1.375rem" }}>
-        {/* Category badge */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.25rem",
-            fontSize: "0.7rem",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: "var(--accent-dark)",
-            background: "rgba(201,169,110,0.12)",
-            borderRadius: "var(--radius-full)",
-            padding: "0.25rem 0.625rem",
-            marginBottom: "0.625rem",
-          }}
-        >
-          {product.category}
-        </div>
-
+      {/* Info */}
+      <div style={{ padding: "1.125rem 1.25rem 1.25rem" }}>
         <h3
           style={{
             fontSize: "0.9375rem",
             fontWeight: 600,
             color: "var(--fg-primary)",
             letterSpacing: "-0.01em",
-            marginBottom: "0.5rem",
-            whiteSpace: "nowrap",
+            marginBottom: "0.375rem",
             overflow: "hidden",
             textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {product.name}
@@ -212,6 +198,7 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            marginTop: "0.625rem",
           }}
         >
           <div
@@ -226,18 +213,23 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             Rs. {product.price.toLocaleString()}
           </div>
 
+          {/* Arrow button */}
           <div
+            className="card-arrow"
             style={{
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               borderRadius: "50%",
               border: "1.5px solid var(--border)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               color: "var(--fg-muted)",
-              transition: "border-color 0.2s, color 0.2s, background 0.2s",
+              transition: "border-color 0.22s, color 0.22s, background 0.22s",
               fontSize: "0.9rem",
+              fontWeight: 600,
+              background: "transparent",
+              flexShrink: 0,
             }}
           >
             →
