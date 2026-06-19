@@ -22,7 +22,6 @@ import {
   X,
   Maximize2,
   ChevronLeft,
-  Box,
 } from "lucide-react";
 
 interface ProductDetailsViewProps {
@@ -327,73 +326,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Reserved Visualization Space */}
-            <div
-              style={{
-                background: "var(--bg-elevated)",
-                border: "1px dashed var(--border-strong)",
-                borderRadius: "var(--radius-lg)",
-                padding: "2rem",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              className="texture-grain"
-            >
-              <div
-                style={{
-                  background: "var(--bg-surface)",
-                  borderRadius: "50%",
-                  padding: "0.75rem",
-                  color: "var(--accent-dark)",
-                  marginBottom: "1rem",
-                  boxShadow: "var(--shadow-sm)",
-                }}
-              >
-                <Box size={24} className="animate-float" />
-              </div>
-              <div
-                style={{
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "var(--accent-dark)",
-                  background: "rgba(201, 169, 110, 0.12)",
-                  borderRadius: "var(--radius-full)",
-                  padding: "0.15rem 0.625rem",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                Spatial Visualization
-              </div>
-              <h4
-                style={{
-                  fontSize: "0.9375rem",
-                  fontWeight: 600,
-                  color: "var(--fg-primary)",
-                  marginBottom: "0.375rem",
-                }}
-              >
-                Interactive Preview Coming Soon
-              </h4>
-              <p
-                style={{
-                  fontSize: "0.8125rem",
-                  color: "var(--fg-secondary)",
-                  maxWidth: "24rem",
-                  lineHeight: 1.5,
-                }}
-              >
-                Advanced 3D viewing, WebXR, and AR placement features will be
-                available in a future storefront update.
-              </p>
             </div>
           </div>
 
