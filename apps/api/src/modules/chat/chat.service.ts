@@ -1,5 +1,6 @@
 import type { Conversation, Message } from "@prisma/client";
 import { ApiError } from "@/shared/errors/api-error";
+import { prisma } from "@/lib/prisma";
 import {
   findConversationById,
   findConversationsByCustomerId,
@@ -9,12 +10,34 @@ import {
   getAllConversations,
 } from "./chat.repository";
 
-export async function getCustomerConversations(customerId: string): Promise<Conversation[]> {
-  return findConversationsByCustomerId(customerId);
+export async function getCustomerConversations(customerId: string): Promise<any[]> {
+  const conversations = await findConversationsByCustomerId(customerId);
+  const customer = await prisma.user.findUnique({
+    where: { userId: customerId },
+    select: { userId: true, name: true, email: true },
+  });
+
+  return conversations.map((c) => ({
+    ...c,
+    customer,
+  }));
 }
 
-export async function getAdminConversations(): Promise<Conversation[]> {
-  return getAllConversations();
+export async function getAdminConversations(): Promise<any[]> {
+  const conversations = await getAllConversations();
+  const customerIds = conversations.map((c) => c.customerId);
+
+  const customers = await prisma.user.findMany({
+    where: { userId: { in: customerIds } },
+    select: { userId: true, name: true, email: true },
+  });
+
+  const customerMap = new Map(customers.map((c) => [c.userId, c]));
+
+  return conversations.map((c) => ({
+    ...c,
+    customer: customerMap.get(c.customerId) || null,
+  }));
 }
 
 export async function startConversation(customerId: string): Promise<Conversation> {
@@ -50,8 +73,19 @@ export async function sendMessage(data: {
   });
 }
 
-export async function getConversationDetail(conversationId: string): Promise<Conversation | null> {
-  return findConversationById(conversationId);
+export async function getConversationDetail(conversationId: string): Promise<any | null> {
+  const conversation = await findConversationById(conversationId);
+  if (!conversation) return null;
+
+  const customer = await prisma.user.findUnique({
+    where: { userId: conversation.customerId },
+    select: { userId: true, name: true, email: true },
+  });
+
+  return {
+    ...conversation,
+    customer,
+  };
 }
 
 export async function getMessages(

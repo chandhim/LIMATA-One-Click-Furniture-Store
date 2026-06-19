@@ -75,7 +75,7 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
         <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--fg-primary)", margin: 0 }}>
           {conversation.customerId === currentUserId
             ? "Support Assistant"
-            : `Active Session: Customer #${customerCode}`}
+            : `Active Session: ${conversation.customer?.name || `Customer #${customerCode}`}`}
         </h2>
         <p style={{ fontSize: "0.75rem", color: "var(--fg-muted)", margin: 0 }}>
           Started {new Date(conversation.createdAt).toLocaleDateString([], { year: "numeric", month: "long", day: "numeric" })}

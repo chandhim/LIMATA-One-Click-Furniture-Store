@@ -45,7 +45,9 @@ export function ConversationList({
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="font-medium text-slate-900">
-                  {isAdmin ? `Customer: ${conversation.customerId}` : "Seller"}
+                  {isAdmin
+                    ? conversation.customer?.name || `Customer #${conversation.customerId.slice(-6).toUpperCase()}`
+                    : "Seller"}
                 </p>
                 {lastMessage && (
                   <p className="text-sm text-slate-500 truncate mt-1">

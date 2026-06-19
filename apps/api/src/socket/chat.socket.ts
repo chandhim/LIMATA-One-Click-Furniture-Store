@@ -4,9 +4,7 @@ import { sendMessage, getConversationDetail } from "@/modules/chat/chat.service"
 import { createNotification } from "@/modules/notifications/notification.service";
 
 export function registerChatSocket(io: SocketIOServer) {
-  const chatNamespace = io.of("/chat");
-
-  chatNamespace.on("connection", (socket) => {
+  io.on("connection", (socket) => {
     const userId = (socket as any).user?.id;
     const userRole = (socket as any).user?.role;
 
@@ -37,7 +35,7 @@ export function registerChatSocket(io: SocketIOServer) {
           });
 
           // Broadcast message to conversation room
-          chatNamespace
+          io
             .to(`conversation:${data.conversationId}`)
             .emit("message_received", {
               messageId: message.messageId,
@@ -66,24 +64,24 @@ export function registerChatSocket(io: SocketIOServer) {
             notificationMessage = `Customer sent you a message`;
 
             await createNotification({
-              userId: "admin", // Note: In a multi-admin system, this should be replaced with actual admin user IDs
+              userId: "admin", // In a multi-admin system, this should be replaced with actual admin user IDs
               type: "CHAT_MESSAGE",
               title: notificationTitle,
               message: notificationMessage,
             });
 
             // Send notification to admin
-            chatNamespace.to("admin-room").emit("notification", {
+            io.to("admin-room").emit("notification", {
               type: "CHAT_MESSAGE",
               title: notificationTitle,
               message: notificationMessage,
             });
-            } else if (userRole === Role.ADMIN) {
-              // Admin replied to customer
-              // Get conversation customer ID
-              const conversation = await getConversationDetail(
-                data.conversationId,
-              );
+          } else if (userRole === Role.ADMIN) {
+            // Admin replied to customer
+            // Get conversation customer ID
+            const conversation = await getConversationDetail(
+              data.conversationId,
+            );
 
             if (conversation) {
               notificationTitle = "Seller Replied";
@@ -97,7 +95,7 @@ export function registerChatSocket(io: SocketIOServer) {
               });
 
               // Send notification to customer
-              chatNamespace
+              io
                 .to(`user:${conversation.customerId}`)
                 .emit("notification", {
                   type: "CHAT_MESSAGE",

@@ -74,7 +74,8 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(productId || "");
 
-  const [images, setImages] = useState<File[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [remainingImages, setRemainingImages] = useState<string[]>([]);
   const [model, setModel] = useState<File | null>(null);
   const [uploadingFiles, setUploadingFiles] = useState(false);
 
@@ -97,6 +98,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         category: product.category,
         material: product.material,
       });
+      setRemainingImages(product.images || []);
     }
   }, [product, reset]);
 
@@ -106,11 +108,11 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
       let imageUrls: string[] = [];
       let modelUrl: string | undefined;
 
-      if (images.length > 0) {
-        const uploadRes = await uploadImages(images);
-        imageUrls = uploadRes.urls;
-      } else if (product?.images) {
-        imageUrls = product.images;
+      if (newImages.length > 0) {
+        const uploadRes = await uploadImages(newImages);
+        imageUrls = [...remainingImages, ...uploadRes.urls];
+      } else {
+        imageUrls = remainingImages;
       }
 
       if (model) {
@@ -313,7 +315,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
             >
               Product Images
             </h3>
-            <ImageUpload onChange={setImages} initialImages={product?.images} />
+            <ImageUpload
+              onChange={(newFiles, remainingUrls) => {
+                setNewImages(newFiles);
+                setRemainingImages(remainingUrls);
+              }}
+              initialImages={product?.images}
+            />
           </div>
 
           <div

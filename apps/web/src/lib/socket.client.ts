@@ -7,9 +7,22 @@ export function initializeSocket(token: string): Socket {
     return socket;
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const getSocketUrl = () => {
+    const baseFromEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (baseFromEnv) return baseFromEnv;
 
-  socket = io(apiUrl, {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (apiUrl) {
+      return apiUrl.replace(/\/api(\/v\d+)?$/, "");
+    }
+
+    return "http://localhost:4000";
+  };
+
+  const socketUrl = getSocketUrl();
+  console.log("Initializing Socket.io client to:", socketUrl);
+
+  socket = io(socketUrl, {
     auth: { token },
     reconnection: true,
     reconnectionDelay: 1000,

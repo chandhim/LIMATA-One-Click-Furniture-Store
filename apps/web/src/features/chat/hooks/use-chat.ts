@@ -38,7 +38,7 @@ export function useConversationMessages(conversationId: string) {
 
   useEffect(() => {
     if (initialMessages) {
-      setMessages(initialMessages);
+      setMessages([...initialMessages].reverse());
     }
   }, [initialMessages]);
 
