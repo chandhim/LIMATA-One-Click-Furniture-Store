@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { useProducts } from "@/features/products/hooks/use-products";
 import { ProductGrid } from "@/features/products/components/product-grid";
 import { ProductSearch } from "@/features/products/components/product-search";
-import { CategorySidebarNav, CATEGORY_CONFIG } from "@/features/products/components/category-filter";
+import { CATEGORY_CONFIG } from "@/features/products/components/category-filter";
 import { CategorySection } from "@/features/products/components/category-section";
 import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import { ProductEmpty } from "@/features/products/components/product-empty";
@@ -31,45 +31,10 @@ function groupByCategory(products: ProductSummary[]) {
 // ── Page ─────────────────────────────────────────────────────────────
 export default function ProductsPage() {
   const [search, setSearch] = useState<string>("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(
-    CATEGORY_CONFIG[0]?.name ?? null
-  );
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
   const { data, isLoading, isError } = useProducts(debouncedSearch, undefined);
-
-  // ── Intersection Observer — highlight active sidebar category ──
-  useEffect(() => {
-    if (debouncedSearch) return; // skip when searching
-
-    const observers: IntersectionObserver[] = [];
-
-    sectionRefs.current.forEach((el, cat) => {
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveCategory(cat);
-          }
-        },
-        { rootMargin: "-30% 0px -60% 0px", threshold: 0 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-
-    return () => observers.forEach((o) => o.disconnect());
-  }, [debouncedSearch, data]);
-
-  // ── Scroll to section on sidebar click ──
-  const handleCategoryClick = useCallback((name: string) => {
-    setActiveCategory(name);
-    const id = `section-${name.toLowerCase().replace(/\s+/g, "-")}`;
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, []);
 
   const grouped = data ? groupByCategory(data) : null;
   const isSearchMode = !!debouncedSearch;
@@ -218,7 +183,10 @@ export default function ProductsPage() {
             {CATEGORY_CONFIG.map(({ name, icon }) => (
               <button
                 key={name}
-                onClick={() => handleCategoryClick(name)}
+                onClick={() => {
+                  const id = `section-${name.toLowerCase().replace(/\s+/g, "-")}`;
+                  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -390,77 +358,50 @@ export default function ProductsPage() {
             </>
           )}
 
-          {/* ── BROWSE MODE: sidebar + category sections ── */}
+          {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
-            <div
-              style={{
-                display: "flex",
-                gap: "3rem",
-                alignItems: "flex-start",
-              }}
-            >
-              {/* Sidebar */}
-              <div
-                className="products-sidebar"
-                style={{ flexShrink: 0 }}
-              >
-                <CategorySidebarNav
-                  activeCategory={activeCategory}
-                  onCategoryClick={handleCategoryClick}
-                />
-              </div>
+            <div>
+              {CATEGORY_CONFIG.map(({ name, icon }) => {
+                const products = grouped?.get(name) ?? [];
+                return (
+                  <div
+                    key={name}
+                    ref={(el) => {
+                      if (el) sectionRefs.current.set(name, el);
+                      else sectionRefs.current.delete(name);
+                    }}
+                  >
+                    <CategorySection
+                      category={name}
+                      icon={icon}
+                      products={products}
+                    />
+                  </div>
+                );
+              })}
 
-              {/* Sections */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                {CATEGORY_CONFIG.map(({ name, icon }) => {
-                  const products = grouped?.get(name) ?? [];
-                  return (
-                    <div
-                      key={name}
-                      ref={(el) => {
-                        if (el) sectionRefs.current.set(name, el);
-                        else sectionRefs.current.delete(name);
-                      }}
-                    >
-                      <CategorySection
-                        category={name}
-                        icon={icon}
-                        products={products}
-                      />
-                    </div>
-                  );
-                })}
+              {/* Uncategorized / custom categories */}
+              {grouped &&
+                Array.from(grouped.entries())
+                  .filter(
+                    ([cat]) =>
+                      !CATEGORY_CONFIG.some((c) => c.name === cat)
+                  )
+                  .map(([cat, products]) => (
+                    <CategorySection
+                      key={cat}
+                      category={cat}
+                      icon="🪑"
+                      products={products}
+                    />
+                  ))}
 
-                {/* Uncategorized / custom categories */}
-                {grouped &&
-                  Array.from(grouped.entries())
-                    .filter(
-                      ([cat]) =>
-                        !CATEGORY_CONFIG.some((c) => c.name === cat)
-                    )
-                    .map(([cat, products]) => (
-                      <CategorySection
-                        key={cat}
-                        category={cat}
-                        icon="🪑"
-                        products={products}
-                      />
-                    ))}
-
-                {/* All sections empty */}
-                {data.length === 0 && <ProductEmpty />}
-              </div>
+              {/* All sections empty */}
+              {data.length === 0 && <ProductEmpty />}
             </div>
           )}
         </div>
       </div>
-
-      {/* ── Responsive sidebar hide ──────────────────────────────── */}
-      <style>{`
-        @media (max-width: 900px) {
-          .products-sidebar { display: none !important; }
-        }
-      `}</style>
     </MainLayout>
   );
 }
