@@ -4,6 +4,11 @@ export type Conversation = {
   createdAt: Date;
   updatedAt: Date;
   messages: Message[];
+  customer?: {
+    userId: string;
+    name: string;
+    email: string;
+  } | null;
 };
 
 export type Message = {

@@ -15,10 +15,14 @@ export default function AdminChatsPage() {
 
   const conversations = data ?? [];
 
-  // Filter conversations if search is active (by customer ID)
-  const filteredConversations = conversations.filter((c: Conversation) => 
-    c.customerId.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter conversations if search is active (by customer ID, name, or email)
+  const filteredConversations = conversations.filter((c: Conversation) => {
+    const query = searchQuery.toLowerCase();
+    const matchesId = c.customerId.toLowerCase().includes(query);
+    const matchesName = c.customer?.name?.toLowerCase().includes(query) ?? false;
+    const matchesEmail = c.customer?.email?.toLowerCase().includes(query) ?? false;
+    return matchesId || matchesName || matchesEmail;
+  });
 
   if (isLoading) {
     return (
@@ -79,7 +83,7 @@ export default function AdminChatsPage() {
             />
             <input
               type="text"
-              placeholder="Search by customer reference..."
+              placeholder="Search by customer name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="input-base"
@@ -106,7 +110,14 @@ export default function AdminChatsPage() {
               const formattedDate = lastMsg
                 ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
                 : new Date(conv.createdAt).toLocaleDateString([], { month: "short", day: "numeric" });
-              const initials = conv.customerId.slice(-4).toUpperCase();
+              
+              const initials = conv.customer?.name
+                ? (() => {
+                    const parts = conv.customer.name.trim().split(/\s+/);
+                    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+                    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                  })()
+                : conv.customerId.slice(-4).toUpperCase();
 
               return (
                 <div
@@ -151,13 +162,13 @@ export default function AdminChatsPage() {
                       transition: "all 0.2s ease"
                     }}
                   >
-                    {initials.slice(0, 2)}
+                    {conv.customer?.name ? initials : initials.slice(0, 2)}
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "0.25rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <span style={{ fontSize: "0.825rem", fontWeight: 700, color: "var(--fg-primary)" }}>
-                        Customer #{initials}
+                        {conv.customer?.name || `Customer #${initials}`}
                       </span>
                       <span style={{ fontSize: "0.7rem", color: "var(--fg-muted)" }}>{formattedDate}</span>
                     </div>
