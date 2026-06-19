@@ -16,6 +16,7 @@ export function Navbar() {
   const clearSession = useAuthStore((state) => state.clearSession);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const cartCount = useCartStore((s) => s.count);
   useCart(); // keeps the Zustand cart count in sync
 
@@ -25,10 +26,18 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const closeDropdown = () => setDropdownOpen(false);
+    window.addEventListener("click", closeDropdown);
+    return () => window.removeEventListener("click", closeDropdown);
+  }, [dropdownOpen]);
+
   const handleLogout = () => {
     clearSession();
     router.push("/login");
   };
+
 
   return (
     <>
@@ -245,91 +254,187 @@ export function Navbar() {
                   )}
                 </Link>
 
-                {/* User avatar + name */}
-                <Link
-                  href={user?.role === "ADMIN" ? "/admin" : "/profile"}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.625rem",
-                    padding: "0.375rem 0.75rem",
-                    background: "var(--bg-elevated)",
-                    borderRadius: "var(--radius-full)",
-                    border: "1px solid var(--border)",
-                    textDecoration: "none",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "rgba(201,169,110,0.08)";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "var(--accent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "var(--bg-elevated)";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "var(--border)";
-                  }}
-                >
-                  <div
+                {/* User avatar + dropdown */}
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDropdownOpen(!dropdownOpen);
+                    }}
                     style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: "50%",
-                      background:
-                        "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.75rem",
-                      fontWeight: 700,
-                      color: "#fff",
-                      flexShrink: 0,
+                      gap: "0.625rem",
+                      padding: "0.375rem 0.75rem",
+                      background: "var(--bg-elevated)",
+                      borderRadius: "var(--radius-full)",
+                      border: "1px solid var(--border)",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      outline: "none",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(201,169,110,0.08)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "var(--accent)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "var(--bg-elevated)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "var(--border)";
                     }}
                   >
-                    {user?.name?.[0]?.toUpperCase() ?? "U"}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.875rem",
-                      fontWeight: 500,
-                      color: "var(--fg-primary)",
-                    }}
-                  >
-                    {user?.name}
-                  </span>
-                </Link>
+                    {user?.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          flexShrink: 0,
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background:
+                            "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          color: "#fff",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {user?.name?.[0]?.toUpperCase() ?? "U"}
+                      </div>
+                    )}
+                    <span
+                      style={{
+                        fontSize: "0.875rem",
+                        fontWeight: 500,
+                        color: "var(--fg-primary)",
+                      }}
+                    >
+                      {user?.name}
+                    </span>
+                    <span style={{ fontSize: "0.6rem", color: "var(--fg-muted)" }}>▼</span>
+                  </button>
 
-                {/* Sign out */}
-                <button
-                  onClick={handleLogout}
-                  style={{
-                    padding: "0.5rem 1.125rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "var(--fg-secondary)",
-                    background: "transparent",
-                    border: "1.5px solid var(--border)",
-                    borderRadius: "var(--radius-full)",
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "#e74c3c";
-                    (e.currentTarget as HTMLElement).style.color = "#e74c3c";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "var(--border)";
-                    (e.currentTarget as HTMLElement).style.color =
-                      "var(--fg-secondary)";
-                  }}
-                >
-                  Sign out
-                </button>
+                  {dropdownOpen && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        marginTop: "0.5rem",
+                        width: "12.5rem",
+                        background: "rgba(250,249,247,0.95)",
+                        backdropFilter: "blur(20px)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "var(--radius-md)",
+                        boxShadow: "var(--shadow-lg)",
+                        padding: "0.5rem 0",
+                        zIndex: 100,
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      {user?.role === "ADMIN" && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setDropdownOpen(false)}
+                          style={{
+                            padding: "0.625rem 1rem",
+                            fontSize: "0.875rem",
+                            color: "var(--fg-secondary)",
+                            textDecoration: "none",
+                            textAlign: "left",
+                            transition: "all 0.2s ease",
+                          }}
+                          className="dropdown-item"
+                        >
+                          🛡️ Admin Dashboard
+                        </Link>
+                      )}
+                      <Link
+                        href="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        style={{
+                          padding: "0.625rem 1rem",
+                          fontSize: "0.875rem",
+                          color: "var(--fg-secondary)",
+                          textDecoration: "none",
+                          textAlign: "left",
+                          transition: "all 0.2s ease",
+                        }}
+                        className="dropdown-item"
+                      >
+                        My Profile
+                      </Link>
+                      <Link
+                        href="/account/orders"
+                        onClick={() => setDropdownOpen(false)}
+                        style={{
+                          padding: "0.625rem 1rem",
+                          fontSize: "0.875rem",
+                          color: "var(--fg-secondary)",
+                          textDecoration: "none",
+                          textAlign: "left",
+                          transition: "all 0.2s ease",
+                        }}
+                        className="dropdown-item"
+                      >
+                        My Orders
+                      </Link>
+                      <Link
+                        href="/notifications"
+                        onClick={() => setDropdownOpen(false)}
+                        style={{
+                          padding: "0.625rem 1rem",
+                          fontSize: "0.875rem",
+                          color: "var(--fg-secondary)",
+                          textDecoration: "none",
+                          textAlign: "left",
+                          transition: "all 0.2s ease",
+                        }}
+                        className="dropdown-item"
+                      >
+                        Notifications
+                      </Link>
+                      <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "0.375rem 0" }} />
+                      <button
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          handleLogout();
+                        }}
+                        style={{
+                          padding: "0.625rem 1rem",
+                          fontSize: "0.875rem",
+                          color: "#ef4444",
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          width: "100%",
+                          transition: "all 0.2s ease",
+                        }}
+                        className="dropdown-item-logout"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
@@ -656,6 +761,13 @@ export function Navbar() {
         }
         @media (min-width: 769px) {
           .mobile-menu-btn { display: none !important; }
+        }
+        .dropdown-item:hover {
+          background: rgba(201, 169, 110, 0.1) !important;
+          color: var(--fg-primary) !important;
+        }
+        .dropdown-item-logout:hover {
+          background: rgba(239, 68, 68, 0.08) !important;
         }
       `}</style>
     </>

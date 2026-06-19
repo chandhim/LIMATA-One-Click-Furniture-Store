@@ -7,6 +7,7 @@ import { useCreateOrder, ORDERS_QUERY_KEY } from "./use-orders";
 import { getPaymentParams } from "../services/order.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartStore } from "@/store/use-cart-store";
+import { updateProfile } from "@/features/auth/api/auth";
 
 // Add PayHere script to the document body dynamically
 function loadPayHereScript() {
@@ -24,6 +25,7 @@ export function useCheckout() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
+  const updateUserStore = useAuthStore((s) => s.updateUser);
   const resetCartCount = useCartStore((s) => s.reset);
   const createOrderMutation = useCreateOrder();
 
@@ -34,15 +36,21 @@ export function useCheckout() {
   const [shippingCity, setShippingCity] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState("Standard");
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "PAYHERE">("COD");
+  const [saveToProfile, setSaveToProfile] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Prefill authenticated user profile data
+  // Prefill from authenticated user profile data (name, email, phone, address, city)
   useEffect(() => {
     if (user) {
       setShippingName(user.name || "");
       setShippingEmail(user.email || "");
+
+      // Pre-fill from profile fields if available
+      if (user.phoneNumber) setShippingPhone(user.phoneNumber);
+      if (user.addressLine1) setShippingAddress(user.addressLine1);
+      if (user.city) setShippingCity(user.city);
     }
   }, [user]);
 
@@ -68,6 +76,27 @@ export function useCheckout() {
     return Object.keys(newErrors).length === 0;
   };
 
+  /**
+   * Persist checkout shipping data back to the user's profile.
+   * Called only when the user has checked "Save Details To Profile".
+   */
+  async function persistCheckoutToProfile() {
+    if (!user || !saveToProfile) return;
+    try {
+      const updatedUser = await updateProfile({
+        phoneNumber: shippingPhone || null,
+        addressLine1: shippingAddress || null,
+        city: shippingCity || null,
+      });
+      // Keep Zustand store in sync so the navbar avatar / profile page reflect changes
+      updateUserStore(updatedUser);
+      void queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      // Non-fatal — don't block the order flow
+      console.warn("[Checkout] Failed to save details to profile:", err);
+    }
+  }
+
   const handlePlaceOrder = async () => {
     if (!validate()) return;
     setIsProcessing(true);
@@ -83,6 +112,9 @@ export function useCheckout() {
         deliveryMethod,
         paymentMethod,
       });
+
+      // 2. Optionally persist shipping info back to user profile
+      await persistCheckoutToProfile();
 
       if (paymentMethod === "COD") {
         // COD workflow: order is placed, cart cleared, redirect directly to success
@@ -183,6 +215,8 @@ export function useCheckout() {
     setDeliveryMethod,
     paymentMethod,
     setPaymentMethod,
+    saveToProfile,
+    setSaveToProfile,
     errors,
     isProcessing: isProcessing || createOrderMutation.isPending,
     handlePlaceOrder,
