@@ -15,22 +15,27 @@ interface ImageItem {
   file?: File;
 }
 
-export function ImageUpload({ onChange, initialImages = [] }: ImageUploadProps) {
+const EMPTY_ARRAY: string[] = [];
+
+export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUploadProps) {
   const [items, setItems] = useState<ImageItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const initialImagesKey = initialImages.join(",");
+
   // Sync initialImages into state when the component mounts/receives new values
   useEffect(() => {
+    const imagesArray = initialImagesKey ? initialImagesKey.split(",") : [];
     setItems((prevItems) => {
       // Keep only newly uploaded items that are not in the new initialImages array
       const newUploadedItems = prevItems.filter((item) => item.file !== undefined);
-      const mappedInitial = initialImages.map((url) => ({
+      const mappedInitial = imagesArray.map((url) => ({
         id: url,
         src: url,
       }));
       return [...mappedInitial, ...newUploadedItems];
     });
-  }, [initialImages]);
+  }, [initialImagesKey]);
 
   function triggerChange(currentItems: ImageItem[]) {
     const newFiles = currentItems
