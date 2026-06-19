@@ -6,6 +6,7 @@ import {
   createUser,
   findUserByEmail,
   findUserById,
+  updateUser,
 } from "./auth.repository";
 import type { AuthPayload, AuthUser, LoginInput, RegisterInput } from "./auth.types";
 
@@ -15,6 +16,17 @@ function mapUser(user: User): AuthUser {
     name: user.name,
     email: user.email,
     role: user.role,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    phoneNumber: user.phoneNumber,
+    avatarUrl: user.avatarUrl,
+    addressLine1: user.addressLine1,
+    addressLine2: user.addressLine2,
+    city: user.city,
+    district: user.district,
+    province: user.province,
+    postalCode: user.postalCode,
+    dateOfBirth: user.dateOfBirth,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -75,3 +87,40 @@ export async function getProfile(userId: string) {
 
   return mapUser(user);
 }
+
+export async function updateUserProfile(
+  userId: string,
+  data: {
+    firstName?: string | null;
+    lastName?: string | null;
+    phoneNumber?: string | null;
+    avatarUrl?: string | null;
+    addressLine1?: string | null;
+    addressLine2?: string | null;
+    city?: string | null;
+    district?: string | null;
+    province?: string | null;
+    postalCode?: string | null;
+    dateOfBirth?: string | null;
+  },
+) {
+  const user = await findUserById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  let name = user.name;
+  const newFirstName = data.firstName !== undefined ? data.firstName : user.firstName;
+  const newLastName = data.lastName !== undefined ? data.lastName : user.lastName;
+
+  if (newFirstName || newLastName) {
+    name = `${newFirstName || ""} ${newLastName || ""}`.trim() || user.name;
+  }
+
+  const updated = await updateUser(userId, {
+    ...data,
+    name,
+  });
+
+  return mapUser(updated);
+}

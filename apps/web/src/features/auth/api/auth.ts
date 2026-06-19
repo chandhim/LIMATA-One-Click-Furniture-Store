@@ -64,3 +64,27 @@ export async function getAdminAccess() {
     throw new Error(getErrorMessage(error));
   }
 }
+
+export async function updateProfile(values: Partial<AuthUser>) {
+  try {
+    const response = await api.put<ApiResponse<{ user: AuthUser }>>("/auth/profile", values);
+    return response.data.data.user;
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
+  }
+}
+
+export async function uploadAvatar(file: File) {
+  try {
+    const formData = new FormData();
+    formData.append("avatar", file);
+    const response = await api.post<ApiResponse<{ url: string }>>("/auth/profile/avatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data.data.url;
+  } catch (error) {
+    throw new Error(getErrorMessage(error));
+  }
+}

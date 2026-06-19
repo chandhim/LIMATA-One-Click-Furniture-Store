@@ -29,6 +29,8 @@ export default function CheckoutPage() {
     setDeliveryMethod,
     paymentMethod,
     setPaymentMethod,
+    saveToProfile,
+    setSaveToProfile,
     errors,
     isProcessing,
     handlePlaceOrder,
@@ -152,6 +154,33 @@ export default function CheckoutPage() {
                       />
                       {errors.shippingCity && <span style={{ color: "red", fontSize: "0.75rem", marginTop: "0.25rem", display: "block" }}>{errors.shippingCity}</span>}
                     </div>
+
+                    {/* Save to Profile checkbox */}
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                        padding: "0.875rem 1rem",
+                        background: saveToProfile ? "rgba(201,169,110,0.06)" : "var(--bg-elevated)",
+                        border: `1.5px solid ${saveToProfile ? "var(--accent)" : "var(--border)"}`,
+                        borderRadius: "var(--radius-md)",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        userSelect: "none",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={saveToProfile}
+                        onChange={(e) => setSaveToProfile(e.target.checked)}
+                        style={{ width: "16px", height: "16px", accentColor: "var(--accent-dark)", cursor: "pointer", flexShrink: 0 }}
+                      />
+                      <div>
+                        <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", display: "block" }}>Save Details To Profile</span>
+                        <span style={{ fontSize: "0.775rem", color: "var(--fg-muted)" }}>Your phone, address & city will be saved for faster checkout next time.</span>
+                      </div>
+                    </label>
                   </div>
                 </div>
 
@@ -339,8 +368,7 @@ export default function CheckoutPage() {
         </div>
       </div>
       
-      {/* Visual responsive media queries injection */}
-      <style jsx global>{`
+      <style>{`
         @media (max-width: 1024px) {
           .checkout-grid {
             grid-template-columns: 1fr !important;
