@@ -1,5 +1,7 @@
 import { io, type Socket } from "socket.io-client";
 
+import { getApiBaseUrl } from "./env";
+
 let socket: Socket | null = null;
 
 export function initializeSocket(token: string): Socket {
@@ -7,19 +9,7 @@ export function initializeSocket(token: string): Socket {
     return socket;
   }
 
-  const getSocketUrl = () => {
-    const baseFromEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (baseFromEnv) return baseFromEnv;
-
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (apiUrl) {
-      return apiUrl.replace(/\/api(\/v\d+)?$/, "");
-    }
-
-    return "http://localhost:4000";
-  };
-
-  const socketUrl = getSocketUrl();
+  const socketUrl = getApiBaseUrl();
   console.log("Initializing Socket.io client to:", socketUrl);
 
   socket = io(socketUrl, {
