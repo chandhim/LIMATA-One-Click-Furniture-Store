@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { register as signUp } from "../api/auth";
 import { registerSchema, type RegisterSchema } from "../schemas/auth.schemas";
@@ -64,7 +65,8 @@ export function RegisterForm() {
             width: "28rem",
             height: "28rem",
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 65%)",
+            background:
+              "radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 65%)",
             pointerEvents: "none",
           }}
         />
@@ -76,7 +78,8 @@ export function RegisterForm() {
             width: "20rem",
             height: "20rem",
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 65%)",
+            background:
+              "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 65%)",
             pointerEvents: "none",
           }}
         />
@@ -84,7 +87,8 @@ export function RegisterForm() {
           style={{
             position: "absolute",
             inset: 0,
-            backgroundImage: "radial-gradient(circle, rgba(250,249,247,0.03) 1px, transparent 1px)",
+            backgroundImage:
+              "radial-gradient(circle, rgba(250,249,247,0.03) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
             pointerEvents: "none",
           }}
@@ -135,7 +139,14 @@ export function RegisterForm() {
               gap: "0.5rem",
             }}
           >
-            <span style={{ width: "1.5rem", height: "1.5px", background: "var(--accent)", display: "block" }} />
+            <span
+              style={{
+                width: "1.5rem",
+                height: "1.5px",
+                background: "var(--accent)",
+                display: "block",
+              }}
+            />
             Join LIMATA
           </div>
           <h2
@@ -153,12 +164,19 @@ export function RegisterForm() {
             <br />
             you deserve
           </h2>
-          <p style={{ fontSize: "0.9375rem", color: "rgba(250,249,247,0.55)", lineHeight: 1.75, maxWidth: "24rem" }}>
+          {/* <p style={{ fontSize: "0.9375rem", color: "rgba(250,249,247,0.55)", lineHeight: 1.75, maxWidth: "24rem" }}>
             Create your free account and unlock 2,400+ curated furniture pieces, AR preview, and personalized recommendations.
-          </p>
+          </p> */}
 
           {/* Perks list */}
-          <div style={{ marginTop: "2.5rem", display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+          <div
+            style={{
+              marginTop: "2.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.875rem",
+            }}
+          >
             {[
               { icon: "✓", text: "Free account — no credit card required" },
               { icon: "✓", text: "AR visualization for every product" },
@@ -167,7 +185,11 @@ export function RegisterForm() {
             ].map((perk) => (
               <div
                 key={perk.text}
-                style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.75rem",
+                }}
               >
                 <span
                   style={{
@@ -188,7 +210,13 @@ export function RegisterForm() {
                 >
                   {perk.icon}
                 </span>
-                <span style={{ fontSize: "0.9rem", color: "rgba(250,249,247,0.65)", lineHeight: 1.5 }}>
+                <span
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "rgba(250,249,247,0.65)",
+                    lineHeight: 1.5,
+                  }}
+                >
                   {perk.text}
                 </span>
               </div>
@@ -196,7 +224,13 @@ export function RegisterForm() {
           </div>
         </div>
 
-        <div style={{ fontSize: "0.8rem", color: "rgba(250,249,247,0.25)", position: "relative" }}>
+        <div
+          style={{
+            fontSize: "0.8rem",
+            color: "rgba(250,249,247,0.25)",
+            position: "relative",
+          }}
+        >
           © {new Date().getFullYear()} LIMATA
         </div>
       </div>
@@ -226,11 +260,21 @@ export function RegisterForm() {
             >
               Create account
             </h1>
-            <p style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
+            <p
+              style={{
+                fontSize: "0.9375rem",
+                color: "var(--fg-secondary)",
+                lineHeight: 1.6,
+              }}
+            >
               Already have one?{" "}
               <Link
                 href="/login"
-                style={{ color: "var(--accent-dark)", fontWeight: 600, textDecoration: "none" }}
+                style={{
+                  color: "var(--accent-dark)",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
               >
                 Sign in →
               </Link>
@@ -258,7 +302,10 @@ export function RegisterForm() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
             {/* Name */}
             <div>
               <label
@@ -280,7 +327,13 @@ export function RegisterForm() {
                 className="input-base"
               />
               {form.formState.errors.name && (
-                <p style={{ marginTop: "0.375rem", fontSize: "0.8125rem", color: "#ef4444" }}>
+                <p
+                  style={{
+                    marginTop: "0.375rem",
+                    fontSize: "0.8125rem",
+                    color: "#ef4444",
+                  }}
+                >
                   {form.formState.errors.name.message}
                 </p>
               )}
@@ -307,7 +360,13 @@ export function RegisterForm() {
                 className="input-base"
               />
               {form.formState.errors.email && (
-                <p style={{ marginTop: "0.375rem", fontSize: "0.8125rem", color: "#ef4444" }}>
+                <p
+                  style={{
+                    marginTop: "0.375rem",
+                    fontSize: "0.8125rem",
+                    color: "#ef4444",
+                  }}
+                >
                   {form.formState.errors.email.message}
                 </p>
               )}
@@ -351,11 +410,21 @@ export function RegisterForm() {
                     padding: 0,
                   }}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
               {form.formState.errors.password && (
-                <p style={{ marginTop: "0.375rem", fontSize: "0.8125rem", color: "#ef4444" }}>
+                <p
+                  style={{
+                    marginTop: "0.375rem",
+                    fontSize: "0.8125rem",
+                    color: "#ef4444",
+                  }}
+                >
                   {form.formState.errors.password.message}
                 </p>
               )}
@@ -401,8 +470,17 @@ export function RegisterForm() {
               ) : (
                 <>
                   Create account
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </>
               )}
@@ -417,11 +495,23 @@ export function RegisterForm() {
               }}
             >
               By creating an account, you agree to our{" "}
-              <span style={{ color: "var(--fg-secondary)", textDecoration: "underline", cursor: "pointer" }}>
+              <span
+                style={{
+                  color: "var(--fg-secondary)",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+              >
                 Terms of Service
-              </span>
-              {" "}and{" "}
-              <span style={{ color: "var(--fg-secondary)", textDecoration: "underline", cursor: "pointer" }}>
+              </span>{" "}
+              and{" "}
+              <span
+                style={{
+                  color: "var(--fg-secondary)",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
+              >
                 Privacy Policy
               </span>
             </p>
