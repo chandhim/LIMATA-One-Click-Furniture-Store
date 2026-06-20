@@ -11,6 +11,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { getApiBaseUrl } from "@/lib/env";
 import Link from "next/link";
 
 export default function OrderDetailsPage() {
@@ -195,7 +196,7 @@ export default function OrderDetailsPage() {
           address: payParams.address,
           city: payParams.city,
           country: payParams.country,
-          notify_url: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}/api/payment/notify`,
+          notify_url: `${getApiBaseUrl()}/api/payment/notify`,
           return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${payParams.orderId}` : "",
           cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${payParams.orderId}` : "",
         };
