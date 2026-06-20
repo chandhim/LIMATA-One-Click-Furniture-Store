@@ -20,7 +20,8 @@ function getS3Client(): S3Client {
 }
 
 function getApiBaseUrl() {
-  return (process.env.API_PUBLIC_URL ?? `http://127.0.0.1:${process.env.API_PORT ?? 4000}`).replace(/\/$/, "");
+  const publicUrl = process.env.API_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL;
+  return (publicUrl ?? `http://localhost:${process.env.API_PORT ?? 4000}`).replace(/\/$/, "");
 }
 
 async function uploadLocally(key: string, buffer: Buffer) {

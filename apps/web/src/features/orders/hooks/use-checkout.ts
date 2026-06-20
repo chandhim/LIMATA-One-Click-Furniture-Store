@@ -8,6 +8,7 @@ import { getPaymentParams } from "../services/order.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartStore } from "@/store/use-cart-store";
 import { updateProfile } from "@/features/auth/api/auth";
+import { getApiBaseUrl } from "@/lib/env";
 
 // Add PayHere script to the document body dynamically
 function loadPayHereScript() {
@@ -177,7 +178,7 @@ export function useCheckout() {
             address: params.address,
             city: params.city,
             country: params.country,
-            notify_url: `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"}/api/payment/notify`,
+            notify_url: `${getApiBaseUrl()}/api/payment/notify`,
             return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${params.orderId}` : "",
             cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
           };
