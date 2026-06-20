@@ -12,7 +12,7 @@ export async function findUserByEmail(email: string) {
  * Find a user by their primary key (cuid).
  */
 export async function findUserById(id: string) {
-  return prisma.user.findUnique({ where: { id } });
+  return prisma.user.findUnique({ where: { userId: id } });
 }
 
 /**
@@ -32,3 +32,27 @@ export async function createUser(data: {
     },
   });
 }
+
+/**
+ * Update a user record.
+ */
+export async function updateUser(id: string, data: {
+  name?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  phoneNumber?: string | null;
+  avatarUrl?: string | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  city?: string | null;
+  district?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
+  dateOfBirth?: string | null;
+}) {
+  return prisma.user.update({
+    where: { userId: id },
+    data,
+  });
+}
+

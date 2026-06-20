@@ -3,10 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { usePublicSetting } from "@/features/admin/hooks/use-admin";
+
 const HERO_IMAGE_URL =
   "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/banners/hero-banner.png";
 
 export function HeroSection() {
+  const { data: heroData } = usePublicSetting("homepage_hero");
+
+  const title = heroData?.title ?? "Crafted for the Way You Live.";
+  const subtitle = heroData?.subtitle ?? "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.";
+  const primaryBtn = heroData?.primaryBtn ?? "Browse Collection";
+  const secondaryBtn = heroData?.secondaryBtn ?? "Explore Rooms";
+
   return (
     <section
       style={{
@@ -93,7 +102,7 @@ export function HeroSection() {
           <h1
             className="font-display animate-fade-up delay-100"
             style={{
-              fontSize: "clamp(2.75rem, 5vw, 4.5rem)",
+              fontSize: "clamp(2.75rem, 5vw, 4.2rem)",
               fontWeight: 700,
               lineHeight: 1.06,
               letterSpacing: "-0.03em",
@@ -101,19 +110,7 @@ export function HeroSection() {
               marginBottom: "1.375rem",
             }}
           >
-            Crafted for
-            <br />
-            the Way{" "}
-            <em
-              style={{
-                fontStyle: "italic",
-                fontWeight: 400,
-                color: "var(--accent-light)",
-              }}
-            >
-              You
-            </em>{" "}
-            Live.
+            {title}
           </h1>
 
           {/* Subtext */}
@@ -127,8 +124,7 @@ export function HeroSection() {
               marginBottom: "2.25rem",
             }}
           >
-            Browse 2,400+ curated quality pieces — visualize them in your space
-            with AR and order in one click.
+            {subtitle}
           </p>
 
           {/* CTAs */}
@@ -157,7 +153,7 @@ export function HeroSection() {
                 letterSpacing: "0.01em",
               }}
             >
-              Browse Collection
+              {primaryBtn}
               <svg
                 width="15"
                 height="15"
@@ -197,7 +193,7 @@ export function HeroSection() {
                 el.style.color = "rgba(250,249,247,0.85)";
               }}
             >
-              Explore Rooms
+              {secondaryBtn}
             </a>
           </div>
 

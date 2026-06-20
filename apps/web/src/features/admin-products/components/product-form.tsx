@@ -68,24 +68,59 @@ function FormField({
   );
 }
 
+const PRESET_CATEGORIES = [
+  "Living Room",
+  "Bedroom",
+  "Dining Room",
+  "Office",
+  "Outdoor",
+  "Kitchen",
+];
+
+const PRESET_MATERIALS = [
+  "Solid Oak",
+  "Teak Wood",
+  "Mahogany",
+  "Walnut Wood",
+  "Leather",
+  "Velvet Fabric",
+  "Metal",
+  "Glass",
+  "Marble",
+];
+
 export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const router = useRouter();
   const { data: product, isLoading: isLoadingProduct } = useAdminProduct(productId || "");
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(productId || "");
 
-  const [images, setImages] = useState<File[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [remainingImages, setRemainingImages] = useState<string[]>([]);
   const [model, setModel] = useState<File | null>(null);
   const [uploadingFiles, setUploadingFiles] = useState(false);
+
+  const [selectedCategoryOption, setSelectedCategoryOption] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [selectedMaterialOption, setSelectedMaterialOption] = useState("");
+  const [customMaterial, setCustomMaterial] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
+    trigger,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
   });
+
+  const preventNegative = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "-" || e.key === "+" || e.key === "e" || e.key === "E") {
+      e.preventDefault();
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -97,8 +132,44 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         category: product.category,
         material: product.material,
       });
+
+      if (PRESET_CATEGORIES.includes(product.category)) {
+        setSelectedCategoryOption(product.category);
+        setCustomCategory("");
+      } else {
+        setSelectedCategoryOption("custom");
+        setCustomCategory(product.category || "");
+      }
+
+      if (product.material) {
+        if (PRESET_MATERIALS.includes(product.material)) {
+          setSelectedMaterialOption(product.material);
+          setCustomMaterial("");
+        } else {
+          setSelectedMaterialOption("custom");
+          setCustomMaterial(product.material);
+        }
+      } else {
+        setSelectedMaterialOption("");
+        setCustomMaterial("");
+      }
+
+      setRemainingImages(product.images || []);
     }
   }, [product, reset]);
+
+  useEffect(() => {
+    const finalCategory = selectedCategoryOption === "custom" ? customCategory : selectedCategoryOption;
+    setValue("category", finalCategory);
+    if (finalCategory) {
+      void trigger("category");
+    }
+  }, [selectedCategoryOption, customCategory, setValue, trigger]);
+
+  useEffect(() => {
+    const finalMaterial = selectedMaterialOption === "custom" ? customMaterial : selectedMaterialOption;
+    setValue("material", finalMaterial || undefined);
+  }, [selectedMaterialOption, customMaterial, setValue]);
 
   async function onSubmit(data: ProductFormData) {
     try {
@@ -106,11 +177,11 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
       let imageUrls: string[] = [];
       let modelUrl: string | undefined;
 
-      if (images.length > 0) {
-        const uploadRes = await uploadImages(images);
-        imageUrls = uploadRes.urls;
-      } else if (product?.images) {
-        imageUrls = product.images;
+      if (newImages.length > 0) {
+        const uploadRes = await uploadImages(newImages);
+        imageUrls = [...remainingImages, ...uploadRes.urls];
+      } else {
+        imageUrls = remainingImages;
       }
 
       if (model) {
@@ -229,20 +300,52 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <FormField label="Category" error={errors.category?.message}>
-                  <input
-                    {...register("category")}
-                    type="text"
+                  <select
+                    value={selectedCategoryOption}
+                    onChange={(e) => setSelectedCategoryOption(e.target.value)}
                     className="input-base"
-                    placeholder="e.g. Living Room"
-                  />
+                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                  >
+                    <option value="">Select Category</option>
+                    {PRESET_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                    <option value="custom">Other (Specify...)</option>
+                  </select>
+                  {selectedCategoryOption === "custom" && (
+                    <input
+                      type="text"
+                      value={customCategory}
+                      onChange={(e) => setCustomCategory(e.target.value)}
+                      className="input-base"
+                      placeholder="Enter custom category"
+                      style={{ marginTop: "0.5rem", width: "100%" }}
+                    />
+                  )}
                 </FormField>
-                <FormField label="Material">
-                  <input
-                    {...register("material")}
-                    type="text"
+                <FormField label="Material" error={errors.material?.message}>
+                  <select
+                    value={selectedMaterialOption}
+                    onChange={(e) => setSelectedMaterialOption(e.target.value)}
                     className="input-base"
-                    placeholder="e.g. Solid Oak"
-                  />
+                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                  >
+                    <option value="">Select Material</option>
+                    {PRESET_MATERIALS.map((mat) => (
+                      <option key={mat} value={mat}>{mat}</option>
+                    ))}
+                    <option value="custom">Other (Specify...)</option>
+                  </select>
+                  {selectedMaterialOption === "custom" && (
+                    <input
+                      type="text"
+                      value={customMaterial}
+                      onChange={(e) => setCustomMaterial(e.target.value)}
+                      className="input-base"
+                      placeholder="Enter custom material"
+                      style={{ marginTop: "0.5rem", width: "100%" }}
+                    />
+                  )}
                 </FormField>
               </div>
             </div>
@@ -275,6 +378,8 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                   {...register("price", { valueAsNumber: true })}
                   type="number"
                   step="0.01"
+                  min="0.01"
+                  onKeyDown={preventNegative}
                   className="input-base"
                   placeholder="0.00"
                 />
@@ -283,6 +388,8 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 <input
                   {...register("stock", { valueAsNumber: true })}
                   type="number"
+                  min="0"
+                  onKeyDown={preventNegative}
                   className="input-base"
                   placeholder="0"
                 />
@@ -313,7 +420,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
             >
               Product Images
             </h3>
-            <ImageUpload onChange={setImages} initialImages={product?.images} />
+            <ImageUpload
+              onChange={(newFiles, remainingUrls) => {
+                setNewImages(newFiles);
+                setRemainingImages(remainingUrls);
+              }}
+              initialImages={product?.images}
+            />
           </div>
 
           <div

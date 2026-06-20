@@ -5,7 +5,14 @@ import Image from "next/image";
 const FEATURES_IMAGE_URL =
   "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/banners/features-panel.png";
 
-const features = [
+import { usePublicSetting } from "@/features/admin/hooks/use-admin";
+
+interface HomeFeature {
+  title: string;
+  desc: string;
+}
+
+const defaultFeatures: HomeFeature[] = [
   {
     title: "Curated Quality",
     desc: "Every piece hand-selected by our interior design team — no compromise on craftsmanship or materials.",
@@ -25,6 +32,8 @@ const features = [
 ];
 
 export function FeaturesSection() {
+  const { data: customFeatures } = usePublicSetting("homepage_features");
+  const features: HomeFeature[] = (customFeatures as HomeFeature[]) || defaultFeatures;
   return (
     <section
       id="about"
@@ -69,7 +78,7 @@ export function FeaturesSection() {
           </h2>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {features.map((f, i) => (
+            {features.map((f: HomeFeature, i: number) => (
               <div
                 key={f.title}
                 className={`animate-fade-up delay-${(i + 1) * 100}`}

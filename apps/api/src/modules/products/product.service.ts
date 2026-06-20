@@ -15,18 +15,18 @@ export async function getProducts(opts: {
   return findProducts(opts);
 }
 
-export async function getProductById(id: string) {
-  return findProductById(id) as Promise<Product | null>;
+export async function getProductById(productId: string) {
+  return findProductById(productId) as Promise<Product | null>;
 }
 
 export async function createProduct(data: ProductCreate) {
   return insertProduct(data);
 }
 
-export async function updateProduct(id: string, data: ProductUpdate) {
-  return updateProductById(id, data);
+export async function updateProduct(productId: string, data: ProductUpdate) {
+  return updateProductById(productId, data);
 }
 
-export async function deleteProduct(id: string) {
-  return deleteProductById(id);
+export async function deleteProduct(productId: string) {
+  return deleteProductById(productId);
 }

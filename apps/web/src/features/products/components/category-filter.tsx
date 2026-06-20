@@ -1,67 +1,119 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 
-const options = ["All", "Living Room", "Bedroom", "Dining Room", "Office", "Storage"];
+export const CATEGORY_CONFIG: { name: string; icon: string }[] = [
+  { name: "Living Room", icon: "🛋️" },
+  { name: "Bedroom",     icon: "🛏️" },
+  { name: "Dining Room", icon: "🍽️" },
+  { name: "Office",      icon: "💼" },
+  { name: "Outdoor",     icon: "🌿" },
+  { name: "Kitchen",     icon: "🍳" },
+];
 
-export function CategoryFilter({ onSelect }: { onSelect: (category?: string) => void }) {
-  const [selected, setSelected] = useState<string>("All");
+interface CategorySidebarNavProps {
+  activeCategory: string | null;
+  onCategoryClick: (name: string) => void;
+}
 
-  function change(cat: string) {
-    setSelected(cat);
-    onSelect(cat === "All" ? undefined : cat);
-  }
-
+export function CategorySidebarNav({ activeCategory, onCategoryClick }: CategorySidebarNavProps) {
   return (
-    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
-      <span
+    <nav
+      aria-label="Product categories"
+      style={{
+        position: "sticky",
+        top: "5.5rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.25rem",
+        padding: "1.25rem",
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border)",
+        borderRadius: "var(--radius-lg)",
+        boxShadow: "var(--shadow-sm)",
+        minWidth: "180px",
+        maxWidth: "200px",
+        alignSelf: "flex-start",
+      }}
+    >
+      <div
         style={{
-          fontSize: "0.8rem",
-          fontWeight: 600,
-          color: "var(--fg-muted)",
-          letterSpacing: "0.06em",
+          fontSize: "0.7rem",
+          fontWeight: 700,
+          letterSpacing: "0.12em",
           textTransform: "uppercase",
-          marginRight: "0.25rem",
-          whiteSpace: "nowrap",
+          color: "var(--fg-muted)",
+          paddingBottom: "0.75rem",
+          borderBottom: "1px solid var(--border)",
+          marginBottom: "0.5rem",
         }}
       >
-        Filter:
-      </span>
-      {options.map((opt) => {
-        const isActive = selected === opt;
+        Browse by Room
+      </div>
+
+      {CATEGORY_CONFIG.map(({ name, icon }) => {
+        const isActive = activeCategory === name;
         return (
           <button
-            key={opt}
-            onClick={() => change(opt)}
+            key={name}
+            onClick={() => onCategoryClick(name)}
             style={{
-              padding: "0.375rem 0.875rem",
-              borderRadius: "var(--radius-full)",
-              fontSize: "0.8125rem",
-              fontWeight: isActive ? 600 : 500,
-              border: isActive ? "1.5px solid var(--accent)" : "1.5px solid var(--border)",
-              background: isActive ? "rgba(201,169,110,0.12)" : "transparent",
-              color: isActive ? "var(--accent-dark)" : "var(--fg-secondary)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.625rem",
+              padding: "0.625rem 0.875rem",
+              borderRadius: "var(--radius-md)",
+              border: "none",
               cursor: "pointer",
+              textAlign: "left",
+              fontSize: "0.875rem",
+              fontWeight: isActive ? 700 : 500,
+              color: isActive ? "var(--accent-dark)" : "var(--fg-secondary)",
+              background: isActive ? "rgba(201,169,110,0.1)" : "transparent",
               transition: "all 0.18s ease",
-              whiteSpace: "nowrap",
+              width: "100%",
+              fontFamily: "var(--font-sans)",
+              position: "relative",
             }}
             onMouseEnter={(e) => {
               if (!isActive) {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-light)";
+                (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
                 (e.currentTarget as HTMLElement).style.color = "var(--fg-primary)";
               }
             }}
             onMouseLeave={(e) => {
               if (!isActive) {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+                (e.currentTarget as HTMLElement).style.background = "transparent";
                 (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
               }
             }}
           >
-            {opt}
+            {/* Active indicator bar */}
+            {isActive && (
+              <span
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: "20%",
+                  bottom: "20%",
+                  width: "3px",
+                  background: "var(--accent)",
+                  borderRadius: "var(--radius-full)",
+                }}
+              />
+            )}
+            <span style={{ fontSize: "1rem" }}>{icon}</span>
+            <span>{name}</span>
           </button>
         );
       })}
-    </div>
+    </nav>
   );
+}
+
+/** CategoryFilter is kept as a simple export alias for backward compat */
+export function CategoryFilter({ onSelect }: { onSelect: (category?: string) => void }) {
+  const _ = useRef(onSelect);
+  useEffect(() => { _.current = onSelect; }, [onSelect]);
+  return null;
 }

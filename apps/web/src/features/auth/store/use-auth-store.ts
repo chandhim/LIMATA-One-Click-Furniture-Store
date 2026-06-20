@@ -12,6 +12,7 @@ type AuthStore = {
   hydrate: () => void;
   setSession: (session: AuthSession) => void;
   clearSession: () => void;
+  updateUser: (user: AuthUser) => void;
   hasRole: (role: AuthRole) => boolean;
 };
 
@@ -84,6 +85,14 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       isAuthenticated: false,
       isHydrated: true,
     });
+  },
+  updateUser: (user) => {
+    const session = readStoredSession();
+    if (session) {
+      session.user = user;
+      persistSession(session);
+    }
+    set({ user });
   },
   hasRole: (role) => get().user?.role === role,
 }));

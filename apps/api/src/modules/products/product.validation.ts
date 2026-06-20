@@ -6,7 +6,7 @@ export const listQuerySchema = z.object({
 });
 
 export const idParamSchema = z.object({
-  id: z.string().min(1),
+  productId: z.string().min(1),
 });
 
 export const productCreateSchema = z.object({

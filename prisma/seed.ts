@@ -11,7 +11,7 @@ async function main() {
       stock: 10,
       category: "Sofas",
       material: "Leather",
-      images: ["/images/sofa1.png"],
+      images: ["/images/sofa1.png", "/images/tvstand1.png", "/images/wardrobe1.png"],
     },
     {
       name: "Dining Table",
@@ -29,7 +29,7 @@ async function main() {
       stock: 20,
       category: "Chairs",
       material: "Mesh",
-      images: ["/images/chair1.png"],
+      images: ["/images/chair1.png", "/images/bed1.png", "/images/dining1.png"],
     },
     {
       name: "TV Stand",
@@ -66,7 +66,7 @@ async function main() {
     });
     if (existing) {
       await prisma.product.update({
-        where: { id: existing.id },
+        where: { productId: existing.productId },
         data: p,
       });
     } else {

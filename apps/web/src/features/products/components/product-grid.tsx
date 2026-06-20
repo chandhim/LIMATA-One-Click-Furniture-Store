@@ -13,7 +13,7 @@ export function ProductGrid({ products }: { products: ProductSummary[] }) {
       }}
     >
       {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+        <ProductCard key={p.productId} product={p} />
       ))}
     </div>
   );

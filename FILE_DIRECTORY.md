@@ -142,7 +142,7 @@ LIMATA-One-Click-Furniture-Store/
 │           │   │   └── page.tsx
 │           │   ├── products/
 │           │   │   ├── page.tsx                 # Product listing
-│           │   │   └── [id]/
+│           │   │   └── [productId]/
 │           │   │       └── page.tsx             # Product detail
 │           │   └── admin/
 │           │       ├── layout.tsx               # Admin layout wrapper
@@ -154,7 +154,7 @@ LIMATA-One-Click-Furniture-Store/
 │           │       └── products/
 │           │           ├── page.tsx             # Product management list
 │           │           ├── new/page.tsx         # Create product
-│           │           └── [id]/edit/page.tsx   # Edit product
+│           │           └── [productId]/edit/page.tsx   # Edit product
 │           │
 │           ├── components/                      # Shared UI layout components
 │           │   └── layout/
@@ -307,10 +307,10 @@ LIMATA-One-Click-Furniture-Store/
 | `GET` | `/api/auth/profile` | 🔒 User | Get own profile |
 | `GET` | `/api/auth/admin` | 🔒 Admin | Admin access check |
 | `GET` | `/api/products` | Public | List products (`?search=`, `?category=`) |
-| `GET` | `/api/products/:id` | Public | Get product detail |
+| `GET` | `/api/products/:productId` | Public | Get product detail |
 | `POST` | `/api/products` | 🔒 Admin | Create product |
-| `PUT` | `/api/products/:id` | 🔒 Admin | Update product |
-| `DELETE` | `/api/products/:id` | 🔒 Admin | Delete product |
+| `PUT` | `/api/products/:productId` | 🔒 Admin | Update product |
+| `DELETE` | `/api/products/:productId` | 🔒 Admin | Delete product |
 | `POST` | `/api/products/upload-images` | 🔒 Admin | Upload product images (multipart) |
 | `POST` | `/api/products/upload-model` | 🔒 Admin | Upload 3D model `.glb` (multipart) |
 
@@ -336,7 +336,7 @@ LIMATA-One-Click-Furniture-Store/
 
 ```prisma
 model User {
-  id        String   @id @default(cuid())
+  userId    String   @id @default(cuid())
   name      String
   email     String   @unique
   password  String
@@ -346,7 +346,7 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  productId   String   @id @default(cuid())
   name        String
   description String
   price       Float

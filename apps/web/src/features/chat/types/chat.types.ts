@@ -1,13 +1,18 @@
 export type Conversation = {
-  id: string;
+  conversationId: string;
   customerId: string;
   createdAt: Date;
   updatedAt: Date;
   messages: Message[];
+  customer?: {
+    userId: string;
+    name: string;
+    email: string;
+  } | null;
 };
 
 export type Message = {
-  id: string;
+  messageId: string;
   conversationId: string;
   senderId: string;
   content: string;

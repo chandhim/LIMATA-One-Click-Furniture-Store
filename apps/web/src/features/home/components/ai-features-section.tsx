@@ -1,27 +1,38 @@
 "use client";
 
-const aiFeatures = [
+import { usePublicSetting } from "@/features/admin/hooks/use-admin";
+
+const defaultAiFeatures = [
   {
-    icon: "🎯",
     title: "3D Visualization",
     desc: "Rotate and inspect every detail before you buy. True sense of scale and texture.",
     badge: "Coming Soon",
   },
   {
-    icon: "📱",
     title: "AR Placement",
     desc: "Drop any piece into your room via your phone camera. See it live before ordering.",
     badge: "Beta",
   },
   {
-    icon: "✨",
     title: "AI Style Match",
     desc: "Tell us your aesthetic — our AI recommends pieces that work together beautifully.",
     badge: "Coming Soon",
   },
 ];
 
+interface AIFeature {
+  title: string;
+  desc: string;
+  badge: string;
+}
+
 export function AIFeaturesSection() {
+  const { data: customAiFeatures } = usePublicSetting("homepage_ai");
+  const icons = ["🎯", "📱", "✨"];
+  const aiFeatures = ((customAiFeatures as AIFeature[]) || defaultAiFeatures).map((f: AIFeature, idx: number) => ({
+    ...f,
+    icon: icons[idx] || "✨",
+  }));
   return (
     <section
       style={{

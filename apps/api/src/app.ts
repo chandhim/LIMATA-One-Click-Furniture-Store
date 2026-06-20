@@ -8,6 +8,11 @@ import { healthRouter } from "./modules/health/health.route";
 import { errorHandler } from "./middleware/error-handler";
 import { chatRouter } from "./modules/chat/chat.route";
 import { notificationRouter } from "./modules/notifications/notification.route";
+import { cartRouter } from "./modules/cart/cart.routes";
+import { ordersRouter } from "./modules/orders";
+import { paymentsRouter } from "./modules/payments";
+import { adminRouter } from "./modules/admin/admin.route";
+import { publicSettingsRouter } from "./modules/admin/public-settings.route";
 
 loadProjectEnv();
 
@@ -29,6 +34,11 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/notifications", notificationRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/orders", ordersRouter);
+app.use("/api/payment", paymentsRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/public", publicSettingsRouter);
 
 app.use(errorHandler);
 

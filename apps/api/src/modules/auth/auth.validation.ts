@@ -13,3 +13,19 @@ export const loginSchema = z.object({
 
 export type RegisterSchema = z.infer<typeof registerSchema>;
 export type LoginSchema = z.infer<typeof loginSchema>;
+
+export const updateProfileSchema = z.object({
+  firstName: z.string().trim().max(100).nullable().optional(),
+  lastName: z.string().trim().max(100).nullable().optional(),
+  phoneNumber: z.string().trim().max(50).nullable().optional(),
+  avatarUrl: z.string().trim().nullable().optional(),
+  addressLine1: z.string().trim().max(200).nullable().optional(),
+  addressLine2: z.string().trim().max(200).nullable().optional(),
+  city: z.string().trim().max(100).nullable().optional(),
+  district: z.string().trim().max(100).nullable().optional(),
+  province: z.string().trim().max(100).nullable().optional(),
+  postalCode: z.string().trim().max(20).nullable().optional(),
+  dateOfBirth: z.string().trim().nullable().optional(),
+});
+
+export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;

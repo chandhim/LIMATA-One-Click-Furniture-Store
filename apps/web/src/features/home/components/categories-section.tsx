@@ -5,7 +5,16 @@ import Link from "next/link";
 
 const R2 = "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev";
 
-const categories = [
+import { usePublicCategories } from "@/features/admin/hooks/use-admin";
+
+interface StorefrontCategory {
+  name: string;
+  desc: string;
+  image: string;
+  alt: string;
+}
+
+const defaultCategories: StorefrontCategory[] = [
   {
     name: "Living Room",
     desc: "Sofas, armchairs & tables",
@@ -40,6 +49,8 @@ const categories = [
 
 
 export function CategoriesSection() {
+  const { data: dbCategories } = usePublicCategories();
+  const categories: StorefrontCategory[] = dbCategories && dbCategories.length > 0 ? (dbCategories as StorefrontCategory[]) : defaultCategories;
   return (
     <section
       id="categories"
@@ -128,7 +139,7 @@ export function CategoriesSection() {
           margin: "0 auto",
         }}
       >
-        {categories.map((cat, i) => (
+        {categories.map((cat: StorefrontCategory, i: number) => (
           <Link
             key={cat.name}
             href="/products"

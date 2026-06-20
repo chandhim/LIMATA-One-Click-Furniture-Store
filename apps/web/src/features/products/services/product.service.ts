@@ -16,7 +16,7 @@ export async function fetchProducts(params?: { search?: string; category?: strin
   return res.data.data;
 }
 
-export async function fetchProduct(id: string) {
-  const res = await api.get<ApiResponse<Product>>(`/products/${id}`);
+export async function fetchProduct(productId: string) {
+  const res = await api.get<ApiResponse<Product>>(`/products/${productId}`);
   return res.data.data;
 }

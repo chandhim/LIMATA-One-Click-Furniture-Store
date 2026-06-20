@@ -16,41 +16,71 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-white p-4 space-y-4">
+    <div 
+      style={{ 
+        flex: 1, 
+        overflowY: "auto", 
+        background: "var(--bg-elevated)", 
+        padding: "1.5rem", 
+        display: "flex", 
+        flexDirection: "column", 
+        gap: "1rem" 
+      }}
+    >
       {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-slate-400">
-            No messages yet. Start the conversation!
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--fg-muted)" }}>
+          <p style={{ fontSize: "0.85rem", margin: 0 }}>
+            No messages yet. Send a response to initiate the conversation!
           </p>
         </div>
       ) : (
         <>
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.senderId === currentUserId
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
-            >
+          {messages.map((message) => {
+            const isMe = message.senderId === currentUserId;
+            return (
               <div
-                className={`max-w-xs px-4 py-2 rounded-lg ${
-                  message.senderId === currentUserId
-                    ? "bg-slate-900 text-white"
-                    : "bg-slate-100 text-slate-900"
-                }`}
+                key={message.messageId}
+                style={{
+                  display: "flex",
+                  justifyContent: isMe ? "flex-end" : "flex-start",
+                  width: "100%"
+                }}
               >
-                <p className="text-sm">{message.content}</p>
-                <span className="text-xs opacity-75 mt-1 block">
-                  {new Date(message.createdAt).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+                <div
+                  style={{
+                    maxWidth: "70%",
+                    padding: "0.75rem 1rem",
+                    borderRadius: isMe 
+                      ? "var(--radius-lg) var(--radius-lg) 0 var(--radius-lg)" 
+                      : "var(--radius-lg) var(--radius-lg) var(--radius-lg) 0",
+                    background: isMe ? "var(--bg-dark)" : "var(--bg-surface)",
+                    color: isMe ? "#FAF9F7" : "var(--fg-primary)",
+                    border: isMe ? "1px solid rgba(250,249,247,0.08)" : "1px solid var(--border)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                  }}
+                >
+                  <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.4, wordBreak: "break-word" }}>
+                    {message.content}
+                  </p>
+                  <span 
+                    style={{ 
+                      fontSize: "0.68rem", 
+                      opacity: 0.6, 
+                      marginTop: "0.375rem", 
+                      display: "block",
+                      textAlign: "right",
+                      fontStyle: "italic"
+                    }}
+                  >
+                    {new Date(message.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           <div ref={endRef} />
         </>
       )}

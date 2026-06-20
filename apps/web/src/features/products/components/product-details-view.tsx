@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useProducts } from "../hooks/use-products";
 import { ProductCard } from "./product-card";
 import type { Product } from "../types/product.types";
+import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import {
   Heart,
   ShoppingCart,
@@ -19,7 +22,6 @@ import {
   X,
   Maximize2,
   ChevronLeft,
-  Box,
 } from "lucide-react";
 
 interface ProductDetailsViewProps {
@@ -43,6 +45,35 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   // Wishlist local state
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  // Cart
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const addToCartMutation = useAddToCart();
+  const [cartFeedback, setCartFeedback] = useState<
+    "idle" | "adding" | "added" | "error"
+  >("idle");
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    setCartFeedback("adding");
+    addToCartMutation.mutate(
+      { productId: product.productId, quantity },
+      {
+        onSuccess: () => {
+          setCartFeedback("added");
+          setTimeout(() => setCartFeedback("idle"), 2500);
+        },
+        onError: () => {
+          setCartFeedback("error");
+          setTimeout(() => setCartFeedback("idle"), 2500);
+        },
+      },
+    );
+  };
+
   // Fetch related products (same category)
   const { data: relatedProducts, isLoading: relatedLoading } = useProducts(
     undefined,
@@ -50,7 +81,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   );
 
   const filteredRelated =
-    relatedProducts?.filter((p) => p.id !== product.id).slice(0, 4) ?? [];
+    relatedProducts?.filter((p) => p.productId !== product.productId).slice(0, 4) ?? [];
 
   const images =
     product.images && product.images.length > 0
@@ -296,73 +327,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 </div>
               )}
             </div>
-
-            {/* Reserved Visualization Space */}
-            <div
-              style={{
-                background: "var(--bg-elevated)",
-                border: "1px dashed var(--border-strong)",
-                borderRadius: "var(--radius-lg)",
-                padding: "2rem",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              className="texture-grain"
-            >
-              <div
-                style={{
-                  background: "var(--bg-surface)",
-                  borderRadius: "50%",
-                  padding: "0.75rem",
-                  color: "var(--accent-dark)",
-                  marginBottom: "1rem",
-                  boxShadow: "var(--shadow-sm)",
-                }}
-              >
-                <Box size={24} className="animate-float" />
-              </div>
-              <div
-                style={{
-                  fontSize: "0.7rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "var(--accent-dark)",
-                  background: "rgba(201, 169, 110, 0.12)",
-                  borderRadius: "var(--radius-full)",
-                  padding: "0.15rem 0.625rem",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                Spatial Visualization
-              </div>
-              <h4
-                style={{
-                  fontSize: "0.9375rem",
-                  fontWeight: 600,
-                  color: "var(--fg-primary)",
-                  marginBottom: "0.375rem",
-                }}
-              >
-                Interactive Preview Coming Soon
-              </h4>
-              <p
-                style={{
-                  fontSize: "0.8125rem",
-                  color: "var(--fg-secondary)",
-                  maxWidth: "24rem",
-                  lineHeight: 1.5,
-                }}
-              >
-                Advanced 3D viewing, WebXR, and AR placement features will be
-                available in a future storefront update.
-              </p>
-            </div>
           </div>
 
           {/* Column 2: Product Information & Purchase Area */}
@@ -587,35 +551,76 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 >
                   {/* Cart button */}
                   <button
-                    disabled={product.stock <= 0}
-                    className={product.stock > 0 ? "btn-shimmer" : ""}
+                    disabled={product.stock <= 0 || cartFeedback === "adding"}
+                    onClick={handleAddToCart}
+                    className={
+                      product.stock > 0 && cartFeedback !== "adding"
+                        ? "btn-shimmer"
+                        : ""
+                    }
                     style={{
                       flex: 1,
                       height: "44px",
                       background:
                         product.stock <= 0
                           ? "var(--border-strong)"
-                          : "var(--accent)",
+                          : cartFeedback === "added"
+                            ? "rgba(34,197,94,0.15)"
+                            : cartFeedback === "error"
+                              ? "rgba(239,68,68,0.12)"
+                              : "var(--accent)",
                       color:
                         product.stock <= 0
                           ? "var(--fg-muted)"
-                          : "var(--fg-primary)",
-                      border: "none",
+                          : cartFeedback === "added"
+                            ? "#16a34a"
+                            : cartFeedback === "error"
+                              ? "#dc2626"
+                              : "var(--fg-primary)",
+                      border:
+                        cartFeedback === "added"
+                          ? "1px solid rgba(34,197,94,0.3)"
+                          : cartFeedback === "error"
+                            ? "1px solid rgba(239,68,68,0.3)"
+                            : "none",
                       borderRadius: "var(--radius-full)",
                       fontSize: "0.875rem",
                       fontWeight: 600,
-                      cursor: product.stock <= 0 ? "not-allowed" : "pointer",
+                      cursor:
+                        product.stock <= 0 || cartFeedback === "adding"
+                          ? "not-allowed"
+                          : "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "0.5rem",
                       boxShadow:
-                        product.stock > 0 ? "var(--shadow-sm)" : "none",
+                        product.stock > 0 && cartFeedback === "idle"
+                          ? "var(--shadow-sm)"
+                          : "none",
                       outline: "none",
+                      transition:
+                        "background 0.3s ease, color 0.3s ease, border 0.3s ease",
                     }}
                   >
-                    <ShoppingCart size={16} />
-                    {product.stock <= 0 ? "Out of Stock" : "Add to Cart"}
+                    <ShoppingCart
+                      size={16}
+                      style={{
+                        animation:
+                          cartFeedback === "adding"
+                            ? "pulse 0.8s ease infinite"
+                            : "none",
+                      }}
+                    />
+                    {product.stock <= 0
+                      ? "Out of Stock"
+                      : cartFeedback === "adding"
+                        ? "Adding…"
+                        : cartFeedback === "added"
+                          ? "Added to Cart ✓"
+                          : cartFeedback === "error"
+                            ? "Try Again"
+                            : "Add to Cart"}
                   </button>
 
                   {/* Wishlist button */}
@@ -1035,7 +1040,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           fontFamily: "monospace",
                         }}
                       >
-                        {product.id}
+                        {product.productId}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
@@ -1235,7 +1240,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               }}
             >
               {filteredRelated.map((relatedProd) => (
-                <ProductCard key={relatedProd.id} product={relatedProd} />
+                <ProductCard key={relatedProd.productId} product={relatedProd} />
               ))}
             </div>
           </section>
