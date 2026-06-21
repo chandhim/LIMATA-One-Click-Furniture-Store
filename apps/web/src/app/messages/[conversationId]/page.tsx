@@ -23,6 +23,12 @@ function ConversationPageContent() {
   const conversationId = params.conversationId;
   const isAdmin = user?.role === "ADMIN";
 
+  useEffect(() => {
+    if (user && !isAdmin) {
+      router.replace("/");
+    }
+  }, [user, isAdmin, router]);
+
   const { data: conversation, isLoading: convLoading } = useConversation(conversationId);
   const messages = useConversationMessages(conversationId);
   const { sendMessage, isSending } = useSendMessage();

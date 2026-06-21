@@ -129,9 +129,15 @@ function MessagesPageContent() {
   const hasAttemptedRef = useRef(false);
 
   useEffect(() => {
-    if (productId && conversations.length > 0 && !isAdmin && !isLoading) {
+    if (!isLoading && user && !isAdmin) {
+      router.replace("/");
+    }
+  }, [isLoading, user, isAdmin, router]);
+
+  useEffect(() => {
+    if (productId && conversations.length > 0 && isAdmin && !isLoading) {
       router.replace(`/messages/${conversations[0].conversationId}?productId=${productId}`);
-    } else if (productId && conversations.length === 0 && !isAdmin && !isLoading && !hasAttemptedRef.current) {
+    } else if (productId && conversations.length === 0 && isAdmin && !isLoading && !hasAttemptedRef.current) {
       hasAttemptedRef.current = true;
       start().then((conv) => {
         if (conv) {
@@ -139,7 +145,7 @@ function MessagesPageContent() {
         }
       });
     }
-  }, [productId, conversations, isLoading, isAdmin, start, router]);
+  }, [productId, conversations, isAdmin, isLoading, router, start]);
 
   const handleStartConversation = async () => {
     const conv = await start();

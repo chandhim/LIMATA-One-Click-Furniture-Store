@@ -93,6 +93,21 @@ export default function OrdersHistoryPage() {
                           <strong className="font-numeric" style={{ color: "var(--fg-primary)" }}>Rs. {order.totalAmount.toLocaleString()}</strong>
                         </div>
                       </div>
+
+                      {/* Product Images Preview */}
+                      <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
+                        {order.items?.slice(0, 4).map((item, idx) => (
+                          <div key={idx} style={{ position: "relative", width: "48px", height: "48px", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--border)", flexShrink: 0 }} title={item.product.name}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={item.product.images?.[0] || "/placeholder.jpg"} alt={item.product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          </div>
+                        ))}
+                        {order.items && order.items.length > 4 && (
+                          <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: 600, color: "var(--fg-secondary)", flexShrink: 0 }}>
+                            +{order.items.length - 4}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Status badges and actions */}

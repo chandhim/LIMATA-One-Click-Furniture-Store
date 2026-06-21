@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Bell, Check, CheckCheck, CreditCard, MessageSquare, Package, Star, Zap } from "lucide-react";
 import { MainLayout } from "@/components/layout/main-layout";
 import {
@@ -8,6 +9,8 @@ import {
   useMarkAllNotificationsAsRead,
 } from "@/features/notifications/hooks/use-notifications";
 import type { NotificationType } from "@/features/notifications/types/notification.types";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import { useRouter } from "next/navigation";
 
 function typeColor(type: NotificationType): string {
   switch (type) {
@@ -47,6 +50,14 @@ export default function NotificationsPage() {
   const { data: notifications = [], isLoading } = useNotifications();
   const { markAsRead } = useMarkNotificationAsRead();
   const { markAllAsRead } = useMarkAllNotificationsAsRead();
+  const user = useAuthStore((state) => state.user);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user && user.role !== "ADMIN") {
+      router.replace("/");
+    }
+  }, [user, router]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 

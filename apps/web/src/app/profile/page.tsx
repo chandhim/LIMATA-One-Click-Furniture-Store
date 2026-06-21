@@ -5,7 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useAuthBootstrap, useAuthGuard } from "@/features/auth/hooks/use-auth-session";
 import { useProfile, useUpdateProfile, useUploadAvatar } from "@/features/auth/hooks/use-profile";
-import { Camera, Trash2, Edit2, User, MapPin, Mail, Shield, Check, X } from "lucide-react";
+import { Camera, Trash2, Edit2, User, MapPin, Mail, Shield, Check, X, LogOut } from "lucide-react";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 // Default export wraps content in Suspense so useSearchParams doesn't
 // cause a "Missing Suspense boundary" error in Next.js 15 App Router.
@@ -25,8 +26,10 @@ function ProfileContent() {
   const uploadAvatarMutation = useUploadAvatar();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const clearSession = useAuthStore((state) => state.clearSession);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -64,7 +67,11 @@ function ProfileContent() {
   useEffect(() => {
     if (searchParams.get("edit") === "true") {
       setIsEditing(true);
-      // Clean query parameter after reading
+      const newUrl = window.location.pathname;
+      router.replace(newUrl);
+    }
+    if (searchParams.get("registered") === "true") {
+      setShowWelcomePopup(true);
       const newUrl = window.location.pathname;
       router.replace(newUrl);
     }
@@ -140,6 +147,11 @@ function ProfileContent() {
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleLogout = () => {
+    clearSession();
+    router.push("/login");
   };
 
   return (
@@ -276,6 +288,36 @@ function ProfileContent() {
                       <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", wordBreak: "break-all" }}>{profile.email}</span>
                     </div>
                   </div>
+
+                  <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "0.5rem 0" }} />
+
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      padding: "0.75rem",
+                      background: "rgba(239,68,68,0.08)",
+                      border: "1px solid rgba(239,68,68,0.2)",
+                      borderRadius: "var(--radius-md)",
+                      color: "#ef4444",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)";
+                    }}
+                  >
+                    <LogOut size={16} />
+                    Log Out
+                  </button>
                 </div>
               </div>
 
@@ -605,6 +647,70 @@ function ProfileContent() {
 
         </div>
       </div>
+
+      {showWelcomePopup && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.5)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: "var(--bg-surface)",
+            padding: "2.5rem",
+            borderRadius: "var(--radius-lg)",
+            maxWidth: "400px",
+            width: "90%",
+            textAlign: "center",
+            boxShadow: "var(--shadow-lg)",
+            border: "1px solid var(--border)"
+          }}>
+            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.5rem", marginBottom: "1rem", color: "var(--fg-primary)" }}>
+              Welcome to LIMATA!
+            </h2>
+            <p style={{ color: "var(--fg-secondary)", marginBottom: "2rem", lineHeight: 1.5 }}>
+              Your account has been created successfully. Would you like to set up your profile details now?
+            </p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <button
+                onClick={() => setShowWelcomePopup(false)}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "transparent",
+                  border: "1.5px solid var(--border)",
+                  borderRadius: "var(--radius-md)",
+                  color: "var(--fg-secondary)",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Skip for now
+              </button>
+              <button
+                onClick={() => {
+                  setShowWelcomePopup(false);
+                  setIsEditing(true);
+                }}
+                style={{
+                  padding: "0.75rem 1.5rem",
+                  background: "var(--accent-dark)",
+                  border: "none",
+                  borderRadius: "var(--radius-md)",
+                  color: "white",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes pulse {
