@@ -9,7 +9,7 @@ export function useProductReviews(productId: string, sort: string = "recent") {
       const res = await apiClient.get<{
         success: boolean;
         data: GetReviewsResponse;
-      }>(`/api/products/${productId}/reviews`, { params: { sort } });
+      }>(`/products/${productId}/reviews`, { params: { sort } });
       return res.data.data;
     },
     enabled: !!productId,
@@ -23,7 +23,7 @@ export function useReviewEligibility(productId: string, isAuthenticated: boolean
       const res = await apiClient.get<{
         success: boolean;
         data: ReviewEligibilityResponse;
-      }>(`/api/products/${productId}/reviews/eligibility`);
+      }>(`/products/${productId}/reviews/eligibility`);
       return res.data.data;
     },
     enabled: !!productId && isAuthenticated,
@@ -46,7 +46,7 @@ export function useSubmitReview() {
       title: string;
       comment: string;
     }) => {
-      const res = await apiClient.post(`/api/products/${productId}/reviews`, {
+      const res = await apiClient.post(`/products/${productId}/reviews`, {
         rating,
         title,
         comment,

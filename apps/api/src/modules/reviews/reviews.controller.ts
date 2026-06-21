@@ -71,7 +71,7 @@ export async function getReviewEligibilityController(
 ) {
   try {
     const { productId } = req.params;
-    const userId = req.user?.userId;
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new ApiError(401, "Unauthorized");
@@ -117,7 +117,7 @@ export async function createReviewController(
 ) {
   try {
     const { productId } = req.params;
-    const userId = req.user?.userId;
+    const userId = req.user?.id;
     const { rating, title, comment } = req.body;
 
     if (!userId) {

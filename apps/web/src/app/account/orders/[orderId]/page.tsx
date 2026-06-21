@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/env";
 import Link from "next/link";
+import { OrderProductReview } from "./order-product-review";
 
 export default function OrderDetailsPage() {
   const params = useParams();
@@ -507,81 +508,81 @@ export default function OrderDetailsPage() {
                   </h3>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {order.items.map((item) => (
-                      <div
-                        key={item.orderItemId}
-                        style={{
-                          display: "flex",
-                          gap: "1.5rem",
-                          alignItems: "center",
-                          padding: "1rem 0",
-                          borderBottom: "1px solid var(--border)",
-                        }}
-                      >
+                      <div key={item.orderItemId} style={{ display: "flex", flexDirection: "column", padding: "1rem 0", borderBottom: "1px solid var(--border)" }}>
                         <div
                           style={{
-                            width: "5rem",
-                            height: "5rem",
-                            background: "var(--bg-elevated)",
-                            border: "1px solid var(--border)",
-                            borderRadius: "var(--radius-md)",
-                            overflow: "hidden",
                             display: "flex",
+                            gap: "1.5rem",
                             alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                            position: "relative",
                           }}
                         >
-                          {item.product.images && item.product.images.length > 0 ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={item.product.images[0]}
-                              alt={item.product.name}
-                              style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                              }}
-                            />
-                          ) : (
-                            <span style={{ fontSize: "1.75rem" }}>🪑</span>
-                          )}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <h4
+                          <div
                             style={{
-                              fontSize: "0.95rem",
+                              width: "5rem",
+                              height: "5rem",
+                              background: "var(--bg-elevated)",
+                              border: "1px solid var(--border)",
+                              borderRadius: "var(--radius-md)",
+                              overflow: "hidden",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0,
+                              position: "relative",
+                            }}
+                          >
+                            {item.product.images && item.product.images.length > 0 ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={item.product.images[0]}
+                                alt={item.product.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            ) : (
+                              <span style={{ fontSize: "1.75rem" }}>🪑</span>
+                            )}
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <h4
+                              style={{
+                                fontSize: "0.95rem",
+                                fontWeight: 600,
+                                color: "var(--fg-primary)",
+                                margin: "0 0 0.25rem",
+                                letterSpacing: "-0.01em",
+                              }}
+                            >
+                              {item.product.name}
+                            </h4>
+                            <span
+                              style={{
+                                fontSize: "0.825rem",
+                                color: "var(--fg-secondary)",
+                              }}
+                            >
+                              Rs. {item.price.toLocaleString()} × {item.quantity}
+                            </span>
+                          </div>
+                          <div
+                            style={{
                               fontWeight: 600,
                               color: "var(--fg-primary)",
-                              margin: "0 0 0.25rem",
-                              letterSpacing: "-0.01em",
+                              fontSize: "0.95rem",
                             }}
                           >
-                            {item.product.name}
-                          </h4>
-                          <span
-                            style={{
-                              fontSize: "0.825rem",
-                              color: "var(--fg-secondary)",
-                            }}
-                          >
-                            Rs. {item.price.toLocaleString()} × {item.quantity}
-                          </span>
+                            Rs. {(item.price * item.quantity).toLocaleString()}
+                          </div>
                         </div>
-                        <div
-                          style={{
-                            fontWeight: 600,
-                            color: "var(--fg-primary)",
-                            fontSize: "0.95rem",
-                          }}
-                        >
-                          Rs. {(item.price * item.quantity).toLocaleString()}
-                        </div>
+                        <OrderProductReview productId={item.productId} orderStatus={order.orderStatus} />
                       </div>
                     ))}
                   </div>
 
-                  {/* Calculations */}
+                {/* Calculations */}
                   <div
                     style={{
                       display: "flex",
