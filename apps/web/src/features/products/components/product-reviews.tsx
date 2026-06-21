@@ -84,7 +84,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         )}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", md: { gridTemplateColumns: "1fr 2fr" } }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem" }}>
         {/* Left Column: Form / Status */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           {!isAuthenticated ? (
