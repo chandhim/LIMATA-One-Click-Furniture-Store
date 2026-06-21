@@ -7,6 +7,13 @@ import Link from "next/link";
 import { useProducts } from "../hooks/use-products";
 import { ProductCard } from "./product-card";
 import type { Product } from "../types/product.types";
+import { ProductReviews } from "./product-reviews";
+import dynamic from "next/dynamic";
+const Product3DViewer = dynamic(
+  () => import("./product-3d-viewer").then((mod) => mod.Product3DViewer),
+  { ssr: false }
+);
+import { ARLauncherView } from "./ar-launcher-view";
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import {
@@ -35,6 +42,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   const [activeTab, setActiveTab] = useState<
     "description" | "specifications" | "shipping"
   >("description");
+
+  // View Mode
+  const [viewMode, setViewMode] = useState<"photos" | "3d">("photos");
 
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
@@ -223,10 +233,46 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}
           >
-            {/* Gallery Wrapper */}
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-            >
+            {/* View Mode Toggle */}
+            <div style={{ display: "flex", background: "var(--bg-surface)", padding: "0.35rem", borderRadius: "var(--radius-full)", width: "fit-content", gap: "0.25rem", border: "1px solid var(--border)" }}>
+              <button
+                onClick={() => setViewMode("photos")}
+                style={{
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "var(--radius-full)",
+                  background: viewMode === "photos" ? "var(--bg-dark)" : "transparent",
+                  color: viewMode === "photos" ? "var(--fg-inverse)" : "var(--fg-secondary)",
+                  border: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+              >
+                Photos
+              </button>
+              <button
+                onClick={() => setViewMode("3d")}
+                style={{
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "var(--radius-full)",
+                  background: viewMode === "3d" ? "var(--bg-dark)" : "transparent",
+                  color: viewMode === "3d" ? "var(--fg-inverse)" : "var(--fg-secondary)",
+                  border: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+              >
+                3D & AR
+              </button>
+            </div>
+
+            {viewMode === "photos" ? (
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+              >
               {/* Main Image Viewport with Hover Zoom */}
               <div
                 onMouseEnter={() => setIsZoomed(true)}
@@ -328,6 +374,14 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 </div>
               )}
             </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ aspectRatio: "4/3", width: "100%" }}>
+                  <Product3DViewer modelUrl={product.model3dUrl} />
+                </div>
+                {product.model3dUrl && <ARLauncherView modelUrl={product.model3dUrl} />}
+              </div>
+            )}
           </div>
 
           {/* Column 2: Product Information & Purchase Area */}
@@ -1245,6 +1299,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             )}
           </div>
         </section>
+
+        {/* Customer Reviews Section */}
+        <ProductReviews productId={product.productId} />
 
         {/* Related Products Section */}
         {!relatedLoading && filteredRelated.length > 0 && (

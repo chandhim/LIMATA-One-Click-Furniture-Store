@@ -13,6 +13,7 @@ import { ordersRouter } from "./modules/orders";
 import { paymentsRouter } from "./modules/payments";
 import { adminRouter } from "./modules/admin/admin.route";
 import { publicSettingsRouter } from "./modules/admin/public-settings.route";
+import { reviewsRouter } from "./modules/reviews/reviews.route";
 
 loadProjectEnv();
 
@@ -33,6 +34,7 @@ app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
 app.use("/api/v1/health", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/products", productsRouter);
+app.use("/api/products/:productId/reviews", reviewsRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/cart", cartRouter);
