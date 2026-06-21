@@ -92,6 +92,114 @@ async function main() {
       });
     }
   }
+
+  // --- 1. Create Mock Users with Sri Lankan Names ---
+  const mockUsers = [
+    {
+      name: "Kamal Perera",
+      email: "kamal.perera@example.com",
+      password: "password123", // Using plain for seed, normally hashed
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kamal",
+    },
+    {
+      name: "Nimali Silva",
+      email: "nimali.silva@example.com",
+      password: "password123",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Nimali",
+    },
+    {
+      name: "Kasun Fernando",
+      email: "kasun.fernando@example.com",
+      password: "password123",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Kasun",
+    },
+    {
+      name: "Sanduni Weerasinghe",
+      email: "sanduni.w@example.com",
+      password: "password123",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sanduni",
+    },
+    {
+      name: "Amila Jayasuriya",
+      email: "amila.j@example.com",
+      password: "password123",
+      avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amila",
+    }
+  ];
+
+  const createdUsers = [];
+  for (const u of mockUsers) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: u.email },
+    });
+    if (existingUser) {
+      createdUsers.push(existingUser);
+    } else {
+      const newUser = await prisma.user.create({
+        data: u,
+      });
+      createdUsers.push(newUser);
+    }
+  }
+
+  // --- 2. Create Reviews for Products ---
+  const allProducts = await prisma.product.findMany();
+  
+  const reviewTitles = [
+    "Great quality!",
+    "Highly recommended",
+    "Good value for money",
+    "Looks beautiful in my home",
+    "Average quality, but okay",
+    "Absolutely stunning furniture",
+  ];
+
+  const reviewComments = [
+    "I am very impressed with the build quality. The delivery was fast and the team was professional.",
+    "This perfectly matches my interior. The finish is exactly as shown in the pictures.",
+    "Good product. The assembly took a bit of time but it is very sturdy once built.",
+    "Excellent customer service and the product exceeds expectations. Highly recommended!",
+    "It's decent for the price. Not the absolute best material but it gets the job done.",
+    "Beautiful piece of furniture. Brought elegance to my living space."
+  ];
+
+  // For each product, create 2-4 reviews
+  for (const prod of allProducts) {
+    const numReviews = Math.floor(Math.random() * 3) + 2; // 2 to 4 reviews
+    
+    // Pick random users
+    const shuffledUsers = [...createdUsers].sort(() => 0.5 - Math.random());
+    const selectedUsers = shuffledUsers.slice(0, numReviews);
+
+    for (const user of selectedUsers) {
+      // Check if review already exists
+      const existingReview = await prisma.review.findFirst({
+        where: {
+          productId: prod.productId,
+          userId: user.userId,
+        }
+      });
+
+      if (!existingReview) {
+        const rating = Math.floor(Math.random() * 2) + 4; // 4 or 5 stars mostly
+        const title = reviewTitles[Math.floor(Math.random() * reviewTitles.length)];
+        const comment = reviewComments[Math.floor(Math.random() * reviewComments.length)];
+        
+        await prisma.review.create({
+          data: {
+            productId: prod.productId,
+            userId: user.userId,
+            rating,
+            title,
+            comment,
+            isApproved: true, // Auto-approve for seed data
+          }
+        });
+      }
+    }
+  }
+
+  console.log("Seeding completed successfully.");
 }
 
 main()
