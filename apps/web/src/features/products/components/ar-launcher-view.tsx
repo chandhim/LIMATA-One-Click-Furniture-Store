@@ -11,7 +11,7 @@ interface ARLauncherViewProps {
 
 
 export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
-  const viewerRef = useRef<any>(null);
+  const viewerRef = useRef<(HTMLElement & { activateAR: () => void }) | null>(null);
   const [isSupported, setIsSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
