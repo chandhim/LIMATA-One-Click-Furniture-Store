@@ -273,7 +273,7 @@ export default function AdminOverviewPage() {
               </div>
             </div>
             <div
-              className="font-serif text-gradient"
+              className="font-serif font-numeric text-gradient"
               style={{
                 fontSize: "1.75rem",
                 fontWeight: 700,

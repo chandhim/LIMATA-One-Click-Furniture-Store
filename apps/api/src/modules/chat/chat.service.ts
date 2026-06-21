@@ -10,7 +10,7 @@ import {
   getAllConversations,
 } from "./chat.repository";
 
-export async function getCustomerConversations(customerId: string): Promise<any[]> {
+export async function getCustomerConversations(customerId: string): Promise<Record<string, unknown>[]> {
   const conversations = await findConversationsByCustomerId(customerId);
   const customer = await prisma.user.findUnique({
     where: { userId: customerId },
@@ -23,7 +23,7 @@ export async function getCustomerConversations(customerId: string): Promise<any[
   }));
 }
 
-export async function getAdminConversations(): Promise<any[]> {
+export async function getAdminConversations(): Promise<Record<string, unknown>[]> {
   const conversations = await getAllConversations();
   const customerIds = conversations.map((c) => c.customerId);
 
@@ -73,7 +73,7 @@ export async function sendMessage(data: {
   });
 }
 
-export async function getConversationDetail(conversationId: string): Promise<any | null> {
+export async function getConversationDetail(conversationId: string): Promise<Record<string, unknown> | null> {
   const conversation = await findConversationById(conversationId);
   if (!conversation) return null;
 

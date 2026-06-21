@@ -74,6 +74,7 @@ export function CartSummary({ items }: CartSummaryProps) {
             Items ({totalItems})
           </span>
           <span
+            className="font-numeric"
             style={{
               fontSize: "0.875rem",
               fontWeight: 500,
@@ -128,7 +129,7 @@ export function CartSummary({ items }: CartSummaryProps) {
           Estimated Total
         </span>
         <span
-          className="font-serif"
+          className="font-serif font-numeric"
           style={{
             fontSize: "1.375rem",
             fontWeight: 700,

@@ -13,6 +13,8 @@ import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 // ── Message List ────────────────────────────────────────────────────────────
 
+import { ProductPreviewCard } from "./product-preview-card";
+
 function MessageBubble({
   content,
   createdAt,
@@ -22,6 +24,8 @@ function MessageBubble({
   createdAt: Date;
   isMine: boolean;
 }) {
+  const productMatch = content.match(/I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i);
+
   return (
     <div
       style={{
@@ -43,7 +47,16 @@ function MessageBubble({
           boxShadow: isMine ? "var(--shadow-accent)" : "var(--shadow-sm)",
         }}
       >
-        <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>{content}</p>
+        {productMatch ? (
+          <>
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: "0 0 0.5rem 0" }}>
+              I am interested in this product:
+            </p>
+            <ProductPreviewCard productId={productMatch[3]} isMine={isMine} />
+          </>
+        ) : (
+          <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>{content}</p>
+        )}
         <span
           style={{
             fontSize: "0.7rem",

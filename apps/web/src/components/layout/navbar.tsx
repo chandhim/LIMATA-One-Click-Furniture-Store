@@ -230,12 +230,13 @@ export function Navbar() {
                   <ShoppingCart size={18} />
                   {cartCount > 0 && (
                     <span
+                      className="font-numeric"
                       style={{
                         position: "absolute",
-                        top: 0,
-                        right: 0,
-                        minWidth: 17,
-                        height: 17,
+                        top: "-4px",
+                        right: "-6px",
+                        minWidth: "16px",
+                        height: "16px",
                         background: "var(--accent)",
                         color: "var(--fg-primary)",
                         borderRadius: "var(--radius-full)",
@@ -672,6 +673,7 @@ export function Navbar() {
                     </span>
                     {cartCount > 0 && (
                       <span
+                        className="font-numeric"
                         style={{
                           background: "var(--accent)",
                           color: "var(--fg-primary)",

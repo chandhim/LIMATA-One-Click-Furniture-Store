@@ -90,7 +90,7 @@ export default function OrdersHistoryPage() {
                         </div>
                         <div>
                           <span>Total Amount: </span>
-                          <strong style={{ color: "var(--fg-primary)" }}>Rs. {order.totalAmount.toLocaleString()}</strong>
+                          <strong className="font-numeric" style={{ color: "var(--fg-primary)" }}>Rs. {order.totalAmount.toLocaleString()}</strong>
                         </div>
                       </div>
                     </div>

@@ -27,7 +27,7 @@ export async function getAdminStatsController(
     const completedOrdersForRevenue = await prisma.order.findMany({
       where: {
         paymentStatus: "PAID",
-        orderStatus: { notIn: ["CANCELLED"] },
+        orderStatus: { in: ["DELIVERED"] },
       },
       select: { totalAmount: true },
     });
@@ -78,7 +78,7 @@ export async function getAdminStatsController(
       where: {
         createdAt: { gte: sevenDaysAgo },
         paymentStatus: "PAID",
-        orderStatus: { notIn: ["CANCELLED"] },
+        orderStatus: { in: ["DELIVERED"] },
       },
       select: { createdAt: true, totalAmount: true },
     });
@@ -144,7 +144,7 @@ export async function listAdminUsersController(
 
     // Remove passwords before sending
     const sanitizedUsers = users.map((u) => {
-      const { password, ...rest } = u;
+      const { password: _password, ...rest } = u;
       return rest;
     });
 
@@ -172,7 +172,7 @@ export async function updateAdminUserRoleController(
       data: { role },
     });
 
-    const { password, ...rest } = updatedUser;
+    const { password: _password, ...rest } = updatedUser;
     return sendResponse(res, 200, rest);
   } catch (error) {
     return next(error);
@@ -197,7 +197,7 @@ export async function toggleAdminUserStatusController(
       data: { isActive },
     });
 
-    const { password, ...rest } = updatedUser;
+    const { password: _password, ...rest } = updatedUser;
     return sendResponse(res, 200, rest);
   } catch (error) {
     return next(error);
