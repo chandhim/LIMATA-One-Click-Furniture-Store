@@ -186,6 +186,7 @@ model Review {
   productId   String
   userId      String
   rating      Int
+  title       String
   comment     String
   isApproved  Boolean  @default(false)
   createdAt   DateTime @default(now())

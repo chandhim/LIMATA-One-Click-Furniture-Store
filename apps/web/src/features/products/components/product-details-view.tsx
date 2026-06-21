@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useProducts } from "../hooks/use-products";
 import { ProductCard } from "./product-card";
 import type { Product } from "../types/product.types";
+import { ProductReviews } from "./product-reviews";
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import {
@@ -1245,6 +1246,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             )}
           </div>
         </section>
+
+        {/* Customer Reviews Section */}
+        <ProductReviews productId={product.productId} />
 
         {/* Related Products Section */}
         {!relatedLoading && filteredRelated.length > 0 && (
