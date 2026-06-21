@@ -175,6 +175,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.2
         version: 19.2.3(@types/react@19.2.15)
+      '@types/three':
+        specifier: ^0.184.1
+        version: 0.184.1
       eslint:
         specifier: ^9.39.1
         version: 9.39.4(jiti@2.7.0)
@@ -375,10 +378,13 @@ packages:
     resolution: {integrity: sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ==}
     engines: {node: '>=18.0.0'}
 
+<<<<<<< HEAD
   '@babel/runtime@7.29.7':
     resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   '@dimforge/rapier3d-compat@0.12.0':
     resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
 
@@ -1217,9 +1223,12 @@ packages:
   '@types/three@0.184.1':
     resolution: {integrity: sha512-6q4VdiqVsrTRqmk62/BnlcAvIrnDM0zf2ZDVKI5kZiniWrSaOHaQzmbp+BNzoggc/8tgW412pL//wZIxu2PPTA==}
 
+<<<<<<< HEAD
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   '@types/webxr@0.5.24':
     resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
 
@@ -2032,9 +2041,12 @@ packages:
       picomatch:
         optional: true
 
+<<<<<<< HEAD
   fflate@0.6.10:
     resolution: {integrity: sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   fflate@0.8.3:
     resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
@@ -2549,11 +2561,14 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
+<<<<<<< HEAD
   meshline@3.3.1:
     resolution: {integrity: sha512-/TQj+JdZkeSUOl5Mk2J7eLcYTLiQm2IDzmlSvYm7ov15anEcDJ92GHqqazxTSreeNgfnYu24kiEvvv0WlbCdFQ==}
     peerDependencies:
       three: '>=0.137'
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   meshoptimizer@1.1.1:
     resolution: {integrity: sha512-oRFNWJRDA/WTrVj7NWvqa5HqE1t9MYDj2VaWirQCzCCrAd2GHrqR/sQezCxiWATPNlKTcRaPRHPJwIRoPBAp5g==}
 
@@ -3684,8 +3699,11 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
+<<<<<<< HEAD
   '@babel/runtime@7.29.7': {}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   '@dimforge/rapier3d-compat@0.12.0': {}
 
   '@emnapi/core@1.10.0':
@@ -4401,8 +4419,11 @@ snapshots:
       fflate: 0.8.3
       meshoptimizer: 1.1.1
 
+<<<<<<< HEAD
   '@types/trusted-types@2.0.7': {}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   '@types/webxr@0.5.24': {}
 
   '@types/ws@8.18.1':
@@ -5446,8 +5467,11 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.4
 
+<<<<<<< HEAD
   fflate@0.6.10: {}
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   fflate@0.8.3: {}
 
   file-entry-cache@8.0.0:
@@ -5969,10 +5993,13 @@ snapshots:
 
   merge2@1.4.1: {}
 
+<<<<<<< HEAD
   meshline@3.3.1(three@0.184.0):
     dependencies:
       three: 0.184.0
 
+=======
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
   meshoptimizer@1.1.1: {}
 
   methods@1.1.2: {}
@@ -6843,6 +6870,10 @@ snapshots:
   use-sync-external-store@1.6.0(react@19.2.4):
     dependencies:
       react: 19.2.4
+<<<<<<< HEAD
+=======
+    optional: true
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
 
   util-deprecate@1.0.2: {}
 
@@ -6915,6 +6946,7 @@ snapshots:
 
   zod@4.4.3: {}
 
+<<<<<<< HEAD
   zustand@4.5.7(@types/react@19.2.15)(react@19.2.4):
     dependencies:
       use-sync-external-store: 1.6.0(react@19.2.4)
@@ -6926,4 +6958,10 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.15
       react: 19.2.4
+=======
+  zustand@5.0.13(@types/react@19.2.15)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)):
+    optionalDependencies:
+      '@types/react': 19.2.15
+      react: 19.2.4
+>>>>>>> f09ba2768b6c37b42c57d8e3b51be4854a84b2da
       use-sync-external-store: 1.6.0(react@19.2.4)
