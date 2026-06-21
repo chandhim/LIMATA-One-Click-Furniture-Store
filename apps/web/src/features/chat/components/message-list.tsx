@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Message } from "../types/chat.types";
+import { ProductPreviewCard } from "./product-preview-card";
 
 interface MessageListProps {
   messages: Message[];
@@ -37,6 +38,8 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
         <>
           {messages.map((message) => {
             const isMe = message.senderId === currentUserId;
+            const productMatch = message.content.match(/I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i);
+            
             return (
               <div
                 key={message.messageId}
@@ -59,9 +62,18 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
                     boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                   }}
                 >
-                  <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.4, wordBreak: "break-word" }}>
-                    {message.content}
-                  </p>
+                  {productMatch ? (
+                    <>
+                      <p style={{ fontSize: "0.85rem", lineHeight: 1.4, margin: "0 0 0.5rem 0" }}>
+                        I am interested in this product:
+                      </p>
+                      <ProductPreviewCard productId={productMatch[3]} isMine={isMe} />
+                    </>
+                  ) : (
+                    <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.4, wordBreak: "break-word" }}>
+                      {message.content}
+                    </p>
+                  )}
                   <span 
                     style={{ 
                       fontSize: "0.68rem", 

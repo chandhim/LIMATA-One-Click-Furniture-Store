@@ -26,14 +26,16 @@ export default function OrdersHistoryPage() {
 
   return (
     <MainLayout>
-      <div style={{ background: "var(--bg-base)", minHeight: "90vh", padding: "3rem 1.5rem" }}>
-        <div style={{ maxWidth: "1024px", margin: "0 auto" }}>
+      <div style={{ background: "var(--bg-base)", height: "calc(100vh - 140px)", display: "flex", flexDirection: "column", padding: "2rem 1.5rem" }}>
+        <div style={{ maxWidth: "1024px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
           
           {/* Header */}
-          <div style={{ marginBottom: "2rem" }}>
+          <div style={{ marginBottom: "1.5rem", flexShrink: 0 }}>
             <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>My Orders</h1>
             <p style={{ color: "var(--fg-muted)", fontSize: "0.9rem" }}>View and manage your current and previous furniture orders.</p>
           </div>
+          
+          <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem", paddingBottom: "2rem" }}>
 
           {isError && (
             <div style={{ padding: "1.5rem", background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "var(--radius-md)", color: "#b91c1c", marginBottom: "2rem" }}>
@@ -90,8 +92,23 @@ export default function OrdersHistoryPage() {
                         </div>
                         <div>
                           <span>Total Amount: </span>
-                          <strong style={{ color: "var(--fg-primary)" }}>Rs. {order.totalAmount.toLocaleString()}</strong>
+                          <strong className="font-numeric" style={{ color: "var(--fg-primary)" }}>Rs. {order.totalAmount.toLocaleString()}</strong>
                         </div>
+                      </div>
+
+                      {/* Product Images Preview */}
+                      <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
+                        {order.items?.slice(0, 4).map((item, idx) => (
+                          <div key={idx} style={{ position: "relative", width: "48px", height: "48px", borderRadius: "8px", overflow: "hidden", border: "1px solid var(--border)", flexShrink: 0 }} title={item.product.name}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={item.product.images?.[0] || "/placeholder.jpg"} alt={item.product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          </div>
+                        ))}
+                        {order.items && order.items.length > 4 && (
+                          <div style={{ width: "48px", height: "48px", borderRadius: "8px", background: "var(--bg-elevated)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: 600, color: "var(--fg-secondary)", flexShrink: 0 }}>
+                            +{order.items.length - 4}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -169,6 +186,7 @@ export default function OrdersHistoryPage() {
             </div>
           )}
 
+          </div>
         </div>
       </div>
     </MainLayout>

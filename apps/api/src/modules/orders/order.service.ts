@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { OrderStatus } from "@prisma/client";
 import { ApiError } from "@/shared/errors/api-error";
 import type { CreateOrderInput } from "./order.validation";
 import { findOrders, findOrder, updateOrder } from "./order.repository";
@@ -296,7 +297,7 @@ export async function cancelOrder(orderId: string, userId: string) {
 
 export async function updateOrderStatusByAdmin(
   orderId: string,
-  newStatus: any,
+  newStatus: OrderStatus,
   adminUserId: string
 ) {
   // Confirm user is Admin

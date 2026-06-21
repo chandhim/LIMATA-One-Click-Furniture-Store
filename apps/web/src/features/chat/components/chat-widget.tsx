@@ -13,6 +13,8 @@ import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 // ── Message List ────────────────────────────────────────────────────────────
 
+import { ProductPreviewCard } from "./product-preview-card";
+
 function MessageBubble({
   content,
   createdAt,
@@ -22,6 +24,8 @@ function MessageBubble({
   createdAt: Date;
   isMine: boolean;
 }) {
+  const productMatch = content.match(/I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i);
+
   return (
     <div
       style={{
@@ -43,7 +47,16 @@ function MessageBubble({
           boxShadow: isMine ? "var(--shadow-accent)" : "var(--shadow-sm)",
         }}
       >
-        <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>{content}</p>
+        {productMatch ? (
+          <>
+            <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: "0 0 0.5rem 0" }}>
+              I am interested in this product:
+            </p>
+            <ProductPreviewCard productId={productMatch[3]} isMine={isMine} />
+          </>
+        ) : (
+          <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>{content}</p>
+        )}
         <span
           style={{
             fontSize: "0.7rem",
@@ -409,25 +422,10 @@ export function ChatWidget() {
 
   const { data: conversations = [], isLoading } = useConversations();
   const { start, isLoading: isStarting, error: startError } = useStartConversation();
+  const { sendMessage } = useSendMessage();
+  const [pendingProductMsg, setPendingProductMsg] = useState<string | null>(null);
 
   const isAdmin = user?.role === "ADMIN";
-
-  // For customers: auto-select their single conversation if they have one
-  useEffect(() => {
-    if (!isAdmin && conversations.length === 1 && !selectedConversation && isOpen) {
-      setSelectedConversation(conversations[0]);
-    }
-  }, [conversations, isAdmin, selectedConversation, isOpen]);
-
-  if (!isAuthenticated || !user) return null;
-
-  const handleOpen = () => {
-    setIsOpen(true);
-    // If customer with no conversations, auto-start
-    if (!isAdmin && conversations.length === 0 && !isLoading) {
-      handleStartChat();
-    }
-  };
 
   const handleStartChat = async () => {
     const conv = await start();
@@ -435,6 +433,52 @@ export function ChatWidget() {
       setSelectedConversation(conv);
     }
   };
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    if (!isAdmin && conversations.length === 0 && !isLoading) {
+      handleStartChat();
+    }
+  };
+  useEffect(() => {
+    if (!isAdmin && conversations.length === 1 && !selectedConversation && isOpen) {
+      setSelectedConversation(conversations[0]);
+    }
+  }, [conversations, isAdmin, selectedConversation, isOpen]);
+
+  useEffect(() => {
+    const handleOpenChat = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setIsOpen(true);
+      
+      const { productId, productName, origin } = customEvent.detail || {};
+      
+      if (productId) {
+        const msg = `I am interested in this product: ${productName} (${origin}/products/${productId})`;
+        setPendingProductMsg(msg);
+        
+        // If customer has no conversation, start one
+        if (!isAdmin && conversations.length === 0 && !isLoading) {
+          handleStartChat();
+        } else if (!isAdmin && conversations.length === 1) {
+          setSelectedConversation(conversations[0]);
+        }
+      }
+    };
+    
+    window.addEventListener("open-chat", handleOpenChat);
+    return () => window.removeEventListener("open-chat", handleOpenChat);
+  }, [conversations, isAdmin, isLoading]);
+
+  // Process pending message when a conversation is selected
+  useEffect(() => {
+    if (pendingProductMsg && selectedConversation) {
+      sendMessage(selectedConversation.conversationId, pendingProductMsg);
+      setPendingProductMsg(null);
+    }
+  }, [pendingProductMsg, selectedConversation, sendMessage]);
+
+  if (!isAuthenticated || !user) return null;
 
   const showList = isAdmin || conversations.length > 1;
 

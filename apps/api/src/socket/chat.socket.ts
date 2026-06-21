@@ -5,8 +5,10 @@ import { createNotification } from "@/modules/notifications/notification.service
 
 export function registerChatSocket(io: SocketIOServer) {
   io.on("connection", (socket) => {
-    const userId = (socket as any).user?.id;
-    const userRole = (socket as any).user?.role;
+    type AuthSocket = typeof socket & { user?: { id: string; role: string } };
+    const authSocket = socket as AuthSocket;
+    const userId = authSocket.user?.id;
+    const userRole = authSocket.user?.role;
 
     if (!userId) {
       socket.disconnect();

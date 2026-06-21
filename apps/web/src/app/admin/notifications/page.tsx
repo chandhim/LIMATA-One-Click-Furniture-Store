@@ -40,6 +40,10 @@ export default function AdminNotificationsPage() {
   const { markAllAsRead } = useMarkAllNotificationsAsRead();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+  
+  const sortedNotifications = [...notifications].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
   if (isLoading) {
     return (
@@ -63,7 +67,7 @@ export default function AdminNotificationsPage() {
   }
 
   return (
-    <div style={{ padding: "2.5rem 2rem", maxWidth: 900, margin: "0 auto", background: "var(--bg-base)", minHeight: "100vh" }}>
+    <div style={{ padding: "1.5rem 2rem", maxWidth: 900, margin: "0 auto", background: "var(--bg-base)" }}>
       
       {/* Page Header */}
       <div
@@ -71,47 +75,12 @@ export default function AdminNotificationsPage() {
           display: "flex",
           alignItems: "flex-end",
           justifyContent: "space-between",
-          marginBottom: "2.5rem",
+          marginBottom: "1rem",
           flexWrap: "wrap",
           gap: "1rem",
         }}
       >
-        <div>
-          <span className="section-label">System Logs</span>
-          <h1
-            className="font-display"
-            style={{
-              margin: "0.5rem 0 0",
-              fontSize: "clamp(1.5rem, 3vw, 2rem)",
-              fontWeight: 700,
-              color: "var(--fg-primary)",
-              letterSpacing: "-0.025em",
-            }}
-          >
-            Notification Alerts
-            {unreadCount > 0 && (
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginLeft: "0.875rem",
-                  minWidth: 24,
-                  height: 24,
-                  borderRadius: "50%",
-                  background: "#dc2626",
-                  color: "#fff",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  verticalAlign: "middle",
-                  boxShadow: "0 2px 8px rgba(220,38,38,0.3)"
-                }}
-              >
-                {unreadCount}
-              </span>
-            )}
-          </h1>
-        </div>
+        <div></div>
 
         {unreadCount > 0 && (
           <button
@@ -180,7 +149,7 @@ export default function AdminNotificationsPage() {
             boxShadow: "var(--shadow-sm)" 
           }}
         >
-          {notifications.map((n, idx) => {
+          {sortedNotifications.map((n, idx) => {
             const color = typeColor(n.type);
             const isUnread = !n.isRead;
             
@@ -189,7 +158,7 @@ export default function AdminNotificationsPage() {
                 key={n.notificationId}
                 style={{
                   padding: "1.375rem 1.5rem",
-                  borderBottom: idx < notifications.length - 1 ? "1px solid var(--border)" : "none",
+                  borderBottom: idx < sortedNotifications.length - 1 ? "1px solid var(--border)" : "none",
                   background: isUnread ? "rgba(201,169,110,0.03)" : "transparent",
                   borderLeft: isUnread ? "3px solid var(--accent)" : "3px solid transparent",
                   display: "flex",

@@ -28,8 +28,13 @@ export async function getAdminReviews() {
   return res.data.data;
 }
 
-export async function toggleReviewApproval(reviewId: string, isApproved: boolean) {
-  const res = await api.patch(`/admin/reviews/${reviewId}/approve`, { isApproved });
+export async function toggleReviewApproval(
+  reviewId: string,
+  isApproved: boolean,
+) {
+  const res = await api.patch(`/admin/reviews/${reviewId}/approve`, {
+    isApproved,
+  });
   return res.data.data;
 }
 
@@ -44,7 +49,12 @@ export async function getAdminCategories() {
   return res.data.data;
 }
 
-export async function createAdminCategory(data: { name: string; desc: string; image?: string; alt?: string }) {
+export async function createAdminCategory(data: {
+  name: string;
+  desc: string;
+  image?: string;
+  alt?: string;
+}) {
   const res = await api.post("/admin/categories", data);
   return res.data.data;
 }

@@ -1,7 +1,5 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { prisma } from "@/lib/prisma";
-import { ApiError } from "@/shared/errors/api-error";
-
 export const publicSettingsRouter = Router();
 
 // 1. Fetch public store settings by key

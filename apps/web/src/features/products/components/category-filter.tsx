@@ -2,21 +2,14 @@
 
 import { useEffect, useRef } from "react";
 
-export const CATEGORY_CONFIG: { name: string; icon: string }[] = [
-  { name: "Living Room", icon: "🛋️" },
-  { name: "Bedroom",     icon: "🛏️" },
-  { name: "Dining Room", icon: "🍽️" },
-  { name: "Office",      icon: "💼" },
-  { name: "Outdoor",     icon: "🌿" },
-  { name: "Kitchen",     icon: "🍳" },
-];
 
 interface CategorySidebarNavProps {
+  categories: { name: string; icon?: string }[];
   activeCategory: string | null;
   onCategoryClick: (name: string) => void;
 }
 
-export function CategorySidebarNav({ activeCategory, onCategoryClick }: CategorySidebarNavProps) {
+export function CategorySidebarNav({ categories, activeCategory, onCategoryClick }: CategorySidebarNavProps) {
   return (
     <nav
       aria-label="Product categories"
@@ -51,7 +44,7 @@ export function CategorySidebarNav({ activeCategory, onCategoryClick }: Category
         Browse by Room
       </div>
 
-      {CATEGORY_CONFIG.map(({ name, icon }) => {
+      {categories.map(({ name, icon }) => {
         const isActive = activeCategory === name;
         return (
           <button
@@ -102,7 +95,7 @@ export function CategorySidebarNav({ activeCategory, onCategoryClick }: Category
                 }}
               />
             )}
-            <span style={{ fontSize: "1rem" }}>{icon}</span>
+            {icon && <span style={{ fontSize: "1rem" }}>{icon}</span>}
             <span>{name}</span>
           </button>
         );
