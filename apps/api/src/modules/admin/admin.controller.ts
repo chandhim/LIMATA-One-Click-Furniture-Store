@@ -11,7 +11,7 @@ function sendResponse(res: Response, status: number, data: unknown) {
 export async function getAdminStatsController(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const totalProducts = await prisma.product.count();
@@ -33,7 +33,7 @@ export async function getAdminStatsController(
     });
     const totalRevenue = completedOrdersForRevenue.reduce(
       (sum, o) => sum + o.totalAmount,
-      0
+      0,
     );
 
     // Recent 5 orders
@@ -87,7 +87,10 @@ export async function getAdminStatsController(
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const dateStr = d.toLocaleDateString([], { month: "short", day: "numeric" });
+      const dateStr = d.toLocaleDateString([], {
+        month: "short",
+        day: "numeric",
+      });
       dailyRevenue[dateStr] = 0;
     }
 
@@ -127,7 +130,7 @@ export async function getAdminStatsController(
 export async function listAdminUsersController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const search = req.query.search ? String(req.query.search) : "";
@@ -157,7 +160,7 @@ export async function listAdminUsersController(
 export async function updateAdminUserRoleController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { userId } = req.params;
@@ -182,7 +185,7 @@ export async function updateAdminUserRoleController(
 export async function toggleAdminUserStatusController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { userId } = req.params;
@@ -208,7 +211,7 @@ export async function toggleAdminUserStatusController(
 export async function listAdminReviewsController(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const reviews = await prisma.review.findMany({
@@ -228,7 +231,7 @@ export async function listAdminReviewsController(
 export async function toggleReviewApprovalController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { reviewId } = req.params;
@@ -252,7 +255,7 @@ export async function toggleReviewApprovalController(
 export async function deleteAdminReviewController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { reviewId } = req.params;
@@ -271,7 +274,7 @@ export async function deleteAdminReviewController(
 export async function listAdminCategoriesController(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const categories = await prisma.category.findMany({
@@ -286,7 +289,7 @@ export async function listAdminCategoriesController(
 export async function createAdminCategoryController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { name, desc, image, alt } = req.body;
@@ -310,10 +313,39 @@ export async function createAdminCategoryController(
   }
 }
 
+export async function updateAdminCategoryController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const { categoryId } = req.params;
+    const { name, desc, image, alt } = req.body;
+
+    if (!name || !desc) {
+      throw new ApiError(400, "Name and description are required");
+    }
+
+    const category = await prisma.category.update({
+      where: { categoryId: categoryId },
+      data: {
+        name: name.trim(),
+        desc: desc.trim(),
+        image: image !== undefined ? image : undefined,
+        alt: alt !== undefined ? alt : undefined,
+      },
+    });
+
+    return sendResponse(res, 200, category);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export async function deleteAdminCategoryController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { categoryId } = req.params;
@@ -332,15 +364,18 @@ export async function deleteAdminCategoryController(
 export async function getAdminSettingsController(
   _req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const settings = await prisma.storeSetting.findMany();
     // Convert key-value array into object
-    const settingsMap = settings.reduce<Record<string, unknown>>((acc, curr) => {
-      acc[curr.key] = curr.value;
-      return acc;
-    }, {});
+    const settingsMap = settings.reduce<Record<string, unknown>>(
+      (acc, curr) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      },
+      {},
+    );
 
     return sendResponse(res, 200, settingsMap);
   } catch (error) {
@@ -351,7 +386,7 @@ export async function getAdminSettingsController(
 export async function updateAdminSettingsController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const { key, value } = req.body;

@@ -170,51 +170,66 @@ export default function AdminOverviewPage() {
   ];
 
   return (
-    <div style={{ padding: "2.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", minHeight: "100vh" }}>
+    <div style={{ padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)" }}>
       
       {/* Welcome Card Banner */}
       <div
-        className="texture-grain animate-fade-up"
+        className="animate-fade-up"
         style={{
-          background: "radial-gradient(circle at 80% 20%, rgba(201,169,110,0.15), transparent 60%), var(--bg-dark)",
-          borderRadius: "var(--radius-xl)",
-          padding: "2.25rem 2.75rem",
-          marginBottom: "2rem",
-          position: "relative",
-          overflow: "hidden",
-          border: "1px solid rgba(250,249,247,0.06)",
-          boxShadow: "var(--shadow-md)",
+          background: "var(--bg-surface)",
+          borderRadius: "var(--radius-lg)",
+          padding: "1.25rem 2.25rem",
+          marginBottom: "1.5rem",
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-sm)",
         }}
       >
-        <span 
-          style={{ 
-            fontSize: "0.7rem", 
-            fontWeight: 700, 
-            letterSpacing: "0.18em", 
-            textTransform: "uppercase", 
-            color: "var(--accent)",
-            display: "inline-block",
-            marginBottom: "0.75rem"
-          }}
-        >
-          Control Panel
-        </span>
-        <h1
-          className="font-serif"
-          style={{
-            fontSize: "clamp(1.75rem, 3.5vw, 2.25rem)",
-            fontWeight: 700,
-            color: "#FAF9F7",
-            letterSpacing: "-0.01em",
-            marginBottom: "0.5rem",
-            lineHeight: 1.2,
-          }}
-        >
-          Welcome Back, {user?.name ?? "Admin"}
-        </h1>
-        <p style={{ fontSize: "0.9rem", color: "rgba(250,249,247,0.5)", lineHeight: 1.6, maxWidth: 650, margin: 0 }}>
-          Manage products, orders, chat queries, and storefront content from your control console.
-        </p>
+
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <Link
+            href="/admin/products/new"
+            className="btn-shimmer"
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              color: "var(--fg-primary)",
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.375rem"
+            }}
+          >
+            <PlusCircle size={14} />
+            Add Product
+          </Link>
+          <Link
+            href="/admin/orders"
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              color: "#FAF9F7",
+              background: "var(--accent-dark)",
+              border: "1px solid var(--accent)",
+              borderRadius: "var(--radius-md)",
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.375rem",
+              boxShadow: "var(--shadow-accent)"
+            }}
+          >
+            <ShoppingCart size={14} />
+            View Orders
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards Row */}
@@ -285,56 +300,6 @@ export default function AdminOverviewPage() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Quick Actions Panel */}
-      <div style={{ marginBottom: "2.5rem" }}>
-        <div className="section-label" style={{ marginBottom: "1.25rem" }}>Quick Actions</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "1rem" }}>
-          {quickActions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
-                <div
-                  className="card"
-                  style={{
-                    padding: "1.5rem 1.125rem",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                    height: "100%",
-                  }}
-                >
-                  <div 
-                    style={{ 
-                      width: 44, 
-                      height: 44, 
-                      borderRadius: "50%", 
-                      background: action.accent, 
-                      border: `1px solid ${action.accentBorder}`, 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center", 
-                      color: action.color,
-                      marginBottom: "1rem", 
-                      flexShrink: 0 
-                    }}
-                  >
-                    <Icon size={20} />
-                  </div>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.375rem" }}>
-                    {action.title}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", lineHeight: 1.4 }}>
-                    {action.desc}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
       </div>
 
       {/* Main Sections Grid */}
@@ -488,6 +453,43 @@ export default function AdminOverviewPage() {
 
         {/* Right Hand Column (Feeds & Alerts) */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          
+          {/* Quick Links */}
+          <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--shadow-sm)" }}>
+            <div style={{ padding: "1.5rem 1.5rem 1.25rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Layers size={16} style={{ color: "var(--accent)" }} />
+                <h3 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--fg-primary)", margin: 0 }}>Quick Links</h3>
+              </div>
+            </div>
+            <div style={{ padding: "0.5rem 1.5rem" }}>
+              {quickActions.slice(1, 5).map((action, idx) => {
+                const Icon = action.icon;
+                return (
+                  <Link key={action.href} href={action.href} style={{ textDecoration: "none" }}>
+                    <div
+                      style={{
+                        padding: "1rem 0",
+                        borderBottom: idx < 3 ? "1px solid var(--border)" : "none",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: action.accent, display: "flex", alignItems: "center", justifyContent: "center", color: action.color }}>
+                        <Icon size={14} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-primary)" }}>{action.title}</div>
+                        <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)" }}>{action.desc}</div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
           
           {/* Support Customer Messages */}
           <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--shadow-sm)" }}>

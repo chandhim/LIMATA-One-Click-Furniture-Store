@@ -26,14 +26,16 @@ export default function OrdersHistoryPage() {
 
   return (
     <MainLayout>
-      <div style={{ background: "var(--bg-base)", minHeight: "90vh", padding: "3rem 1.5rem" }}>
-        <div style={{ maxWidth: "1024px", margin: "0 auto" }}>
+      <div style={{ background: "var(--bg-base)", height: "calc(100vh - 140px)", display: "flex", flexDirection: "column", padding: "2rem 1.5rem" }}>
+        <div style={{ maxWidth: "1024px", margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", height: "100%" }}>
           
           {/* Header */}
-          <div style={{ marginBottom: "2rem" }}>
+          <div style={{ marginBottom: "1.5rem", flexShrink: 0 }}>
             <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>My Orders</h1>
             <p style={{ color: "var(--fg-muted)", fontSize: "0.9rem" }}>View and manage your current and previous furniture orders.</p>
           </div>
+          
+          <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.5rem", paddingBottom: "2rem" }}>
 
           {isError && (
             <div style={{ padding: "1.5rem", background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "var(--radius-md)", color: "#b91c1c", marginBottom: "2rem" }}>
@@ -184,6 +186,7 @@ export default function OrdersHistoryPage() {
             </div>
           )}
 
+          </div>
         </div>
       </div>
     </MainLayout>
