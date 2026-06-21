@@ -64,12 +64,12 @@ export async function createPaymentParamsController(
 export async function payHereNotifyController(
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   try {
     // PayHere sends form-urlencoded data in POST webhook callbacks.
     // Ensure Express urlencoded parsing is active or handle raw body.
-    const result = await processPayHereNotification(req.body);
+    await processPayHereNotification(req.body);
     
     // Always return HTTP 200 for PayHere webhook acknowledgements
     return res.status(200).send("OK");

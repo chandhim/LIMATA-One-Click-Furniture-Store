@@ -3,13 +3,30 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  const categories = [
+    { name: "Living Room", desc: "Furniture for living room", alt: "🛋️", image: "/images/categories/living_room.png" },
+    { name: "Bedroom", desc: "Furniture for bedroom", alt: "🛏️", image: "/images/categories/bedroom.png" },
+    { name: "Dining Room", desc: "Furniture for dining room", alt: "🍽️", image: "/images/categories/dining_room.png" },
+    { name: "Office", desc: "Office furniture", alt: "💼", image: "/images/categories/office.png" },
+    { name: "Outdoor", desc: "Outdoor furniture", alt: "🌿", image: "/images/categories/outdoor.png" },
+    { name: "Kitchen", desc: "Kitchen items", alt: "🍳", image: "/images/categories/kitchen.png" },
+  ];
+
+  for (const c of categories) {
+    await prisma.category.upsert({
+      where: { name: c.name },
+      update: c,
+      create: c,
+    });
+  }
+
   const products = [
     {
       name: "Modern Sofa",
       description: "Comfortable modern sofa for living room.",
       price: 45000,
       stock: 10,
-      category: "Sofas",
+      category: "Living Room",
       material: "Leather",
       images: ["/images/sofa1.png", "/images/tvstand1.png", "/images/wardrobe1.png"],
     },
@@ -18,7 +35,7 @@ async function main() {
       description: "Solid wood dining table.",
       price: 30000,
       stock: 5,
-      category: "Tables",
+      category: "Dining Room",
       material: "Wood",
       images: ["/images/dining1.png"],
     },
@@ -27,7 +44,7 @@ async function main() {
       description: "Ergonomic office chair.",
       price: 8000,
       stock: 20,
-      category: "Chairs",
+      category: "Office",
       material: "Mesh",
       images: ["/images/chair1.png", "/images/bed1.png", "/images/dining1.png"],
     },
@@ -36,7 +53,7 @@ async function main() {
       description: "Stylish TV stand with storage.",
       price: 12000,
       stock: 7,
-      category: "Storage",
+      category: "Living Room",
       material: "MDF",
       images: ["/images/tvstand1.png"],
     },
@@ -45,7 +62,7 @@ async function main() {
       description: "Comfortable queen size bed.",
       price: 40000,
       stock: 3,
-      category: "Beds",
+      category: "Bedroom",
       material: "Wood",
       images: ["/images/bed1.png"],
     },
@@ -54,7 +71,7 @@ async function main() {
       description: "Spacious wardrobe for bedroom.",
       price: 25000,
       stock: 4,
-      category: "Storage",
+      category: "Bedroom",
       material: "Wood",
       images: ["/images/wardrobe1.png"],
     },

@@ -90,14 +90,13 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
 
   return (
     <aside
-      className="texture-grain"
       style={{
         width: 250,
-        minHeight: "100vh",
-        background: "var(--bg-dark)",
+        height: "100%",
+        background: "var(--bg-surface)",
         display: "flex",
         flexDirection: "column",
-        borderRight: "1px solid rgba(250,249,247,0.06)",
+        borderRight: "1px solid var(--border)",
         flexShrink: 0,
         position: "relative",
       }}
@@ -123,7 +122,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             style={{
               fontSize: "1.4rem",
               fontWeight: 700,
-              color: "#FAF9F7",
+              color: "var(--fg-primary)",
               letterSpacing: "-0.01em",
             }}
           >
@@ -137,7 +136,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
               textTransform: "uppercase",
               color: "var(--accent)",
               background: "rgba(201,169,110,0.12)",
-              border: "1px solid rgba(201,169,110,0.25)",
+              border: "1px solid var(--accent)",
               borderRadius: "4px",
               padding: "0.15rem 0.5rem",
             }}
@@ -167,7 +166,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                 fontWeight: 700,
                 letterSpacing: "0.16em",
                 textTransform: "uppercase",
-                color: "rgba(250,249,247,0.25)",
+                color: "var(--fg-muted)",
                 padding: "0.5rem 0.75rem 0.25rem",
               }}
             >
@@ -187,34 +186,33 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                     alignItems: "center",
                     gap: "0.75rem",
                     padding: "0.625rem 0.75rem",
-                    fontSize: "0.85rem",
-                    fontWeight: active ? 600 : 400,
-                    color: active ? "#FAF9F7" : "rgba(250,249,247,0.55)",
+                    fontSize: "0.875rem",
+                    fontWeight: active ? 600 : 500,
+                    color: active ? "var(--accent-dark)" : "var(--fg-secondary)",
                     textDecoration: "none",
                     background: active
-                      ? "linear-gradient(90deg, rgba(201,169,110,0.08) 0%, rgba(201,169,110,0.02) 100%)"
+                      ? "rgba(201,169,110,0.12)"
                       : "transparent",
-                    borderLeft: active ? "3px solid var(--accent)" : "3px solid transparent",
-                    borderRadius: "0 var(--radius-sm) var(--radius-sm) 0",
+                    borderRadius: "var(--radius-md)",
                     transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                     position: "relative",
                   }}
                   onMouseEnter={(e) => {
                     if (!active) {
                       const el = e.currentTarget as HTMLElement;
-                      el.style.color = "rgba(250,249,247,0.9)";
-                      el.style.background = "rgba(250,249,247,0.02)";
+                      el.style.color = "var(--fg-primary)";
+                      el.style.background = "var(--bg-elevated)";
                       const iconSpan = el.firstElementChild as HTMLElement;
-                      if (iconSpan) iconSpan.style.color = "rgba(250,249,247,0.7)";
+                      if (iconSpan) iconSpan.style.color = "var(--accent-dark)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!active) {
                       const el = e.currentTarget as HTMLElement;
-                      el.style.color = "rgba(250,249,247,0.55)";
+                      el.style.color = "var(--fg-secondary)";
                       el.style.background = "transparent";
                       const iconSpan = el.firstElementChild as HTMLElement;
-                      if (iconSpan) iconSpan.style.color = "rgba(250,249,247,0.45)";
+                      if (iconSpan) iconSpan.style.color = "var(--fg-muted)";
                     }
                   }}
                 >
@@ -222,7 +220,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
-                      color: active ? "var(--accent)" : "rgba(250,249,247,0.45)",
+                      color: active ? "var(--accent-dark)" : "var(--fg-muted)",
                       transition: "color 0.2s ease",
                     }}
                   >
@@ -235,8 +233,8 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                         width: "5px",
                         height: "5px",
                         borderRadius: "50%",
-                        background: "var(--accent)",
-                        boxShadow: "0 0 8px var(--accent), 0 0 16px var(--accent)",
+                        background: "var(--accent-dark)",
+                        boxShadow: "0 0 8px var(--accent)",
                         marginLeft: "auto",
                       }}
                     />
@@ -252,8 +250,8 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
       <div
         style={{
           padding: "1.25rem 1rem",
-          borderTop: "1px solid rgba(250,249,247,0.06)",
-          background: "rgba(250,249,247,0.01)",
+          borderTop: "1px solid var(--border)",
+          background: "var(--bg-elevated)",
         }}
       >
         <div
@@ -288,7 +286,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
               style={{
                 fontSize: "0.85rem",
                 fontWeight: 600,
-                color: "#FAF9F7",
+                color: "var(--fg-primary)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -299,7 +297,7 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             <div
               style={{
                 fontSize: "0.7rem",
-                color: "rgba(250,249,247,0.35)",
+                color: "var(--fg-secondary)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -317,9 +315,9 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             padding: "0.5rem",
             fontSize: "0.8rem",
             fontWeight: 600,
-            color: "rgba(250,249,247,0.45)",
-            background: "transparent",
-            border: "1px solid rgba(250,249,247,0.08)",
+            color: "var(--fg-secondary)",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
             borderRadius: "var(--radius-md)",
             cursor: "pointer",
             display: "flex",
@@ -336,9 +334,9 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
           }}
           onMouseLeave={(e) => {
             const el = e.currentTarget as HTMLElement;
-            el.style.borderColor = "rgba(250,249,247,0.08)";
-            el.style.color = "rgba(250,249,247,0.45)";
-            el.style.background = "transparent";
+            el.style.borderColor = "var(--border)";
+            el.style.color = "var(--fg-secondary)";
+            el.style.background = "var(--bg-surface)";
           }}
         >
           <LogOut size={13} />
@@ -355,12 +353,12 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             gap: "0.25rem",
             marginTop: "0.625rem",
             fontSize: "0.75rem",
-            color: "rgba(250,249,247,0.3)",
+            color: "var(--fg-muted)",
             textDecoration: "none",
             transition: "color 0.2s ease",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent)")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.3)")}
+          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent-dark)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-muted)")}
         >
           <span>View Storefront</span>
           <ArrowUpRight size={12} />

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { AdminSidebar } from "./admin-sidebar";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
-import { Menu, ArrowUpRight, ChevronRight } from "lucide-react";
+import { Menu, ArrowUpRight, ChevronRight, Search } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -44,8 +44,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <div
       style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100vh",
         background: "var(--bg-base)",
+        overflow: "hidden",
       }}
     >
       {/* Desktop sidebar */}
@@ -135,7 +136,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
             {/* Breadcrumbs for desktop, Logo for mobile */}
             <div className="admin-header-breadcrumbs" style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.825rem", color: "var(--fg-secondary)" }}>
-              <span>Admin</span>
+              <Link href="/admin" style={{ color: "var(--fg-secondary)", textDecoration: "none" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>Admin</Link>
               <ChevronRight size={12} style={{ opacity: 0.5 }} />
               <span>{category}</span>
               <ChevronRight size={12} style={{ opacity: 0.5 }} />
@@ -163,6 +164,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
           </div>
+
 
           {/* Right: Storefront quick link and profile */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -255,6 +257,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           .admin-header-breadcrumbs { display: none !important; }
           .admin-header-logo-mobile { display: flex !important; }
           .admin-header-username { display: none !important; }
+          .admin-header-search { display: none !important; }
         }
       `}</style>
     </div>

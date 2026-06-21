@@ -102,21 +102,12 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div style={{ padding: "2.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", minHeight: "100vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", overflow: "hidden" }}>
       
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <div className="section-label" style={{ marginBottom: "0.75rem" }}>Sales</div>
-        <h1 className="font-display" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 700, color: "var(--fg-primary)", letterSpacing: "-0.025em" }}>
-          Order Management
-        </h1>
-        <p style={{ marginTop: "0.375rem", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-          Track, filter and update user order shipments.
-        </p>
-      </div>
+
 
       {/* Filters row */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "2rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
         
         {/* Search bar */}
         <div style={{ position: "relative", maxWidth: 500, width: "100%" }}>
@@ -224,13 +215,17 @@ export default function AdminOrdersPage() {
           border: "1px solid var(--border)", 
           borderRadius: "var(--radius-lg)", 
           overflow: "hidden",
-          boxShadow: "var(--shadow-sm)"
+          boxShadow: "var(--shadow-sm)",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minHeight: 0
         }}
       >
-        <div style={{ overflowX: "auto" }}>
+        <div style={{ overflow: "auto", flex: 1 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border)" }}>
+            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+              <tr>
                 {["Order ID", "Customer Details", "Date Purchased", "Items Detail", "Payment Mode", "Grand Total", "Status Badge", "Actions Status"].map((h) => (
                   <th key={h} style={{ padding: "1rem 1.5rem", textAlign: "left", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--fg-secondary)", whiteSpace: "nowrap" }}>
                     {h}

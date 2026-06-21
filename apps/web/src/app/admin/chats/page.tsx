@@ -5,7 +5,7 @@ import { useConversations } from "@/features/chat/hooks/use-chat";
 import { ChatWindow } from "@/features/chat/components/chat-window";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import type { Conversation } from "@/features/chat/types/chat.types";
-import { MessageSquare, Inbox, Search } from "lucide-react";
+import { MessageSquare, Inbox, Search, ChevronLeft } from "lucide-react";
 
 export default function AdminChatsPage() {
   const user = useAuthStore((s) => s.user);
@@ -46,17 +46,17 @@ export default function AdminChatsPage() {
   }
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 64px)", minHeight: 500, background: "var(--bg-base)" }}>
+    <div style={{ display: "flex", height: "calc(100vh - 64px)", minHeight: 500, background: "var(--bg-base)", overflow: "hidden" }}>
       
       {/* Sidebar - Support Inbox */}
       <div
+        className="admin-chat-sidebar"
         style={{
-          width: 340,
           borderRight: "1px solid var(--border)",
           background: "var(--bg-surface)",
-          display: "flex",
           flexDirection: "column",
           flexShrink: 0,
+          height: "100%",
         }}
       >
         {/* Sidebar Header */}
@@ -194,9 +194,16 @@ export default function AdminChatsPage() {
       </div>
 
       {/* Main chat window container */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg-elevated)" }}>
+      <div className="admin-chat-main" style={{ flexDirection: "column", background: "var(--bg-elevated)", height: "100%", overflow: "hidden" }}>
         {selectedConversationId && user?.userId ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg-surface)" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg-surface)", height: "100%", overflow: "hidden" }}>
+            {/* Mobile Back Button */}
+            <div className="mobile-chat-back" style={{ display: "none", padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)", background: "var(--bg-elevated)", alignItems: "center" }}>
+              <button onClick={() => setSelectedConversationId(null)} style={{ background: "transparent", border: "none", display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--fg-primary)", fontWeight: 600, cursor: "pointer", padding: "0.25rem 0.5rem", borderRadius: "var(--radius-sm)" }}>
+                <ChevronLeft size={16} />
+                Back to Inbox
+              </button>
+            </div>
             <ChatWindow conversationId={selectedConversationId} currentUserId={user.userId} />
           </div>
         ) : (
@@ -228,6 +235,30 @@ export default function AdminChatsPage() {
           </div>
         )}
       </div>
+
+      <style>{`
+        .admin-chat-sidebar {
+          width: 340px;
+          display: flex;
+        }
+        .admin-chat-main {
+          flex: 1;
+          display: flex;
+        }
+        @media (max-width: 768px) {
+          .admin-chat-sidebar {
+            width: 100%;
+            display: ${selectedConversationId ? 'none' : 'flex'};
+          }
+          .admin-chat-main {
+            display: ${selectedConversationId ? 'flex' : 'none'};
+            width: 100%;
+          }
+          .mobile-chat-back {
+            display: flex !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

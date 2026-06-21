@@ -1,5 +1,6 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
 import { Loader2, MessageSquare, Plus } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useConversations, useStartConversation } from "@/features/chat/hooks/use-chat";
@@ -114,13 +115,37 @@ function ConversationCard({
   );
 }
 
-export default function MessagesPage() {
+function MessagesPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data: conversations = [], isLoading } = useConversations();
   const { start, isLoading: isStarting, error: startError } = useStartConversation();
   const isAdmin = user?.role === "ADMIN";
+
+  const hasAttemptedRef = useRef(false);
+
+  useEffect(() => {
+    if (!isLoading && user && !isAdmin) {
+      router.replace("/");
+    }
+  }, [isLoading, user, isAdmin, router]);
+
+  useEffect(() => {
+    if (productId && conversations.length > 0 && isAdmin && !isLoading) {
+      router.replace(`/messages/${conversations[0].conversationId}?productId=${productId}`);
+    } else if (productId && conversations.length === 0 && isAdmin && !isLoading && !hasAttemptedRef.current) {
+      hasAttemptedRef.current = true;
+      start().then((conv) => {
+        if (conv) {
+          router.replace(`/messages/${conv.conversationId}?productId=${productId}`);
+        }
+      });
+    }
+  }, [productId, conversations, isAdmin, isLoading, router, start]);
 
   const handleStartConversation = async () => {
     const conv = await start();
@@ -327,5 +352,13 @@ export default function MessagesPage() {
       </div>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </MainLayout>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div></MainLayout>}>
+      <MessagesPageContent />
+    </Suspense>
   );
 }

@@ -19,6 +19,8 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const cartCount = useCartStore((s) => s.count);
   useCart(); // keeps the Zustand cart count in sync
+  
+  const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -108,6 +110,7 @@ export function Navbar() {
                 { label: "Products", href: "/products" },
                 { label: "Categories", href: "/#categories" },
                 { label: "About", href: "/#about" },
+                ...(isAuthenticated && !isAdmin ? [{ label: "My Orders", href: "/account/orders" }] : []),
               ].map((item) => (
                 <Link
                   key={item.label}
@@ -152,43 +155,45 @@ export function Navbar() {
                 <NotificationCenter />
 
                 {/* Chat quick-link */}
-                <Link
-                  href="/messages"
-                  id="navbar-chat-link"
-                  title="Messages"
-                  style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "transparent",
-                    border: "1.5px solid transparent",
-                    cursor: "pointer",
-                    color: "var(--fg-secondary)",
-                    textDecoration: "none",
-                    transition: "all 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "var(--bg-elevated)";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "var(--border)";
-                    (e.currentTarget as HTMLElement).style.color =
-                      "var(--fg-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background =
-                      "transparent";
-                    (e.currentTarget as HTMLElement).style.borderColor =
-                      "transparent";
-                    (e.currentTarget as HTMLElement).style.color =
-                      "var(--fg-secondary)";
-                  }}
-                >
-                  <MessageSquare size={18} />
-                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin/chats"
+                    id="navbar-chat-link"
+                    title="Messages"
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "transparent",
+                      border: "1.5px solid transparent",
+                      cursor: "pointer",
+                      color: "var(--fg-secondary)",
+                      textDecoration: "none",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "var(--bg-elevated)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "var(--border)";
+                      (e.currentTarget as HTMLElement).style.color =
+                        "var(--fg-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.background =
+                        "transparent";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "transparent";
+                      (e.currentTarget as HTMLElement).style.color =
+                        "var(--fg-secondary)";
+                    }}
+                  >
+                    <MessageSquare size={18} />
+                  </Link>
+                )}
 
                 {/* Cart quick-link */}
                 <Link
@@ -230,12 +235,13 @@ export function Navbar() {
                   <ShoppingCart size={18} />
                   {cartCount > 0 && (
                     <span
+                      className="font-numeric"
                       style={{
                         position: "absolute",
-                        top: 0,
-                        right: 0,
-                        minWidth: 17,
-                        height: 17,
+                        top: "-4px",
+                        right: "-6px",
+                        minWidth: "16px",
+                        height: "16px",
                         background: "var(--accent)",
                         color: "var(--fg-primary)",
                         borderRadius: "var(--radius-full)",
@@ -259,7 +265,11 @@ export function Navbar() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setDropdownOpen(!dropdownOpen);
+                      if (!isAdmin) {
+                        router.push("/profile");
+                      } else {
+                        setDropdownOpen(!dropdownOpen);
+                      }
                     }}
                     style={{
                       display: "flex",
@@ -328,10 +338,12 @@ export function Navbar() {
                     >
                       {user?.name}
                     </span>
-                    <span style={{ fontSize: "0.6rem", color: "var(--fg-muted)" }}>▼</span>
+                    <span style={{ fontSize: "0.6rem", color: "var(--fg-muted)" }}>
+                      {isAdmin ? "▼" : "›"}
+                    </span>
                   </button>
 
-                  {dropdownOpen && (
+                  {isAdmin && dropdownOpen && (
                     <div
                       style={{
                         position: "absolute",
@@ -632,24 +644,26 @@ export function Navbar() {
                       👤 Profile
                     </Link>
                   )}
-                  <Link
-                    href="/messages"
-                    onClick={() => setOpen(false)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.625rem",
-                      padding: "0.75rem 1rem",
-                      borderRadius: "var(--radius-md)",
-                      border: "1.5px solid var(--border)",
-                      fontSize: "0.9rem",
-                      fontWeight: 500,
-                      color: "var(--fg-primary)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <MessageSquare size={16} /> Messages
-                  </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin/chats"
+                      onClick={() => setOpen(false)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "var(--radius-md)",
+                        border: "1.5px solid var(--border)",
+                        fontSize: "0.9rem",
+                        fontWeight: 500,
+                        color: "var(--fg-primary)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <MessageSquare size={16} /> Messages
+                    </Link>
+                  )}
 
                   <Link
                     href="/cart"
@@ -672,6 +686,7 @@ export function Navbar() {
                     </span>
                     {cartCount > 0 && (
                       <span
+                        className="font-numeric"
                         style={{
                           background: "var(--accent)",
                           color: "var(--fg-primary)",

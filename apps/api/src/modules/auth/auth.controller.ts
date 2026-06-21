@@ -4,6 +4,7 @@ import { ApiError } from "@/shared/errors/api-error";
 import { loginSchema, registerSchema, updateProfileSchema } from "./auth.validation";
 import { getProfile, loginUser, registerUser, updateUserProfile } from "./auth.service";
 import { uploadToR2, makeKey } from "@/lib/storage";
+import { createNotification } from "../notifications/notification.service";
 
 function sendAuthResponse(
   res: Response,
@@ -131,6 +132,13 @@ export async function uploadAvatarController(
 
     // Save to user profile automatically
     await updateUserProfile(req.user.id, { avatarUrl: url });
+
+    await createNotification({
+      userId: req.user.id,
+      type: "PROFILE_UPDATED",
+      title: "Avatar Updated",
+      message: "Your profile picture has been updated successfully.",
+    });
 
     return sendAuthResponse(res, 200, "Avatar uploaded successfully", { url });
   } catch (error) {

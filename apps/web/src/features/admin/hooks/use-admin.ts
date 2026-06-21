@@ -68,8 +68,13 @@ export function useAdminReviews() {
 export function useToggleReviewApproval() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ reviewId, isApproved }: { reviewId: string; isApproved: boolean }) =>
-      toggleReviewApproval(reviewId, isApproved),
+    mutationFn: ({
+      reviewId,
+      isApproved,
+    }: {
+      reviewId: string;
+      isApproved: boolean;
+    }) => toggleReviewApproval(reviewId, isApproved),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
@@ -97,8 +102,12 @@ export function useAdminCategories() {
 export function useCreateCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: { name: string; desc: string; image?: string; alt?: string }) =>
-      createAdminCategory(data),
+    mutationFn: (data: {
+      name: string;
+      desc: string;
+      image?: string;
+      alt?: string;
+    }) => createAdminCategory(data),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-categories"] });
       void queryClient.invalidateQueries({ queryKey: ["public-categories"] });
@@ -132,7 +141,9 @@ export function useUpdateSetting() {
       updateAdminSetting(key, value),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({ queryKey: ["admin-settings"] });
-      void queryClient.invalidateQueries({ queryKey: ["public-setting", variables.key] });
+      void queryClient.invalidateQueries({
+        queryKey: ["public-setting", variables.key],
+      });
     },
   });
 }
