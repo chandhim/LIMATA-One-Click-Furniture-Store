@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateProduct } from "../hooks/use-create-product";
 import { useUpdateProduct } from "../hooks/use-update-product";
 import { useAdminProduct } from "../hooks/use-admin-products";
+import { useAdminCategories } from "@/features/admin/hooks/use-admin";
 import { uploadImages, uploadModel } from "../services/admin-product.service";
 import { ImageUpload } from "./image-upload";
 import { ModelUpload } from "./model-upload";
@@ -92,6 +93,8 @@ const PRESET_MATERIALS = [
 export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const router = useRouter();
   const { data: product, isLoading: isLoadingProduct } = useAdminProduct(productId || "");
+  const { data: dbCategories } = useAdminCategories();
+  const CATEGORIES = useMemo(() => Array.from(new Set([...PRESET_CATEGORIES, ...(dbCategories?.map((c: { name: string }) => c.name) || [])])), [dbCategories]);
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(productId || "");
 
@@ -133,7 +136,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         material: product.material,
       });
 
-      if (PRESET_CATEGORIES.includes(product.category)) {
+      if (CATEGORIES.includes(product.category)) {
         setSelectedCategoryOption(product.category);
         setCustomCategory("");
       } else {
@@ -156,7 +159,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
 
       setRemainingImages(product.images || []);
     }
-  }, [product, reset]);
+  }, [product, reset, CATEGORIES]);
 
   useEffect(() => {
     const finalCategory = selectedCategoryOption === "custom" ? customCategory : selectedCategoryOption;
@@ -307,7 +310,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                     style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
                   >
                     <option value="">Select Category</option>
-                    {PRESET_CATEGORIES.map((cat) => (
+                    {CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                     <option value="custom">Other (Specify...)</option>

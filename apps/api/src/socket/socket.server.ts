@@ -32,10 +32,10 @@ export function createSocketServer(httpServer: HTTPServer) {
     }
 
     try {
-      const payload = verifyToken(token);
-      (socket as any).user = payload;
+      const payload = verifyToken(token) as SocketAuthPayload;
+      (socket as typeof socket & { user?: SocketAuthPayload }).user = payload;
       next();
-    } catch (error) {
+    } catch (_error) {
       next(new ApiError(401, "Invalid or expired token"));
     }
   });

@@ -60,18 +60,9 @@ export default function AdminCustomersPage() {
   }
 
   return (
-    <div style={{ padding: "2.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", minHeight: "100vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", overflow: "hidden" }}>
       
-      {/* Header */}
-      <div style={{ marginBottom: "2rem" }}>
-        <div className="section-label" style={{ marginBottom: "0.75rem" }}>Users</div>
-        <h1 className="font-display" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 700, color: "var(--fg-primary)", letterSpacing: "-0.025em" }}>
-          User Accounts
-        </h1>
-        <p style={{ marginTop: "0.375rem", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-          Manage user profiles, modify privileges, and regulate customer account access settings.
-        </p>
-      </div>
+
 
       {/* Filter / Search Row */}
       <div style={{ marginBottom: "1.75rem", position: "relative", maxWidth: 500, width: "100%" }}>
@@ -102,13 +93,17 @@ export default function AdminCustomersPage() {
           border: "1px solid var(--border)", 
           borderRadius: "var(--radius-lg)", 
           overflow: "hidden",
-          boxShadow: "var(--shadow-sm)"
+          boxShadow: "var(--shadow-sm)",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minHeight: 0
         }}
       >
-        <div style={{ overflowX: "auto" }}>
+        <div style={{ overflow: "auto", flex: 1 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border)" }}>
+            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+              <tr>
                 {["Name", "Email Address", "Privilege Role", "Registered On", "Account Status", "Actions"].map((h) => (
                   <th key={h} style={{ padding: "1rem 1.5rem", textAlign: "left", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--fg-secondary)", whiteSpace: "nowrap" }}>
                     {h}

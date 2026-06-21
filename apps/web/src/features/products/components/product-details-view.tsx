@@ -22,6 +22,7 @@ import {
   X,
   Maximize2,
   ChevronLeft,
+  MessageSquare,
 } from "lucide-react";
 
 interface ProductDetailsViewProps {
@@ -237,12 +238,12 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   width: "100%",
                   aspectRatio: "4/3",
                   background:
-                    "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
-                  borderRadius: "var(--radius-lg)",
+                    "linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)",
+                  borderRadius: "var(--radius-xl)",
                   overflow: "hidden",
                   cursor: "zoom-in",
-                  border: "1px solid var(--border)",
-                  boxShadow: "var(--shadow-sm)",
+                  border: "1px solid rgba(255,255,255,0.4)",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
                 }}
               >
                 <div
@@ -407,7 +408,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
               {/* Price */}
               <div
-                className="font-serif"
+                className="font-serif font-numeric"
                 style={{
                   fontSize: "2rem",
                   fontWeight: 700,
@@ -448,9 +449,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "1.5rem",
-                  flexWrap: "wrap",
+                  gap: "1rem",
+                  width: "100%",
                 }}
               >
                 {/* Quantity Selector */}
@@ -460,6 +460,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                       display: "flex",
                       flexDirection: "column",
                       gap: "0.5rem",
+                      minWidth: "120px",
                     }}
                   >
                     <span
@@ -469,17 +470,19 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         textTransform: "uppercase",
                         letterSpacing: "0.05em",
                         color: "var(--fg-muted)",
+                        height: "1rem",
                       }}
                     >
                       Quantity
                     </span>
                     <div
                       style={{
-                        display: "inline-flex",
+                        display: "flex",
                         alignItems: "center",
-                        background: "var(--bg-elevated)",
-                        border: "1px solid var(--border-strong)",
-                        borderRadius: "var(--radius-md)",
+                        justifyContent: "space-between",
+                        background: "transparent",
+                        border: "1.5px solid var(--border-strong)",
+                        borderRadius: "var(--radius-full)",
                         padding: "0.25rem",
                         height: "44px",
                       }}
@@ -491,7 +494,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           background: "none",
                           border: "none",
                           cursor: quantity <= 1 ? "not-allowed" : "pointer",
-                          padding: "0.5rem 0.75rem",
+                          padding: "0.5rem",
                           color: "var(--fg-primary)",
                           opacity: quantity <= 1 ? 0.35 : 0.8,
                           display: "flex",
@@ -523,7 +526,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                             quantity >= product.stock
                               ? "not-allowed"
                               : "pointer",
-                          padding: "0.5rem 0.75rem",
+                          padding: "0.5rem",
                           color: "var(--fg-primary)",
                           opacity: quantity >= product.stock ? 0.35 : 0.8,
                           display: "flex",
@@ -542,125 +545,187 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 <div
                   style={{
                     display: "flex",
-                    alignItems: "flex-end",
-                    gap: "0.75rem",
+                    flexDirection: "column",
+                    gap: "0.5rem",
                     flex: 1,
-                    minWidth: "240px",
-                    height: "100%",
                   }}
                 >
-                  {/* Cart button */}
-                  <button
-                    disabled={product.stock <= 0 || cartFeedback === "adding"}
-                    onClick={handleAddToCart}
-                    className={
-                      product.stock > 0 && cartFeedback !== "adding"
-                        ? "btn-shimmer"
-                        : ""
-                    }
+                  <span
                     style={{
-                      flex: 1,
-                      height: "44px",
-                      background:
-                        product.stock <= 0
-                          ? "var(--border-strong)"
-                          : cartFeedback === "added"
-                            ? "rgba(34,197,94,0.15)"
-                            : cartFeedback === "error"
-                              ? "rgba(239,68,68,0.12)"
-                              : "var(--accent)",
-                      color:
-                        product.stock <= 0
-                          ? "var(--fg-muted)"
-                          : cartFeedback === "added"
-                            ? "#16a34a"
-                            : cartFeedback === "error"
-                              ? "#dc2626"
-                              : "var(--fg-primary)",
-                      border:
-                        cartFeedback === "added"
-                          ? "1px solid rgba(34,197,94,0.3)"
-                          : cartFeedback === "error"
-                            ? "1px solid rgba(239,68,68,0.3)"
-                            : "none",
-                      borderRadius: "var(--radius-full)",
-                      fontSize: "0.875rem",
-                      fontWeight: 600,
-                      cursor:
-                        product.stock <= 0 || cartFeedback === "adding"
-                          ? "not-allowed"
-                          : "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      boxShadow:
-                        product.stock > 0 && cartFeedback === "idle"
-                          ? "var(--shadow-sm)"
-                          : "none",
-                      outline: "none",
-                      transition:
-                        "background 0.3s ease, color 0.3s ease, border 0.3s ease",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      color: "transparent",
+                      height: "1rem",
+                      userSelect: "none",
                     }}
                   >
-                    <ShoppingCart
-                      size={16}
+                    Action
+                  </span>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      width: "100%",
+                    }}
+                  >
+                    {/* Cart button */}
+                    <button
+                      disabled={product.stock <= 0 || cartFeedback === "adding"}
+                      onClick={handleAddToCart}
+                      className={
+                        product.stock > 0 && cartFeedback !== "adding"
+                          ? "btn-shimmer"
+                          : ""
+                      }
                       style={{
-                        animation:
-                          cartFeedback === "adding"
-                            ? "pulse 0.8s ease infinite"
+                        flex: 1,
+                        height: "44px",
+                        background:
+                          product.stock <= 0
+                            ? "var(--border-strong)"
+                            : cartFeedback === "added"
+                              ? "rgba(34,197,94,0.15)"
+                              : cartFeedback === "error"
+                                ? "rgba(239,68,68,0.12)"
+                                : "var(--bg-dark)",
+                        color:
+                          product.stock <= 0
+                            ? "var(--fg-muted)"
+                            : cartFeedback === "added"
+                              ? "#16a34a"
+                              : cartFeedback === "error"
+                                ? "#dc2626"
+                                : "var(--accent-light)",
+                        border:
+                          cartFeedback === "added"
+                            ? "1px solid rgba(34,197,94,0.3)"
+                            : cartFeedback === "error"
+                              ? "1px solid rgba(239,68,68,0.3)"
+                              : "none",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.875rem",
+                        fontWeight: 600,
+                        cursor:
+                          product.stock <= 0 || cartFeedback === "adding"
+                            ? "not-allowed"
+                            : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        boxShadow:
+                          product.stock > 0 && cartFeedback === "idle"
+                            ? "0 8px 20px rgba(0,0,0,0.15)"
                             : "none",
+                        outline: "none",
+                        transition:
+                          "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
                       }}
-                    />
-                    {product.stock <= 0
-                      ? "Out of Stock"
-                      : cartFeedback === "adding"
-                        ? "Adding…"
-                        : cartFeedback === "added"
-                          ? "Added to Cart ✓"
-                          : cartFeedback === "error"
-                            ? "Try Again"
-                            : "Add to Cart"}
-                  </button>
+                    >
+                      <ShoppingCart
+                        size={16}
+                        style={{
+                          animation:
+                            cartFeedback === "adding"
+                              ? "pulse 0.8s ease infinite"
+                              : "none",
+                        }}
+                      />
+                      {product.stock <= 0
+                        ? "Out of Stock"
+                        : cartFeedback === "adding"
+                          ? "Adding…"
+                          : cartFeedback === "added"
+                            ? "Added to Cart ✓"
+                            : cartFeedback === "error"
+                              ? "Try Again"
+                              : "Add to Cart"}
+                    </button>
 
-                  {/* Wishlist button */}
-                  <button
-                    onClick={() => setIsWishlisted(!isWishlisted)}
-                    style={{
-                      width: "44px",
-                      height: "44px",
-                      borderRadius: "50%",
-                      border: "1.5px solid var(--border-strong)",
-                      background: isWishlisted
-                        ? "rgba(239, 68, 68, 0.08)"
-                        : "var(--bg-surface)",
-                      color: isWishlisted ? "#ef4444" : "var(--fg-secondary)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      transition: "all 0.25s ease",
-                      outline: "none",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isWishlisted) {
-                        e.currentTarget.style.borderColor = "var(--accent)";
-                        e.currentTarget.style.color = "var(--accent-dark)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isWishlisted) {
-                        e.currentTarget.style.borderColor =
-                          "var(--border-strong)";
-                        e.currentTarget.style.color = "var(--fg-secondary)";
-                      }
-                    }}
-                  >
-                    <Heart size={18} fill={isWishlisted ? "#ef4444" : "none"} />
-                  </button>
+                    {/* Wishlist button */}
+                    <button
+                      onClick={() => setIsWishlisted(!isWishlisted)}
+                      style={{
+                        width: "44px",
+                        height: "44px",
+                        borderRadius: "50%",
+                        border: "1.5px solid var(--border-strong)",
+                        background: isWishlisted
+                          ? "rgba(239, 68, 68, 0.08)"
+                          : "var(--bg-surface)",
+                        color: isWishlisted ? "#ef4444" : "var(--fg-secondary)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        outline: "none",
+                        transition: "all 0.2s ease",
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isWishlisted) {
+                          e.currentTarget.style.borderColor =
+                            "var(--fg-primary)";
+                          e.currentTarget.style.color = "var(--fg-primary)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isWishlisted) {
+                          e.currentTarget.style.borderColor =
+                            "var(--border-strong)";
+                          e.currentTarget.style.color = "var(--fg-secondary)";
+                        }
+                      }}
+                    >
+                      <Heart size={18} fill={isWishlisted ? "#ef4444" : "none"} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+
+                {/* Contact Seller */}
+                <button
+                  onClick={() => router.push(`/messages?productId=${product.productId}`)}
+                  style={{
+                    height: "44px",
+                    background: "transparent",
+                    color: "var(--fg-primary)",
+                    border: "1.5px solid var(--border-strong)",
+                    borderRadius: "var(--radius-full)",
+                    fontSize: "0.875rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    marginTop: "0.5rem",
+                    width: "100%",
+                    transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.background = "var(--bg-dark)";
+                    el.style.borderColor = "var(--bg-dark)";
+                    el.style.color = "var(--accent-light)";
+                    el.style.boxShadow = "0 8px 20px rgba(0,0,0,0.1)";
+                    el.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.background = "transparent";
+                    el.style.borderColor = "var(--border-strong)";
+                    el.style.color = "var(--fg-primary)";
+                    el.style.boxShadow = "none";
+                    el.style.transform = "translateY(0)";
+                  }}
+                >
+                  <MessageSquare size={16} /> Chat with Seller
+                </button>
+              </div>
 
             {/* Divider */}
             <div

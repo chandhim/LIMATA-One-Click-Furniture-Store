@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const R2 = "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev";
 
 import { usePublicCategories } from "@/features/admin/hooks/use-admin";
 
@@ -14,43 +13,13 @@ interface StorefrontCategory {
   alt: string;
 }
 
-const defaultCategories: StorefrontCategory[] = [
-  {
-    name: "Living Room",
-    desc: "Sofas, armchairs & tables",
-    image: `${R2}/categories/living-room.png`,
-    alt: "Modern Scandinavian living room with beige sofa",
-  },
-  {
-    name: "Bedroom",
-    desc: "Beds, wardrobes & more",
-    image: `${R2}/categories/bedroom.png`,
-    alt: "Serene luxury bedroom with upholstered headboard",
-  },
-  {
-    name: "Dining",
-    desc: "Tables, chairs & sets",
-    image: `${R2}/categories/dining.png`,
-    alt: "Stylish modern dining room with walnut table",
-  },
-  {
-    name: "Office",
-    desc: "Desks, chairs & storage",
-    image: `${R2}/categories/office.png`,
-    alt: "Sleek modern home office with standing desk",
-  },
-  {
-    name: "Storage",
-    desc: "Shelves, cabinets & racks",
-    image: `${R2}/categories/storage.png`,
-    alt: "Elegant floor-to-ceiling wooden bookshelves",
-  },
-];
-
-
 export function CategoriesSection() {
   const { data: dbCategories } = usePublicCategories();
-  const categories: StorefrontCategory[] = dbCategories && dbCategories.length > 0 ? (dbCategories as StorefrontCategory[]) : defaultCategories;
+  const categories: StorefrontCategory[] = dbCategories || [];
+
+  if (categories.length === 0) {
+    return null;
+  }
   return (
     <section
       id="categories"
@@ -142,7 +111,7 @@ export function CategoriesSection() {
         {categories.map((cat: StorefrontCategory, i: number) => (
           <Link
             key={cat.name}
-            href="/products"
+            href={`/products?category=${encodeURIComponent(cat.name)}`}
             className={`animate-fade-up delay-${(i + 1) * 100}`}
             style={{
               flexShrink: 0,
@@ -169,8 +138,8 @@ export function CategoriesSection() {
           >
             {/* Photorealistic room background image from R2 */}
             <Image
-              src={cat.image}
-              alt={cat.alt}
+              src={cat.image || "/images/hero.svg"}
+              alt={cat.alt || "Category"}
               fill
               sizes="(max-width: 768px) 80vw, 280px"
               style={{

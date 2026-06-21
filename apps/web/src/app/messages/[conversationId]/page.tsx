@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowLeft, Loader2, MessageCircle, Send } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import {
@@ -10,8 +11,9 @@ import {
   useSendMessage,
 } from "@/features/chat/hooks/use-chat";
 import { MainLayout } from "@/components/layout/main-layout";
+import { useProduct } from "@/features/products/hooks/use-product";
 
-export default function ConversationPage() {
+function ConversationPageContent() {
   const params = useParams<{ conversationId: string }>();
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
@@ -21,9 +23,29 @@ export default function ConversationPage() {
   const conversationId = params.conversationId;
   const isAdmin = user?.role === "ADMIN";
 
+  useEffect(() => {
+    if (user && !isAdmin) {
+      router.replace("/");
+    }
+  }, [user, isAdmin, router]);
+
   const { data: conversation, isLoading: convLoading } = useConversation(conversationId);
   const messages = useConversationMessages(conversationId);
   const { sendMessage, isSending } = useSendMessage();
+
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId") || undefined;
+  const { data: product } = useProduct(productId);
+  const [hasSentProduct, setHasSentProduct] = useState(false);
+
+  useEffect(() => {
+    if (productId && product && !hasSentProduct && !isSending) {
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      sendMessage(conversationId, `I am interested in this product: ${product.name} (${origin}/products/${product.productId})`);
+      setHasSentProduct(true);
+      router.replace(`/messages/${conversationId}`);
+    }
+  }, [productId, product, hasSentProduct, isSending, sendMessage, conversationId, router]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -383,5 +405,13 @@ export default function ConversationPage() {
       </div>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </MainLayout>
+  );
+}
+
+export default function ConversationPage() {
+  return (
+    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div></MainLayout>}>
+      <ConversationPageContent />
+    </Suspense>
   );
 }

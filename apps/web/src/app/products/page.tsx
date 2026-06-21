@@ -1,43 +1,54 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePublicCategories } from "@/features/admin/hooks/use-admin";
 import { useProducts } from "@/features/products/hooks/use-products";
 import { ProductGrid } from "@/features/products/components/product-grid";
 import { ProductSearch } from "@/features/products/components/product-search";
-import { CATEGORY_CONFIG } from "@/features/products/components/category-filter";
-import { CategorySection } from "@/features/products/components/category-section";
-import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import { ProductEmpty } from "@/features/products/components/product-empty";
+import { ProductSkeleton } from "@/features/products/components/product-skeleton";
+import { CategorySection } from "@/features/products/components/category-section";
 import { MainLayout } from "@/components/layout/main-layout";
 import type { ProductSummary } from "@/features/products/types/product.types";
 
 // ── Helper ──────────────────────────────────────────────────────────
-function groupByCategory(products: ProductSummary[]) {
+function groupByCategory(products: ProductSummary[], categories: { name: string }[]) {
   const map = new Map<string, ProductSummary[]>();
-  for (const cat of CATEGORY_CONFIG) {
+  for (const cat of categories) {
     map.set(cat.name, []);
   }
   for (const p of products) {
     if (map.has(p.category)) {
       map.get(p.category)!.push(p);
     } else {
-      if (!map.has(p.category)) map.set(p.category, []);
-      map.get(p.category)!.push(p);
+      map.set(p.category, [p]);
     }
   }
   return map;
 }
 
 // ── Page ─────────────────────────────────────────────────────────────
-export default function ProductsPage() {
+function ProductsPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category") || undefined;
+
   const [search, setSearch] = useState<string>("");
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
-  const { data, isLoading, isError } = useProducts(debouncedSearch, undefined);
+  const { data, isLoading, isError } = useProducts(debouncedSearch, categoryParam);
+  const { data: dbCategories } = usePublicCategories();
 
-  const grouped = data ? groupByCategory(data) : null;
-  const isSearchMode = !!debouncedSearch;
+  // Map dbCategories to format needed by CategorySidebarNav and pills
+  const allCategories = (dbCategories || []).map((c: { name: string; alt?: string }) => ({
+    name: c.name,
+    icon: c.alt || "🪑",
+  }));
+
+  const grouped = data ? groupByCategory(data, allCategories) : null;
+  const isSearchMode = !!debouncedSearch || !!categoryParam;
 
   return (
     <MainLayout>
@@ -180,12 +191,17 @@ export default function ProductsPage() {
               marginTop: "1.75rem",
             }}
           >
-            {CATEGORY_CONFIG.map(({ name, icon }) => (
+            {allCategories.map(({ name, icon }: { name: string; icon: string }) => {
+              const isActive = categoryParam === name;
+              return (
               <button
                 key={name}
                 onClick={() => {
-                  const id = `section-${name.toLowerCase().replace(/\s+/g, "-")}`;
-                  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  if (isActive) {
+                    router.push("/products");
+                  } else {
+                    router.push(`/products?category=${encodeURIComponent(name)}`);
+                  }
                 }}
                 style={{
                   display: "inline-flex",
@@ -195,9 +211,10 @@ export default function ProductsPage() {
                   borderRadius: "var(--radius-full)",
                   fontSize: "0.8rem",
                   fontWeight: 600,
-                  border: "1.5px solid rgba(255,255,255,0.12)",
-                  background: "rgba(255,255,255,0.06)",
-                  color: "rgba(250,249,247,0.7)",
+                  border: "1.5px solid",
+                  borderColor: isActive ? "rgba(201,169,110,0.55)" : "rgba(255,255,255,0.12)",
+                  background: isActive ? "rgba(201,169,110,0.12)" : "rgba(255,255,255,0.06)",
+                  color: isActive ? "var(--accent)" : "rgba(250,249,247,0.7)",
                   cursor: "pointer",
                   transition: "all 0.18s ease",
                   fontFamily: "var(--font-sans)",
@@ -219,7 +236,7 @@ export default function ProductsPage() {
                 <span>{icon}</span>
                 {name}
               </button>
-            ))}
+            )})}
           </div>
         </div>
       </div>
@@ -309,11 +326,13 @@ export default function ProductsPage() {
                   </h2>
                   <p style={{ fontSize: "0.875rem", color: "var(--fg-muted)" }}>
                     {data?.length ?? 0} result
-                    {(data?.length ?? 0) !== 1 ? "s" : ""} for &ldquo;
-                    <strong style={{ color: "var(--fg-secondary)" }}>
-                      {search}
-                    </strong>
-                    &rdquo;
+                    {(data?.length ?? 0) !== 1 ? "s" : ""}
+                    {search ? (
+                      <> for &ldquo;<strong style={{ color: "var(--fg-secondary)" }}>{search}</strong>&rdquo;</>
+                    ) : null}
+                    {categoryParam ? (
+                      <> in category <strong style={{ color: "var(--fg-secondary)" }}>{categoryParam}</strong></>
+                    ) : null}
                   </p>
                 </div>
                 <button
@@ -361,8 +380,9 @@ export default function ProductsPage() {
           {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
             <div>
-              {CATEGORY_CONFIG.map(({ name, icon }) => {
+              {allCategories.map(({ name, icon }: { name: string; icon: string }) => {
                 const products = grouped?.get(name) ?? [];
+                if (products.length === 0) return null; // Don't show empty sections
                 return (
                   <div
                     key={name}
@@ -380,22 +400,6 @@ export default function ProductsPage() {
                 );
               })}
 
-              {/* Uncategorized / custom categories */}
-              {grouped &&
-                Array.from(grouped.entries())
-                  .filter(
-                    ([cat]) =>
-                      !CATEGORY_CONFIG.some((c) => c.name === cat)
-                  )
-                  .map(([cat, products]) => (
-                    <CategorySection
-                      key={cat}
-                      category={cat}
-                      icon="🪑"
-                      products={products}
-                    />
-                  ))}
-
               {/* All sections empty */}
               {data.length === 0 && <ProductEmpty />}
             </div>
@@ -403,5 +407,13 @@ export default function ProductsPage() {
         </div>
       </div>
     </MainLayout>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center", minHeight: "70vh" }}>Loading...</div></MainLayout>}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

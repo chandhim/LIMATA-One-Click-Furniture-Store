@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
 import { useDeleteProduct } from "@/features/admin-products/hooks/use-delete-product";
 import type { Product } from "@/features/products/types/product.types";
-import { Edit3, Trash2, Plus } from "lucide-react";
+import { Edit3, Trash2, Plus, Search } from "lucide-react";
 
 export function ProductTable() {
   const { data: products, isLoading } = useAdminProducts();
@@ -111,18 +111,95 @@ export function ProductTable() {
         border: "1px solid var(--border)",
         borderRadius: "var(--radius-lg)",
         overflow: "hidden",
-        boxShadow: "var(--shadow-sm)"
+        boxShadow: "var(--shadow-sm)",
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        minHeight: 0
       }}
     >
-      <div style={{ overflowX: "auto" }}>
+      {/* Search & Filter Toolbar */}
+      <div 
+        style={{ 
+          padding: "1rem 1.5rem", 
+          borderBottom: "1px solid var(--border)", 
+          display: "flex", 
+          gap: "1rem",
+          alignItems: "center",
+          flexWrap: "wrap"
+        }}
+      >
+        <div style={{ position: "relative", flex: 1, minWidth: "200px", maxWidth: "320px" }}>
+          <input 
+            type="text" 
+            placeholder="Search products by name or SKU..." 
+            style={{
+              width: "100%",
+              padding: "0.5rem 1rem 0.5rem 2.25rem",
+              fontSize: "0.85rem",
+              background: "var(--bg-base)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius-md)",
+              color: "var(--fg-primary)",
+              outline: "none",
+              transition: "border-color 0.2s"
+            }}
+            onFocus={(e) => e.target.style.borderColor = "var(--accent)"}
+            onBlur={(e) => e.target.style.borderColor = "var(--border)"}
+          />
+          <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--fg-muted)" }} />
+        </div>
+        <select 
+          style={{
+            padding: "0.5rem 2rem 0.5rem 1rem",
+            fontSize: "0.85rem",
+            background: "var(--bg-base)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-md)",
+            color: "var(--fg-primary)",
+            outline: "none",
+            cursor: "pointer",
+            appearance: "none",
+            backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 0.7rem top 50%",
+            backgroundSize: "0.65rem auto"
+          }}
+        >
+          <option value="all">All Categories</option>
+          <option value="living">Living Room</option>
+          <option value="bedroom">Bedroom</option>
+          <option value="dining">Dining Room</option>
+          <option value="office">Office</option>
+        </select>
+        <select 
+          style={{
+            padding: "0.5rem 2rem 0.5rem 1rem",
+            fontSize: "0.85rem",
+            background: "var(--bg-base)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-md)",
+            color: "var(--fg-primary)",
+            outline: "none",
+            cursor: "pointer",
+            appearance: "none",
+            backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 0.7rem top 50%",
+            backgroundSize: "0.65rem auto"
+          }}
+        >
+          <option value="all">Stock Status</option>
+          <option value="in-stock">In Stock</option>
+          <option value="low">Low Stock</option>
+          <option value="out">Out of Stock</option>
+        </select>
+      </div>
+
+      <div style={{ overflow: "auto", flex: 1 }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr
-              style={{
-                background: "var(--bg-elevated)",
-                borderBottom: "1px solid var(--border)",
-              }}
-            >
+          <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+            <tr>
               {["Preview", "Design Name", "Room Category", "Retail Price", "Inventory", "Actions"].map((h) => (
                 <th
                   key={h}

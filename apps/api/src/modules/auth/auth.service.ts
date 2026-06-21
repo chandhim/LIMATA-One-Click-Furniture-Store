@@ -9,6 +9,7 @@ import {
   updateUser,
 } from "./auth.repository";
 import type { AuthPayload, AuthUser, LoginInput, RegisterInput } from "./auth.types";
+import { createNotification } from "../notifications/notification.service";
 
 function mapUser(user: User): AuthUser {
   return {
@@ -121,6 +122,16 @@ export async function updateUserProfile(
     ...data,
     name,
   });
+
+  // Ignore avatar update for this notification as it has its own
+  if (Object.keys(data).some((k) => k !== "avatarUrl" && data[k as keyof typeof data] !== undefined)) {
+    await createNotification({
+      userId,
+      type: "PROFILE_UPDATED",
+      title: "Profile Updated",
+      message: "Your profile details have been updated successfully.",
+    });
+  }
 
   return mapUser(updated);
 }

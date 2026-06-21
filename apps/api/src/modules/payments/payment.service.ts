@@ -68,7 +68,17 @@ export function generatePaymentHash(
   };
 }
  
-export function verifyPayHereSignature(body: any): boolean {
+interface PayHereNotification {
+  merchant_id?: string;
+  order_id?: string;
+  payhere_amount?: string;
+  payhere_currency?: string;
+  status_code?: string;
+  md5sig?: string;
+  [key: string]: unknown;
+}
+
+export function verifyPayHereSignature(body: PayHereNotification): boolean {
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
@@ -111,13 +121,13 @@ export function verifyPayHereSignature(body: any): boolean {
   return calculatedSig === md5sig?.toUpperCase();
 }
 
-export async function processPayHereNotification(body: any) {
+export async function processPayHereNotification(body: PayHereNotification) {
   const isValid = verifyPayHereSignature(body);
   if (!isValid) {
     throw new ApiError(400, "Invalid payment signature verification");
   }
 
-  const { order_id, status_code, payhere_amount } = body;
+  const { order_id, status_code, payhere_amount: _payhere_amount } = body;
 
   // Retrieve the order details
   const order = await findOrder(order_id);
