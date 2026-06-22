@@ -182,8 +182,6 @@ export default function AdminOverviewPage() {
         background: "var(--bg-base)",
       }}
     >
-
-
       {/* Stats Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-10">
         {statCards.map((stat, idx) => (
@@ -266,7 +264,6 @@ export default function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Hand Column (Charts & Orders) */}
         <div className="lg:col-span-8 flex flex-col gap-8">
-
           {/* Recent Orders List */}
           <div
             style={{
@@ -472,8 +469,6 @@ export default function AdminOverviewPage() {
 
         {/* Right Hand Column (Feeds & Alerts) */}
         <div className="lg:col-span-4 flex flex-col gap-8">
-
-
           {/* Support Customer Messages */}
           <div
             style={{

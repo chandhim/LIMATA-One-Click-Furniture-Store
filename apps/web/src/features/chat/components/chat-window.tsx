@@ -21,31 +21,35 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
 
   if (isLoading) {
     return (
-      <div 
-        style={{ 
-          flex: 1, 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           minHeight: "100%",
-          color: "var(--fg-muted)"
+          color: "var(--fg-muted)",
         }}
       >
-        <Loader2 className="animate-spin" size={28} style={{ color: "var(--accent)" }} />
+        <Loader2
+          className="animate-spin"
+          size={28}
+          style={{ color: "var(--accent)" }}
+        />
       </div>
     );
   }
 
   if (!conversation) {
     return (
-      <div 
-        style={{ 
-          flex: 1, 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           color: "var(--fg-muted)",
-          fontSize: "0.875rem"
+          fontSize: "0.875rem",
         }}
       >
         <p>Conversation not found</p>
@@ -60,31 +64,50 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
   const customerCode = conversation.customerId.slice(-6).toUpperCase();
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       {/* Active Conversation Header */}
-      <div 
-        style={{ 
-          borderBottom: "1px solid var(--border)", 
-          padding: "1.25rem 1.5rem", 
+      <div
+        style={{
+          borderBottom: "1px solid var(--border)",
+          padding: "1.25rem 1.5rem",
           background: "var(--bg-surface)",
           display: "flex",
           flexDirection: "column",
-          gap: "0.25rem"
+          gap: "0.25rem",
         }}
       >
-        <h2 style={{ fontSize: "0.9375rem", fontWeight: 700, color: "var(--fg-primary)", margin: 0 }}>
+        <h2
+          style={{
+            fontSize: "0.9375rem",
+            fontWeight: 700,
+            color: "var(--fg-primary)",
+            margin: 0,
+          }}
+        >
           {conversation.customerId === currentUserId
             ? "Support Assistant"
             : `Active Session: ${conversation.customer?.name || `Customer #${customerCode}`}`}
         </h2>
         <p style={{ fontSize: "0.75rem", color: "var(--fg-muted)", margin: 0 }}>
-          Started {new Date(conversation.createdAt).toLocaleDateString([], { year: "numeric", month: "long", day: "numeric" })}
+          Started{" "}
+          {new Date(conversation.createdAt).toLocaleDateString([], {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
       </div>
 
       {/* Messages Feed */}
       <MessageList messages={messages} currentUserId={currentUserId} />
-      
+
       {/* Input Form Bar */}
       <MessageInput onSendMessage={handleSendMessage} isSending={isSending} />
     </div>

@@ -8,7 +8,12 @@ import {
   findUserById,
   updateUser,
 } from "./auth.repository";
-import type { AuthPayload, AuthUser, LoginInput, RegisterInput } from "./auth.types";
+import type {
+  AuthPayload,
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+} from "./auth.types";
 import { createNotification } from "../notifications/notification.service";
 
 function mapUser(user: User): AuthUser {
@@ -64,7 +69,10 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
   }
 
   if (user.isActive === false) {
-    throw new ApiError(403, "Your account has been disabled. Please contact support.");
+    throw new ApiError(
+      403,
+      "Your account has been disabled. Please contact support.",
+    );
   }
 
   const passwordMatches = await bcrypt.compare(input.password, user.password);
@@ -111,8 +119,10 @@ export async function updateUserProfile(
   }
 
   let name = user.name;
-  const newFirstName = data.firstName !== undefined ? data.firstName : user.firstName;
-  const newLastName = data.lastName !== undefined ? data.lastName : user.lastName;
+  const newFirstName =
+    data.firstName !== undefined ? data.firstName : user.firstName;
+  const newLastName =
+    data.lastName !== undefined ? data.lastName : user.lastName;
 
   if (newFirstName || newLastName) {
     name = `${newFirstName || ""} ${newLastName || ""}`.trim() || user.name;
@@ -124,7 +134,11 @@ export async function updateUserProfile(
   });
 
   // Ignore avatar update for this notification as it has its own
-  if (Object.keys(data).some((k) => k !== "avatarUrl" && data[k as keyof typeof data] !== undefined)) {
+  if (
+    Object.keys(data).some(
+      (k) => k !== "avatarUrl" && data[k as keyof typeof data] !== undefined,
+    )
+  ) {
     await createNotification({
       userId,
       type: "PROFILE_UPDATED",
@@ -134,4 +148,4 @@ export async function updateUserProfile(
   }
 
   return mapUser(updated);
-}
+}

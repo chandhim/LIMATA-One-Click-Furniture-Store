@@ -10,7 +10,10 @@ interface ProductPreviewCardProps {
   isMine: boolean;
 }
 
-export function ProductPreviewCard({ productId, isMine }: ProductPreviewCardProps) {
+export function ProductPreviewCard({
+  productId,
+  isMine,
+}: ProductPreviewCardProps) {
   const { data: product, isLoading, isError } = useProduct(productId);
 
   if (isLoading) {
@@ -23,7 +26,9 @@ export function ProductPreviewCard({ productId, isMine }: ProductPreviewCardProp
           padding: "1rem",
           background: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-surface)",
           borderRadius: "var(--radius-md)",
-          border: isMine ? "1px solid rgba(255,255,255,0.2)" : "1px solid var(--border)",
+          border: isMine
+            ? "1px solid rgba(255,255,255,0.2)"
+            : "1px solid var(--border)",
           color: isMine ? "#fff" : "var(--fg-primary)",
         }}
       >
@@ -40,7 +45,9 @@ export function ProductPreviewCard({ productId, isMine }: ProductPreviewCardProp
           padding: "1rem",
           background: isMine ? "rgba(255,255,255,0.1)" : "var(--bg-surface)",
           borderRadius: "var(--radius-md)",
-          border: isMine ? "1px solid rgba(255,255,255,0.2)" : "1px solid var(--border)",
+          border: isMine
+            ? "1px solid rgba(255,255,255,0.2)"
+            : "1px solid var(--border)",
           color: isMine ? "#fff" : "var(--fg-primary)",
           fontSize: "0.85rem",
         }}

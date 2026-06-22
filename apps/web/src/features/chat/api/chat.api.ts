@@ -16,7 +16,9 @@ export async function getConversations(): Promise<Conversation[]> {
     }>("/chat/conversations");
     return response.data.data.conversations;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Failed to get conversations");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to get conversations",
+    );
   }
 }
 
@@ -32,11 +34,15 @@ export async function startConversation(): Promise<Conversation> {
     if (axiosError?.response?.status === 409) {
       throw new Error("You already have an active conversation");
     }
-    throw new Error(error instanceof Error ? error.message : "Failed to start conversation");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to start conversation",
+    );
   }
 }
 
-export async function getConversation(conversationId: string): Promise<Conversation> {
+export async function getConversation(
+  conversationId: string,
+): Promise<Conversation> {
   try {
     const response = await api.get<{
       success: boolean;
@@ -44,7 +50,9 @@ export async function getConversation(conversationId: string): Promise<Conversat
     }>(`/chat/conversations/${conversationId}`);
     return response.data.data.conversation;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Failed to get conversation");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to get conversation",
+    );
   }
 }
 
@@ -65,6 +73,8 @@ export async function getMessages(
 
     return response.data.data.messages;
   } catch (error) {
-    throw new Error(error instanceof Error ? error.message : "Failed to get messages");
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to get messages",
+    );
   }
 }

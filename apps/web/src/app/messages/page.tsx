@@ -3,7 +3,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 import { Loader2, MessageSquare, Plus } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
-import { useConversations, useStartConversation } from "@/features/chat/hooks/use-chat";
+import {
+  useConversations,
+  useStartConversation,
+} from "@/features/chat/hooks/use-chat";
 import type { Conversation } from "@/features/chat/types/chat.types";
 import { MainLayout } from "@/components/layout/main-layout";
 
@@ -57,7 +60,8 @@ function ConversationCard({
           width: 48,
           height: 48,
           borderRadius: "50%",
-          background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+          background:
+            "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -80,7 +84,9 @@ function ConversationCard({
             color: "var(--fg-primary)",
           }}
         >
-          {isAdmin ? `Customer #${conversation.customerId.slice(-6)}` : "LIMATA Support"}
+          {isAdmin
+            ? `Customer #${conversation.customerId.slice(-6)}`
+            : "LIMATA Support"}
         </p>
         {lastMsg ? (
           <p
@@ -96,7 +102,14 @@ function ConversationCard({
             {lastMsg.content}
           </p>
         ) : (
-          <p style={{ margin: "0.25rem 0 0", fontSize: "0.8125rem", color: "var(--fg-muted)", fontStyle: "italic" }}>
+          <p
+            style={{
+              margin: "0.25rem 0 0",
+              fontSize: "0.8125rem",
+              color: "var(--fg-muted)",
+              fontStyle: "italic",
+            }}
+          >
             No messages yet
           </p>
         )}
@@ -123,7 +136,11 @@ function MessagesPageContent() {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data: conversations = [], isLoading } = useConversations();
-  const { start, isLoading: isStarting, error: startError } = useStartConversation();
+  const {
+    start,
+    isLoading: isStarting,
+    error: startError,
+  } = useStartConversation();
   const isAdmin = user?.role === "ADMIN";
 
   const hasAttemptedRef = useRef(false);
@@ -136,12 +153,22 @@ function MessagesPageContent() {
 
   useEffect(() => {
     if (productId && conversations.length > 0 && isAdmin && !isLoading) {
-      router.replace(`/messages/${conversations[0].conversationId}?productId=${productId}`);
-    } else if (productId && conversations.length === 0 && isAdmin && !isLoading && !hasAttemptedRef.current) {
+      router.replace(
+        `/messages/${conversations[0].conversationId}?productId=${productId}`,
+      );
+    } else if (
+      productId &&
+      conversations.length === 0 &&
+      isAdmin &&
+      !isLoading &&
+      !hasAttemptedRef.current
+    ) {
       hasAttemptedRef.current = true;
       start().then((conv) => {
         if (conv) {
-          router.replace(`/messages/${conv.conversationId}?productId=${productId}`);
+          router.replace(
+            `/messages/${conv.conversationId}?productId=${productId}`,
+          );
         }
       });
     }
@@ -167,7 +194,9 @@ function MessagesPageContent() {
             gap: "1rem",
           }}
         >
-          <p style={{ color: "var(--fg-muted)" }}>Please sign in to view your messages.</p>
+          <p style={{ color: "var(--fg-muted)" }}>
+            Please sign in to view your messages.
+          </p>
         </div>
       </MainLayout>
     );
@@ -226,7 +255,10 @@ function MessagesPageContent() {
               }}
             >
               {isStarting ? (
-                <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+                <Loader2
+                  size={16}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
               ) : (
                 <Plus size={16} />
               )}
@@ -264,7 +296,10 @@ function MessagesPageContent() {
               color: "var(--fg-muted)",
             }}
           >
-            <Loader2 size={24} style={{ animation: "spin 1s linear infinite" }} />
+            <Loader2
+              size={24}
+              style={{ animation: "spin 1s linear infinite" }}
+            />
             <span>Loading conversations…</span>
           </div>
         ) : conversations.length === 0 ? (
@@ -304,7 +339,13 @@ function MessagesPageContent() {
               >
                 {isAdmin ? "No customer conversations yet" : "No messages yet"}
               </p>
-              <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--fg-muted)" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.875rem",
+                  color: "var(--fg-muted)",
+                }}
+              >
                 {isAdmin
                   ? "Customer conversations will appear here."
                   : "Start a conversation to get help from our team."}
@@ -329,7 +370,10 @@ function MessagesPageContent() {
                 }}
               >
                 {isStarting ? (
-                  <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+                  <Loader2
+                    size={16}
+                    style={{ animation: "spin 1s linear infinite" }}
+                  />
                 ) : (
                   <MessageSquare size={16} />
                 )}
@@ -338,7 +382,9 @@ function MessagesPageContent() {
             )}
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+          >
             {conversations.map((conv) => (
               <ConversationCard
                 key={conv.conversationId}
@@ -357,7 +403,13 @@ function MessagesPageContent() {
 
 export default function MessagesPage() {
   return (
-    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div></MainLayout>}>
+    <Suspense
+      fallback={
+        <MainLayout>
+          <div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div>
+        </MainLayout>
+      }
+    >
       <MessagesPageContent />
     </Suspense>
   );

@@ -19,9 +19,7 @@ export function ProductSearch({
   const fontSize = large ? "1rem" : "0.9rem";
   const iconSize = large ? 18 : 16;
   const iconLeft = large ? "1.125rem" : "0.875rem";
-  const inputPadding = large
-    ? "0 1.125rem 0 3rem"
-    : "0 0.875rem 0 2.5rem";
+  const inputPadding = large ? "0 1.125rem 0 3rem" : "0 0.875rem 0 2.5rem";
 
   return (
     <div
@@ -37,13 +35,16 @@ export function ProductSearch({
       }}
       onFocusCapture={(e) => {
         if (large) {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,169,110,0.55)";
-          (e.currentTarget as HTMLElement).style.boxShadow = "0 0 0 4px rgba(201,169,110,0.12)";
+          (e.currentTarget as HTMLElement).style.borderColor =
+            "rgba(201,169,110,0.55)";
+          (e.currentTarget as HTMLElement).style.boxShadow =
+            "0 0 0 4px rgba(201,169,110,0.12)";
         }
       }}
       onBlurCapture={(e) => {
         if (large) {
-          (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
+          (e.currentTarget as HTMLElement).style.borderColor =
+            "rgba(255,255,255,0.15)";
           (e.currentTarget as HTMLElement).style.boxShadow = "none";
         }
       }}

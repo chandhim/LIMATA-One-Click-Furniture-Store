@@ -12,13 +12,25 @@ export async function fetchCart(): Promise<Cart> {
   return res.data.data;
 }
 
-export async function addToCart(productId: string, quantity: number): Promise<Cart> {
-  const res = await api.post<ApiResponse<Cart>>("/cart/items", { productId, quantity });
+export async function addToCart(
+  productId: string,
+  quantity: number,
+): Promise<Cart> {
+  const res = await api.post<ApiResponse<Cart>>("/cart/items", {
+    productId,
+    quantity,
+  });
   return res.data.data;
 }
 
-export async function updateCartItem(cartItemId: string, quantity: number): Promise<CartItem> {
-  const res = await api.patch<ApiResponse<CartItem>>(`/cart/items/${cartItemId}`, { quantity });
+export async function updateCartItem(
+  cartItemId: string,
+  quantity: number,
+): Promise<CartItem> {
+  const res = await api.patch<ApiResponse<CartItem>>(
+    `/cart/items/${cartItemId}`,
+    { quantity },
+  );
   return res.data.data;
 }
 

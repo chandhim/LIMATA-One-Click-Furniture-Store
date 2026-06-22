@@ -9,7 +9,9 @@ interface ModelUploadProps {
 }
 
 export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
-  const [fileName, setFileName] = useState<string | null>(initialUrl ? "Existing model" : null);
+  const [fileName, setFileName] = useState<string | null>(
+    initialUrl ? "Existing model" : null,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -26,12 +28,12 @@ export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
 
   return (
     <div>
-      <input 
-        type="file" 
-        accept=".glb" 
-        onChange={handleChange} 
-        ref={fileInputRef} 
-        style={{ display: "none" }} 
+      <input
+        type="file"
+        accept=".glb"
+        onChange={handleChange}
+        ref={fileInputRef}
+        style={{ display: "none" }}
       />
 
       {/* Custom upload dropzone */}
@@ -49,7 +51,7 @@ export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
           alignItems: "center",
           justifyContent: "center",
           transition: "all 0.2s ease",
-          gap: "0.5rem"
+          gap: "0.5rem",
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget as HTMLElement;
@@ -62,8 +64,17 @@ export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
           el.style.background = "var(--bg-elevated)";
         }}
       >
-        <UploadCloud size={24} style={{ color: "var(--fg-muted)", opacity: 0.7 }} />
-        <span style={{ fontSize: "0.85rem", color: "var(--fg-secondary)", fontWeight: 600 }}>
+        <UploadCloud
+          size={24}
+          style={{ color: "var(--fg-muted)", opacity: 0.7 }}
+        />
+        <span
+          style={{
+            fontSize: "0.85rem",
+            color: "var(--fg-secondary)",
+            fontWeight: 600,
+          }}
+        >
           Upload 3D AR Model
         </span>
         <span style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}>
@@ -72,11 +83,11 @@ export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
       </div>
 
       {fileName && (
-        <div 
-          style={{ 
-            marginTop: "1rem", 
-            display: "inline-flex", 
-            alignItems: "center", 
+        <div
+          style={{
+            marginTop: "1rem",
+            display: "inline-flex",
+            alignItems: "center",
             gap: "0.375rem",
             padding: "0.375rem 0.75rem",
             background: "rgba(201,169,110,0.08)",
@@ -84,7 +95,7 @@ export function ModelUpload({ onChange, initialUrl }: ModelUploadProps) {
             borderRadius: "var(--radius-sm)",
             fontSize: "0.78rem",
             fontWeight: 600,
-            color: "var(--accent-dark)"
+            color: "var(--accent-dark)",
           }}
         >
           <Box size={12} />

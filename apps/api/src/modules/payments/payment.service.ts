@@ -45,21 +45,21 @@ export function generatePaymentHash(
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
     "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
- 
+
   const formattedAmount = amount.toFixed(2);
   const secretMd5 = crypto
     .createHash("md5")
     .update(merchantSecret)
     .digest("hex")
     .toUpperCase();
- 
+
   const payload = merchantId + orderId + formattedAmount + currency + secretMd5;
   const hash = crypto
     .createHash("md5")
     .update(payload)
     .digest("hex")
     .toUpperCase();
- 
+
   return {
     merchantId,
     hash,
@@ -67,7 +67,7 @@ export function generatePaymentHash(
     currency,
   };
 }
- 
+
 interface PayHereNotification {
   merchant_id?: string;
   order_id?: string;
@@ -83,7 +83,7 @@ export function verifyPayHereSignature(body: PayHereNotification): boolean {
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
     "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
- 
+
   const {
     merchant_id,
     order_id,
@@ -92,14 +92,14 @@ export function verifyPayHereSignature(body: PayHereNotification): boolean {
     status_code,
     md5sig,
   } = body;
- 
+
   if (merchant_id !== merchantId) {
     console.warn(
       "PayHere notification verification failed: merchant_id mismatch.",
     );
     return false;
   }
- 
+
   const secretMd5 = crypto
     .createHash("md5")
     .update(merchantSecret)
@@ -117,7 +117,7 @@ export function verifyPayHereSignature(body: PayHereNotification): boolean {
     .update(payload)
     .digest("hex")
     .toUpperCase();
- 
+
   return calculatedSig === md5sig?.toUpperCase();
 }
 

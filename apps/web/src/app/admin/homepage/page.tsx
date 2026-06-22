@@ -1,19 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAdminSettings, useUpdateSetting } from "@/features/admin/hooks/use-admin";
+import {
+  useAdminSettings,
+  useUpdateSetting,
+} from "@/features/admin/hooks/use-admin";
 import { Home, Sparkles, Layers, List, Save } from "lucide-react";
 
 type Tab = "hero" | "features" | "products" | "ai";
 
-const tabs: { id: Tab; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+const tabs: {
+  id: Tab;
+  label: string;
+  icon: React.ComponentType<{ size?: number }>;
+}[] = [
   { id: "hero", label: "Hero Banner", icon: Home },
   { id: "features", label: "Highlights Banner", icon: List },
   { id: "products", label: "Featured Collections", icon: Layers },
   { id: "ai", label: "AI & AR Placement", icon: Sparkles },
 ];
 
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div
       style={{
@@ -22,7 +35,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
         borderRadius: "var(--radius-lg)",
         padding: "1.75rem",
         marginBottom: "1.5rem",
-        boxShadow: "var(--shadow-sm)"
+        boxShadow: "var(--shadow-sm)",
       }}
     >
       <h3
@@ -42,19 +55,56 @@ function SectionCard({ title, children }: { title: string; children: React.React
   );
 }
 
-function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function FormField({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div style={{ marginBottom: "1.25rem" }}>
-      <label style={{ display: "block", fontSize: "0.72rem", fontWeight: 700, color: "var(--fg-secondary)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "0.5rem" }}>
+      <label
+        style={{
+          display: "block",
+          fontSize: "0.72rem",
+          fontWeight: 700,
+          color: "var(--fg-secondary)",
+          letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          marginBottom: "0.5rem",
+        }}
+      >
         {label}
       </label>
       {children}
-      {hint && <p style={{ marginTop: "0.375rem", fontSize: "0.75rem", color: "var(--fg-muted)", margin: 0 }}>{hint}</p>}
+      {hint && (
+        <p
+          style={{
+            marginTop: "0.375rem",
+            fontSize: "0.75rem",
+            color: "var(--fg-muted)",
+            margin: 0,
+          }}
+        >
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
 
-function SaveButton({ onClick, saved, disabled }: { onClick: () => void; saved: boolean; disabled?: boolean }) {
+function SaveButton({
+  onClick,
+  saved,
+  disabled,
+}: {
+  onClick: () => void;
+  saved: boolean;
+  disabled?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
@@ -73,7 +123,7 @@ function SaveButton({ onClick, saved, disabled }: { onClick: () => void; saved: 
         gap: "0.5rem",
         opacity: disabled ? 0.7 : 1,
         boxShadow: disabled ? "none" : "var(--shadow-accent)",
-        transition: "all 0.2s ease"
+        transition: "all 0.2s ease",
       }}
     >
       <Save size={14} />
@@ -90,7 +140,8 @@ export default function AdminHomepagePage() {
   // 1. Hero State
   const [heroForm, setHeroForm] = useState({
     title: "Crafted for the Way You Live.",
-    subtitle: "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.",
+    subtitle:
+      "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.",
     primaryBtn: "Browse Collection",
     secondaryBtn: "Explore Rooms",
   });
@@ -98,18 +149,49 @@ export default function AdminHomepagePage() {
 
   // 2. Features State
   const [featuresList, setFeaturesList] = useState([
-    { id: "1", title: "Curated Quality", desc: "Every piece hand-selected by our interior design team." },
-    { id: "2", title: "Secure Payments", desc: "End-to-end encrypted checkout on every order." },
-    { id: "3", title: "White-Glove Delivery", desc: "Professional assembly and delivery to your door." },
-    { id: "4", title: "AR Visualization", desc: "See exactly how any piece looks in your home." },
+    {
+      id: "1",
+      title: "Curated Quality",
+      desc: "Every piece hand-selected by our interior design team.",
+    },
+    {
+      id: "2",
+      title: "Secure Payments",
+      desc: "End-to-end encrypted checkout on every order.",
+    },
+    {
+      id: "3",
+      title: "White-Glove Delivery",
+      desc: "Professional assembly and delivery to your door.",
+    },
+    {
+      id: "4",
+      title: "AR Visualization",
+      desc: "See exactly how any piece looks in your home.",
+    },
   ]);
   const [featuresSaved, setFeaturesSaved] = useState(false);
 
   // 3. AI Features State
   const [aiFeaturesList, setAiFeaturesList] = useState([
-    { id: "1", title: "3D Visualization", desc: "Rotate and inspect every detail before you buy.", badge: "Coming Soon" },
-    { id: "2", title: "AR Placement", desc: "Drop any piece into your room via your phone camera.", badge: "Beta" },
-    { id: "3", title: "AI Style Match", desc: "Tell us your aesthetic — our AI recommends pieces that work together.", badge: "Coming Soon" },
+    {
+      id: "1",
+      title: "3D Visualization",
+      desc: "Rotate and inspect every detail before you buy.",
+      badge: "Coming Soon",
+    },
+    {
+      id: "2",
+      title: "AR Placement",
+      desc: "Drop any piece into your room via your phone camera.",
+      badge: "Beta",
+    },
+    {
+      id: "3",
+      title: "AI Style Match",
+      desc: "Tell us your aesthetic — our AI recommends pieces that work together.",
+      badge: "Coming Soon",
+    },
   ]);
   const [aiSaved, setAiSaved] = useState(false);
 
@@ -129,7 +211,10 @@ export default function AdminHomepagePage() {
   // Save Handlers
   async function saveHero() {
     try {
-      await updateSettingMutation.mutateAsync({ key: "homepage_hero", value: heroForm });
+      await updateSettingMutation.mutateAsync({
+        key: "homepage_hero",
+        value: heroForm,
+      });
       setHeroSaved(true);
       setTimeout(() => setHeroSaved(false), 2000);
     } catch (err) {
@@ -139,7 +224,10 @@ export default function AdminHomepagePage() {
 
   async function saveFeatures() {
     try {
-      await updateSettingMutation.mutateAsync({ key: "homepage_features", value: featuresList });
+      await updateSettingMutation.mutateAsync({
+        key: "homepage_features",
+        value: featuresList,
+      });
       setFeaturesSaved(true);
       setTimeout(() => setFeaturesSaved(false), 2000);
     } catch (err) {
@@ -149,7 +237,10 @@ export default function AdminHomepagePage() {
 
   async function saveAiFeatures() {
     try {
-      await updateSettingMutation.mutateAsync({ key: "homepage_ai", value: aiFeaturesList });
+      await updateSettingMutation.mutateAsync({
+        key: "homepage_ai",
+        value: aiFeaturesList,
+      });
       setAiSaved(true);
       setTimeout(() => setAiSaved(false), 2000);
     } catch (err) {
@@ -159,19 +250,28 @@ export default function AdminHomepagePage() {
 
   if (isLoading) {
     return (
-      <div 
-        style={{ 
-          padding: "4rem", 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
-          minHeight: "80vh", 
-          color: "var(--fg-muted)", 
+      <div
+        style={{
+          padding: "4rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "80vh",
+          color: "var(--fg-muted)",
           gap: "0.75rem",
-          background: "var(--bg-base)"
+          background: "var(--bg-base)",
         }}
       >
-        <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--accent)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            border: "2px solid var(--accent)",
+            borderTopColor: "transparent",
+            animation: "spin 0.7s linear infinite",
+          }}
+        />
         <span>Loading Settings...</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -181,16 +281,40 @@ export default function AdminHomepagePage() {
   const mutating = updateSettingMutation.isPending;
 
   return (
-    <div style={{ padding: "2.5rem 2rem", maxWidth: 1000, margin: "0 auto", background: "var(--bg-base)", minHeight: "100vh" }}>
-      
+    <div
+      style={{
+        padding: "2.5rem 2rem",
+        maxWidth: 1000,
+        margin: "0 auto",
+        background: "var(--bg-base)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header */}
       <div style={{ marginBottom: "2rem" }}>
-        <div className="section-label" style={{ marginBottom: "0.75rem" }}>Storefront</div>
-        <h1 className="font-display" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 700, color: "var(--fg-primary)", letterSpacing: "-0.025em" }}>
+        <div className="section-label" style={{ marginBottom: "0.75rem" }}>
+          Storefront
+        </div>
+        <h1
+          className="font-display"
+          style={{
+            fontSize: "clamp(1.5rem, 3vw, 2rem)",
+            fontWeight: 700,
+            color: "var(--fg-primary)",
+            letterSpacing: "-0.025em",
+          }}
+        >
           Homepage Content Editor
         </h1>
-        <p style={{ marginTop: "0.375rem", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-          Modify public banner content, highlight lists, and promotional headings.
+        <p
+          style={{
+            marginTop: "0.375rem",
+            fontSize: "0.875rem",
+            color: "var(--fg-secondary)",
+          }}
+        >
+          Modify public banner content, highlight lists, and promotional
+          headings.
         </p>
       </div>
 
@@ -223,17 +347,21 @@ export default function AdminHomepagePage() {
                 fontWeight: isActive ? 600 : 500,
                 color: isActive ? "var(--fg-primary)" : "var(--fg-secondary)",
                 background: isActive ? "var(--bg-surface)" : "transparent",
-                border: isActive ? "1px solid var(--border)" : "1px solid transparent",
+                border: isActive
+                  ? "1px solid var(--border)"
+                  : "1px solid transparent",
                 borderRadius: "var(--radius-lg)",
                 cursor: "pointer",
                 boxShadow: isActive ? "var(--shadow-sm)" : "none",
                 transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
               onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.color = "var(--fg-primary)";
+                if (!isActive)
+                  e.currentTarget.style.color = "var(--fg-primary)";
               }}
               onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.color = "var(--fg-secondary)";
+                if (!isActive)
+                  e.currentTarget.style.color = "var(--fg-secondary)";
               }}
             >
               <Icon size={14} />
@@ -247,23 +375,56 @@ export default function AdminHomepagePage() {
       {activeTab === "hero" && (
         <>
           <SectionCard title="Hero Banner Configuration">
-            <FormField label="Main Display Headline" hint="Drawn as the main uppercase welcome title.">
-              <input className="input-base" value={heroForm.title} onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })} />
+            <FormField
+              label="Main Display Headline"
+              hint="Drawn as the main uppercase welcome title."
+            >
+              <input
+                className="input-base"
+                value={heroForm.title}
+                onChange={(e) =>
+                  setHeroForm({ ...heroForm, title: e.target.value })
+                }
+              />
             </FormField>
             <FormField label="Subheading Subtext / Promo Summary">
-              <textarea className="input-base" rows={3} value={heroForm.subtitle} onChange={(e) => setHeroForm({ ...heroForm, subtitle: e.target.value })} style={{ resize: "vertical" }} />
+              <textarea
+                className="input-base"
+                rows={3}
+                value={heroForm.subtitle}
+                onChange={(e) =>
+                  setHeroForm({ ...heroForm, subtitle: e.target.value })
+                }
+                style={{ resize: "vertical" }}
+              />
             </FormField>
             <div className="homepage-hero-grid">
               <FormField label="Primary Action Button text">
-                <input className="input-base" value={heroForm.primaryBtn} onChange={(e) => setHeroForm({ ...heroForm, primaryBtn: e.target.value })} />
+                <input
+                  className="input-base"
+                  value={heroForm.primaryBtn}
+                  onChange={(e) =>
+                    setHeroForm({ ...heroForm, primaryBtn: e.target.value })
+                  }
+                />
               </FormField>
               <FormField label="Secondary Action Button text">
-                <input className="input-base" value={heroForm.secondaryBtn} onChange={(e) => setHeroForm({ ...heroForm, secondaryBtn: e.target.value })} />
+                <input
+                  className="input-base"
+                  value={heroForm.secondaryBtn}
+                  onChange={(e) =>
+                    setHeroForm({ ...heroForm, secondaryBtn: e.target.value })
+                  }
+                />
               </FormField>
             </div>
           </SectionCard>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <SaveButton onClick={saveHero} saved={heroSaved} disabled={mutating} />
+            <SaveButton
+              onClick={saveHero}
+              saved={heroSaved}
+              disabled={mutating}
+            />
           </div>
         </>
       )}
@@ -271,7 +432,13 @@ export default function AdminHomepagePage() {
       {activeTab === "features" && (
         <>
           <SectionCard title="Why LIMATA Highlighting Features">
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+              }}
+            >
               {featuresList.map((f, i) => (
                 <div
                   key={f.id}
@@ -282,10 +449,22 @@ export default function AdminHomepagePage() {
                     borderRadius: "var(--radius-md)",
                   }}
                 >
-                  <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--accent-dark)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
+                  <div
+                    style={{
+                      fontSize: "0.68rem",
+                      fontWeight: 700,
+                      color: "var(--accent-dark)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
                     Feature Card #{i + 1}
                   </div>
-                  <div className="homepage-features-grid" style={{ alignItems: "start" }}>
+                  <div
+                    className="homepage-features-grid"
+                    style={{ alignItems: "start" }}
+                  >
                     <input
                       className="input-base"
                       value={f.title}
@@ -314,32 +493,66 @@ export default function AdminHomepagePage() {
             </div>
           </SectionCard>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <SaveButton onClick={saveFeatures} saved={featuresSaved} disabled={mutating} />
+            <SaveButton
+              onClick={saveFeatures}
+              saved={featuresSaved}
+              disabled={mutating}
+            />
           </div>
         </>
       )}
 
       {activeTab === "products" && (
         <SectionCard title="Featured Products Collection Integration">
-          <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
-            The storefront Featured Products segment pulls products dynamically from your catalog database. Change product listings in the Catalog configuration tab to modify highlights.
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "var(--fg-secondary)",
+              lineHeight: 1.7,
+              marginBottom: "1.5rem",
+            }}
+          >
+            The storefront Featured Products segment pulls products dynamically
+            from your catalog database. Change product listings in the Catalog
+            configuration tab to modify highlights.
           </p>
-          <div 
-            style={{ 
-              padding: "2.5rem", 
-              textAlign: "center", 
-              background: "var(--bg-elevated)", 
-              borderRadius: "var(--radius-lg)", 
+          <div
+            style={{
+              padding: "2.5rem",
+              textAlign: "center",
+              background: "var(--bg-elevated)",
+              borderRadius: "var(--radius-lg)",
               border: "1px dashed var(--border-strong)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "0.75rem"
+              gap: "0.75rem",
             }}
           >
-            <Layers size={28} style={{ color: "var(--fg-muted)", opacity: 0.5 }} />
-            <p style={{ fontSize: "0.875rem", color: "var(--fg-primary)", fontWeight: 600, margin: 0 }}>Catalog integration is active</p>
-            <p style={{ fontSize: "0.78rem", color: "var(--fg-muted)", margin: 0 }}>Newly created catalog items automatically cycle onto the storefront highlights slide.</p>
+            <Layers
+              size={28}
+              style={{ color: "var(--fg-muted)", opacity: 0.5 }}
+            />
+            <p
+              style={{
+                fontSize: "0.875rem",
+                color: "var(--fg-primary)",
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
+              Catalog integration is active
+            </p>
+            <p
+              style={{
+                fontSize: "0.78rem",
+                color: "var(--fg-muted)",
+                margin: 0,
+              }}
+            >
+              Newly created catalog items automatically cycle onto the
+              storefront highlights slide.
+            </p>
           </div>
         </SectionCard>
       )}
@@ -347,7 +560,13 @@ export default function AdminHomepagePage() {
       {activeTab === "ai" && (
         <>
           <SectionCard title="Interactive AI Styles & AR Configurator Cards">
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.25rem",
+              }}
+            >
               {aiFeaturesList.map((item, i) => (
                 <div
                   key={item.id}
@@ -358,7 +577,16 @@ export default function AdminHomepagePage() {
                     borderRadius: "var(--radius-md)",
                   }}
                 >
-                  <div style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--accent-dark)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.75rem" }}>
+                  <div
+                    style={{
+                      fontSize: "0.68rem",
+                      fontWeight: 700,
+                      color: "var(--accent-dark)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.08em",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
                     AI Tool Config #{i + 1}
                   </div>
                   <div className="homepage-ai-grid">
@@ -393,7 +621,11 @@ export default function AdminHomepagePage() {
                         updated[i] = { ...item, badge: e.target.value };
                         setAiFeaturesList(updated);
                       }}
-                      style={{ background: "var(--bg-surface)", fontWeight: 600, color: "var(--accent-dark)" }}
+                      style={{
+                        background: "var(--bg-surface)",
+                        fontWeight: 600,
+                        color: "var(--accent-dark)",
+                      }}
                     />
                   </div>
                 </div>
@@ -401,11 +633,15 @@ export default function AdminHomepagePage() {
             </div>
           </SectionCard>
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <SaveButton onClick={saveAiFeatures} saved={aiSaved} disabled={mutating} />
+            <SaveButton
+              onClick={saveAiFeatures}
+              saved={aiSaved}
+              disabled={mutating}
+            />
           </div>
         </>
       )}
-      
+
       <style>{`
         .homepage-hero-grid {
           display: grid;

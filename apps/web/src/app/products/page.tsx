@@ -11,28 +11,31 @@ import { ProductSkeleton } from "@/features/products/components/product-skeleton
 import { CategorySection } from "@/features/products/components/category-section";
 import { MainLayout } from "@/components/layout/main-layout";
 import type { ProductSummary } from "@/features/products/types/product.types";
-import { 
-  Sofa, 
-  BedDouble, 
-  UtensilsCrossed, 
-  Briefcase, 
-  TreePine, 
-  ChefHat, 
+import {
+  Sofa,
+  BedDouble,
+  UtensilsCrossed,
+  Briefcase,
+  TreePine,
+  ChefHat,
   Armchair,
-  type LucideIcon 
+  type LucideIcon,
 } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "Living Room": Sofa,
-  "Bedroom": BedDouble,
+  Bedroom: BedDouble,
   "Dining Room": UtensilsCrossed,
-  "Office": Briefcase,
-  "Outdoor": TreePine,
-  "Kitchen": ChefHat,
+  Office: Briefcase,
+  Outdoor: TreePine,
+  Kitchen: ChefHat,
 };
 
 // ── Helper ──────────────────────────────────────────────────────────
-function groupByCategory(products: ProductSummary[], categories: { name: string }[]) {
+function groupByCategory(
+  products: ProductSummary[],
+  categories: { name: string }[],
+) {
   const map = new Map<string, ProductSummary[]>();
   for (const cat of categories) {
     map.set(cat.name, []);
@@ -57,17 +60,22 @@ function ProductsPageContent() {
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
-  const { data, isLoading, isError } = useProducts(debouncedSearch, categoryParam);
+  const { data, isLoading, isError } = useProducts(
+    debouncedSearch,
+    categoryParam,
+  );
   const { data: dbCategories } = usePublicCategories();
 
   // Map dbCategories to format needed by CategorySidebarNav and pills
-  const allCategories = (dbCategories || []).map((c: { name: string; alt?: string }) => {
-    const IconComponent = CATEGORY_ICONS[c.name] || Armchair;
-    return {
-      name: c.name,
-      Icon: IconComponent,
-    };
-  });
+  const allCategories = (dbCategories || []).map(
+    (c: { name: string; alt?: string }) => {
+      const IconComponent = CATEGORY_ICONS[c.name] || Armchair;
+      return {
+        name: c.name,
+        Icon: IconComponent,
+      };
+    },
+  );
 
   const grouped = data ? groupByCategory(data, allCategories) : null;
   const isSearchMode = !!debouncedSearch || !!categoryParam;
@@ -216,49 +224,56 @@ function ProductsPageContent() {
             {allCategories.map(({ name, Icon }) => {
               const isActive = categoryParam === name;
               return (
-              <button
-                key={name}
-                onClick={() => {
-                  if (isActive) {
-                    router.push("/products");
-                  } else {
-                    router.push(`/products?category=${encodeURIComponent(name)}`);
-                  }
-                }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.4rem 0.875rem",
-                  borderRadius: "var(--radius-full)",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                  border: "1.5px solid",
-                  borderColor: isActive ? "rgba(201,169,110,0.55)" : "rgba(255,255,255,0.12)",
-                  background: isActive ? "rgba(201,169,110,0.12)" : "rgba(255,255,255,0.06)",
-                  color: isActive ? "var(--accent)" : "rgba(250,249,247,0.7)",
-                  cursor: "pointer",
-                  transition: "all 0.18s ease",
-                  fontFamily: "var(--font-sans)",
-                  backdropFilter: "blur(6px)",
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = "rgba(201,169,110,0.55)";
-                  el.style.background = "rgba(201,169,110,0.12)";
-                  el.style.color = "var(--accent)";
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = "rgba(255,255,255,0.12)";
-                  el.style.background = "rgba(255,255,255,0.06)";
-                  el.style.color = "rgba(250,249,247,0.7)";
-                }}
-              >
-                <Icon size={14} strokeWidth={1.8} />
-                {name}
-              </button>
-            )})}
+                <button
+                  key={name}
+                  onClick={() => {
+                    if (isActive) {
+                      router.push("/products");
+                    } else {
+                      router.push(
+                        `/products?category=${encodeURIComponent(name)}`,
+                      );
+                    }
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.4rem 0.875rem",
+                    borderRadius: "var(--radius-full)",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    border: "1.5px solid",
+                    borderColor: isActive
+                      ? "rgba(201,169,110,0.55)"
+                      : "rgba(255,255,255,0.12)",
+                    background: isActive
+                      ? "rgba(201,169,110,0.12)"
+                      : "rgba(255,255,255,0.06)",
+                    color: isActive ? "var(--accent)" : "rgba(250,249,247,0.7)",
+                    cursor: "pointer",
+                    transition: "all 0.18s ease",
+                    fontFamily: "var(--font-sans)",
+                    backdropFilter: "blur(6px)",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = "rgba(201,169,110,0.55)";
+                    el.style.background = "rgba(201,169,110,0.12)";
+                    el.style.color = "var(--accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = "rgba(255,255,255,0.12)";
+                    el.style.background = "rgba(255,255,255,0.06)";
+                    el.style.color = "rgba(250,249,247,0.7)";
+                  }}
+                >
+                  <Icon size={14} strokeWidth={1.8} />
+                  {name}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -350,10 +365,23 @@ function ProductsPageContent() {
                     {data?.length ?? 0} result
                     {(data?.length ?? 0) !== 1 ? "s" : ""}
                     {search ? (
-                      <> for &ldquo;<strong style={{ color: "var(--fg-secondary)" }}>{search}</strong>&rdquo;</>
+                      <>
+                        {" "}
+                        for &ldquo;
+                        <strong style={{ color: "var(--fg-secondary)" }}>
+                          {search}
+                        </strong>
+                        &rdquo;
+                      </>
                     ) : null}
                     {categoryParam ? (
-                      <> in category <strong style={{ color: "var(--fg-secondary)" }}>{categoryParam}</strong></>
+                      <>
+                        {" "}
+                        in category{" "}
+                        <strong style={{ color: "var(--fg-secondary)" }}>
+                          {categoryParam}
+                        </strong>
+                      </>
                     ) : null}
                   </p>
                 </div>
@@ -434,7 +462,17 @@ function ProductsPageContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center", minHeight: "70vh" }}>Loading...</div></MainLayout>}>
+    <Suspense
+      fallback={
+        <MainLayout>
+          <div
+            style={{ padding: "5rem", textAlign: "center", minHeight: "70vh" }}
+          >
+            Loading...
+          </div>
+        </MainLayout>
+      }
+    >
       <ProductsPageContent />
     </Suspense>
   );

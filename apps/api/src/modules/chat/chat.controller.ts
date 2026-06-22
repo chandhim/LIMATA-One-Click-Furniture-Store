@@ -94,7 +94,10 @@ export async function getConversationController(
     }
 
     // Verify access: customer can only view their own conversation
-    if (req.user.role === Role.CUSTOMER && conversation.customerId !== req.user.id) {
+    if (
+      req.user.role === Role.CUSTOMER &&
+      conversation.customerId !== req.user.id
+    ) {
       throw new ApiError(403, "Access denied");
     }
 

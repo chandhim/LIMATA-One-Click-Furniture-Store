@@ -1,7 +1,10 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createProductService, type AdminProductCreate } from "../services/admin-product.service";
+import {
+  createProductService,
+  type AdminProductCreate,
+} from "../services/admin-product.service";
 
 export function useCreateProduct() {
   const queryClient = useQueryClient();
