@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
 import { useDeleteProduct } from "@/features/admin-products/hooks/use-delete-product";
 import type { Product } from "@/features/products/types/product.types";
-import { Edit3, Trash2, Plus, Search } from "lucide-react";
+import { Edit3, Trash2, Plus, Search, Package } from "lucide-react";
 
 export function ProductTable() {
   const { data: products, isLoading } = useAdminProducts();
@@ -68,10 +68,10 @@ export function ProductTable() {
             display: "flex", 
             alignItems: "center", 
             justifyContent: "center", 
-            fontSize: "1.5rem" 
+            color: "var(--fg-muted)" 
           }}
         >
-          📦
+          <Package size={28} strokeWidth={1.2} />
         </div>
         <div>
           <p style={{ fontWeight: 700, color: "var(--fg-primary)", fontSize: "1rem", margin: "0 0 0.25rem" }}>
@@ -266,7 +266,7 @@ export function ProductTable() {
                           style={{ objectFit: "cover" }}
                         />
                       ) : (
-                        "📦"
+                        <Package size={24} strokeWidth={1.2} style={{ color: "var(--fg-muted)" }} />
                       )}
                     </div>
                   </td>

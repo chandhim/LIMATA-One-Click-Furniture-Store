@@ -11,6 +11,25 @@ import { ProductSkeleton } from "@/features/products/components/product-skeleton
 import { CategorySection } from "@/features/products/components/category-section";
 import { MainLayout } from "@/components/layout/main-layout";
 import type { ProductSummary } from "@/features/products/types/product.types";
+import { 
+  Sofa, 
+  BedDouble, 
+  UtensilsCrossed, 
+  Briefcase, 
+  TreePine, 
+  ChefHat, 
+  Armchair,
+  type LucideIcon 
+} from "lucide-react";
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "Living Room": Sofa,
+  "Bedroom": BedDouble,
+  "Dining Room": UtensilsCrossed,
+  "Office": Briefcase,
+  "Outdoor": TreePine,
+  "Kitchen": ChefHat,
+};
 
 // ── Helper ──────────────────────────────────────────────────────────
 function groupByCategory(products: ProductSummary[], categories: { name: string }[]) {
@@ -42,10 +61,13 @@ function ProductsPageContent() {
   const { data: dbCategories } = usePublicCategories();
 
   // Map dbCategories to format needed by CategorySidebarNav and pills
-  const allCategories = (dbCategories || []).map((c: { name: string; alt?: string }) => ({
-    name: c.name,
-    icon: c.alt || "🪑",
-  }));
+  const allCategories = (dbCategories || []).map((c: { name: string; alt?: string }) => {
+    const IconComponent = CATEGORY_ICONS[c.name] || Armchair;
+    return {
+      name: c.name,
+      Icon: IconComponent,
+    };
+  });
 
   const grouped = data ? groupByCategory(data, allCategories) : null;
   const isSearchMode = !!debouncedSearch || !!categoryParam;
@@ -191,7 +213,7 @@ function ProductsPageContent() {
               marginTop: "1.75rem",
             }}
           >
-            {allCategories.map(({ name, icon }: { name: string; icon: string }) => {
+            {allCategories.map(({ name, Icon }) => {
               const isActive = categoryParam === name;
               return (
               <button
@@ -206,7 +228,7 @@ function ProductsPageContent() {
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
-                  gap: "0.375rem",
+                  gap: "0.5rem",
                   padding: "0.4rem 0.875rem",
                   borderRadius: "var(--radius-full)",
                   fontSize: "0.8rem",
@@ -233,7 +255,7 @@ function ProductsPageContent() {
                   el.style.color = "rgba(250,249,247,0.7)";
                 }}
               >
-                <span>{icon}</span>
+                <Icon size={14} strokeWidth={1.8} />
                 {name}
               </button>
             )})}
@@ -380,7 +402,7 @@ function ProductsPageContent() {
           {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
             <div>
-              {allCategories.map(({ name, icon }: { name: string; icon: string }) => {
+              {allCategories.map(({ name, Icon }) => {
                 const products = grouped?.get(name) ?? [];
                 if (products.length === 0) return null; // Don't show empty sections
                 return (
@@ -393,7 +415,7 @@ function ProductsPageContent() {
                   >
                     <CategorySection
                       category={name}
-                      icon={icon}
+                      Icon={Icon}
                       products={products}
                     />
                   </div>

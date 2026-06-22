@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ProductSummary } from "../types/product.types";
+import { Armchair } from "lucide-react";
 
 export function ProductCard({ product }: { product: ProductSummary }) {
   const inStock = product.stock > 0;
@@ -82,17 +83,21 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             }}
           />
         ) : (
-          <span
+          <div
             className="card-img"
             style={{
-              fontSize: "4rem",
               opacity: 0.35,
               transition: "transform 0.45s ease",
-              display: "block",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+              color: "var(--fg-muted)",
             }}
           >
-            🪑
-          </span>
+            <Armchair size={64} strokeWidth={1.2} />
+          </div>
         )}
 
         {/* Bottom gradient */}
