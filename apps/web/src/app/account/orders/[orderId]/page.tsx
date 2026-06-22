@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/env";
 import Link from "next/link";
 import { OrderProductReview } from "./order-product-review";
+import { Armchair } from "lucide-react";
 
 export default function OrderDetailsPage() {
   const params = useParams();
@@ -543,7 +544,7 @@ export default function OrderDetailsPage() {
                                 }}
                               />
                             ) : (
-                              <span style={{ fontSize: "1.75rem" }}>🪑</span>
+                              <Armchair size={28} style={{ color: "var(--fg-muted)" }} />
                             )}
                           </div>
                           <div style={{ flex: 1 }}>

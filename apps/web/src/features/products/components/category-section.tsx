@@ -1,15 +1,16 @@
 "use client";
 
+import { type LucideIcon } from "lucide-react";
 import { ProductCard } from "./product-card";
 import type { ProductSummary } from "../types/product.types";
 
 interface CategorySectionProps {
   category: string;
-  icon: string;
+  Icon: LucideIcon;
   products: ProductSummary[];
 }
 
-export function CategorySection({ category, icon, products }: CategorySectionProps) {
+export function CategorySection({ category, Icon, products }: CategorySectionProps) {
   if (products.length === 0) return null;
 
   return (
@@ -50,7 +51,7 @@ export function CategorySection({ category, icon, products }: CategorySectionPro
                 display: "block",
               }}
             />
-            {icon} Collection
+            <Icon size={14} strokeWidth={1.8} /> Collection
           </div>
           <h2
             style={{

@@ -6,6 +6,7 @@ import { useProduct } from "@/features/products/hooks/use-product";
 import { MainLayout } from "@/components/layout/main-layout";
 import { ProductDetailsView } from "@/features/products/components/product-details-view";
 import { ProductDetailsSkeleton } from "@/features/products/components/product-details-skeleton";
+import { Armchair } from "lucide-react";
 
 export default function ProductDetailsPage({
   params,
@@ -29,7 +30,9 @@ export default function ProductDetailsPage({
       <MainLayout>
         <div style={{ background: "var(--bg-base)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "4rem 2rem" }}>
           <div style={{ textAlign: "center", maxWidth: "400px" }}>
-            <div style={{ fontSize: "3.5rem", marginBottom: "1.5rem" }}>🛋️</div>
+            <div style={{ display: "flex", justifyContent: "center", color: "var(--fg-muted)", marginBottom: "1.5rem" }}>
+              <Armchair size={64} strokeWidth={1.2} />
+            </div>
             <h1 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.75rem" }}>
               Product Not Found
             </h1>

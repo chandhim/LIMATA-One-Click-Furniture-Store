@@ -2,7 +2,7 @@
 
 import { useAdminReviews, useToggleReviewApproval, useDeleteReview } from "@/features/admin/hooks/use-admin";
 import Image from "next/image";
-import { Star, MessageSquare, Check, EyeOff, Trash2 } from "lucide-react";
+import { Star, MessageSquare, Check, EyeOff, Trash2, Package } from "lucide-react";
 
 interface AdminReview {
   reviewId: string;
@@ -139,8 +139,8 @@ export default function AdminReviewsPage() {
                             {item.product?.images?.[0] ? (
                               <Image src={item.product.images[0]} alt={item.product.name} fill style={{ objectFit: "cover" }} unoptimized />
                             ) : (
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", fontSize: "1.25rem" }}>
-                                📦
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", color: "var(--fg-muted)" }}>
+                                <Package size={20} strokeWidth={1.5} />
                               </div>
                             )}
                           </div>
