@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
+import { Trash2, Armchair } from "lucide-react";
 import { QuantitySelector } from "./quantity-selector";
 import { useUpdateCartItem } from "../hooks/use-update-cart";
 import { useRemoveCartItem } from "../hooks/use-remove-cart-item";
@@ -74,10 +74,9 @@ export function CartItemCard({ item }: CartItemCardProps) {
               alignItems: "center",
               justifyContent: "center",
               color: "var(--fg-muted)",
-              fontSize: "1.5rem",
             }}
           >
-            🪑
+            <Armchair size={36} strokeWidth={1.2} />
           </div>
         )}
       </div>

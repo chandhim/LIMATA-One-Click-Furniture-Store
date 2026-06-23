@@ -5,6 +5,7 @@ import { useCart } from "@/features/cart/hooks/use-cart";
 import { useCheckout } from "@/features/orders/hooks/use-checkout";
 import { MainLayout } from "@/components/layout/main-layout";
 import Link from "next/link";
+import { Armchair, Banknote, CreditCard } from "lucide-react";
 
 export default function CheckoutPage() {
   // 1. Guard page (only authenticated users can checkout)
@@ -261,7 +262,7 @@ export default function CheckoutPage() {
                         <span style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "0.95rem", display: "block" }}>Cash on Delivery (COD)</span>
                         <span style={{ fontSize: "0.8rem", color: "var(--fg-secondary)" }}>Pay with cash upon package delivery to your doorstep.</span>
                       </div>
-                      <span style={{ fontSize: "1.5rem" }}>💵</span>
+                      <Banknote size={24} style={{ color: "var(--fg-secondary)", marginLeft: "auto" }} />
                     </div>
 
                     {/* PayHere */}
@@ -283,7 +284,7 @@ export default function CheckoutPage() {
                         <span style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "0.95rem", display: "block" }}>PayHere (Credit/Debit Card)</span>
                         <span style={{ fontSize: "0.8rem", color: "var(--fg-secondary)" }}>Secure online payment via Visa, Mastercard, AMEX, or Genie.</span>
                       </div>
-                      <span style={{ fontSize: "1.5rem" }}>💳</span>
+                      <CreditCard size={24} style={{ color: "var(--fg-secondary)", marginLeft: "auto" }} />
                     </div>
                   </div>
                 </div>
@@ -304,7 +305,7 @@ export default function CheckoutPage() {
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={item.product.images[0]} alt={item.product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                           ) : (
-                            <span style={{ fontSize: "1.5rem" }}>🪑</span>
+                            <Armchair size={24} style={{ color: "var(--fg-muted)" }} />
                           )}
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>

@@ -49,11 +49,24 @@ export async function uploadImages(files: File[]) {
   return res.data.data as { urls: string[] };
 }
 
-export async function uploadModel(file: File) {
+export async function uploadModel(
+  file: File,
+  onUploadProgress?: (progressEvent: any) => void
+) {
   const formData = new FormData();
   formData.append("model", file);
 
-  const res = await api.post("/products/upload-model", formData);
+  const res = await api.post("/products/upload-model", formData, {
+    onUploadProgress,
+  });
 
-  return res.data.data as { url: string };
+  return res.data.data as { 
+    url: string;
+    optimizationStats?: {
+      originalSize: number;
+      optimizedSize: number;
+      reductionPercentage: string;
+      durationMs: number;
+    }
+  };
 }

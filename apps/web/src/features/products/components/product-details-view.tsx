@@ -92,7 +92,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   );
 
   const filteredRelated =
-    relatedProducts?.filter((p) => p.productId !== product.productId).slice(0, 4) ?? [];
+    relatedProducts
+      ?.filter((p) => p.productId !== product.productId)
+      .slice(0, 4) ?? [];
 
   const images =
     product.images && product.images.length > 0
@@ -675,8 +677,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                             ? "0 8px 20px rgba(0,0,0,0.15)"
                             : "none",
                         outline: "none",
-                        transition:
-                          "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                        transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
                       }}
                     >
                       <ShoppingCart
@@ -734,52 +735,65 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         }
                       }}
                     >
-                      <Heart size={18} fill={isWishlisted ? "#ef4444" : "none"} />
+                      <Heart
+                        size={18}
+                        fill={isWishlisted ? "#ef4444" : "none"}
+                      />
                     </button>
                   </div>
                 </div>
               </div>
 
-                {/* Contact Seller */}
-                <button
-                  onClick={() => router.push(`/messages?productId=${product.productId}`)}
-                  style={{
-                    height: "44px",
-                    background: "transparent",
-                    color: "var(--fg-primary)",
-                    border: "1.5px solid var(--border-strong)",
-                    borderRadius: "var(--radius-full)",
-                    fontSize: "0.875rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "0.5rem",
-                    marginTop: "0.5rem",
-                    width: "100%",
-                    transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = "var(--bg-dark)";
-                    el.style.borderColor = "var(--bg-dark)";
-                    el.style.color = "var(--accent-light)";
-                    el.style.boxShadow = "0 8px 20px rgba(0,0,0,0.1)";
-                    el.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = "transparent";
-                    el.style.borderColor = "var(--border-strong)";
-                    el.style.color = "var(--fg-primary)";
-                    el.style.boxShadow = "none";
-                    el.style.transform = "translateY(0)";
-                  }}
-                >
-                  <MessageSquare size={16} /> Chat with Seller
-                </button>
-              </div>
+              {/* Contact Seller */}
+              <button
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("open-chat", {
+                      detail: {
+                        productId: product.productId,
+                        productName: product.name,
+                        origin: window.location.origin,
+                      },
+                    })
+                  );
+                }}
+                style={{
+                  height: "44px",
+                  background: "transparent",
+                  color: "var(--fg-primary)",
+                  border: "1.5px solid var(--border-strong)",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  marginTop: "0.5rem",
+                  width: "100%",
+                  transition: "all 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = "var(--bg-dark)";
+                  el.style.borderColor = "var(--bg-dark)";
+                  el.style.color = "var(--accent-light)";
+                  el.style.boxShadow = "0 8px 20px rgba(0,0,0,0.1)";
+                  el.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = "transparent";
+                  el.style.borderColor = "var(--border-strong)";
+                  el.style.color = "var(--fg-primary)";
+                  el.style.boxShadow = "none";
+                  el.style.transform = "translateY(0)";
+                }}
+              >
+                <MessageSquare size={16} /> Chat with Seller
+              </button>
+            </div>
 
             {/* Divider */}
             <div
@@ -1362,7 +1376,10 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               }}
             >
               {filteredRelated.map((relatedProd) => (
-                <ProductCard key={relatedProd.productId} product={relatedProd} />
+                <ProductCard
+                  key={relatedProd.productId}
+                  product={relatedProd}
+                />
               ))}
             </div>
           </section>

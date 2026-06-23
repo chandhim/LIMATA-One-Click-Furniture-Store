@@ -3,6 +3,7 @@ import { ApiError } from "@/shared/errors/api-error";
 import { listQuerySchema, idParamSchema, productCreateSchema, productUpdateSchema } from "./product.validation";
 import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./product.service";
 import { uploadToR2, makeKey } from "@/lib/storage";
+import { optimizeGlb } from "./glb-optimizer.service";
 
 function sendResponse(res: Response, status: number, data: unknown) {
   return res.status(status).json({ success: true, message: "ok", data });
@@ -136,10 +137,32 @@ export async function uploadModelController(
       throw new ApiError(400, "Only .glb files are allowed");
     }
 
-    const key = makeKey("models", req.file.originalname);
-    const url = await uploadToR2(key, req.file.buffer, req.file.mimetype);
+    // Check maximum upload size (100MB)
+    const MAX_SIZE = 100 * 1024 * 1024;
+    if (req.file.buffer.length > MAX_SIZE) {
+      throw new ApiError(400, "File size exceeds 100MB limit");
+    }
 
-    return sendResponse(res, 200, { url });
+    // Optimize GLB
+    const optResult = await optimizeGlb(req.file.buffer, req.file.originalname);
+
+    console.log(`[GLB Optimizer] Original: ${(optResult.originalSize / 1024 / 1024).toFixed(2)}MB`);
+    console.log(`[GLB Optimizer] Optimized: ${(optResult.optimizedSize / 1024 / 1024).toFixed(2)}MB`);
+    console.log(`[GLB Optimizer] Reduction: ${optResult.reductionPercentage}%`);
+    console.log(`[GLB Optimizer] Time: ${optResult.durationMs}ms`);
+
+    const key = makeKey("models", `optimized_${req.file.originalname}`);
+    const url = await uploadToR2(key, optResult.optimizedBuffer, req.file.mimetype);
+
+    return sendResponse(res, 200, { 
+      url,
+      optimizationStats: {
+        originalSize: optResult.originalSize,
+        optimizedSize: optResult.optimizedSize,
+        reductionPercentage: optResult.reductionPercentage,
+        durationMs: optResult.durationMs
+      }
+    });
   } catch (error) {
     return next(error);
   }
