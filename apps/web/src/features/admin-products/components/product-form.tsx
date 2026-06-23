@@ -102,6 +102,9 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const [remainingImages, setRemainingImages] = useState<string[]>([]);
   const [model, setModel] = useState<File | null>(null);
   const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStage, setUploadStage] = useState("");
+  const [optimizationStats, setOptimizationStats] = useState<any>(null);
 
   const [selectedCategoryOption, setSelectedCategoryOption] = useState("");
   const [customCategory, setCustomCategory] = useState("");
@@ -177,10 +180,14 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   async function onSubmit(data: ProductFormData) {
     try {
       setUploadingFiles(true);
+      setUploadProgress(0);
+      setUploadStage("Starting upload...");
+      setOptimizationStats(null);
       let imageUrls: string[] = [];
       let modelUrl: string | undefined;
 
       if (newImages.length > 0) {
+        setUploadStage("Uploading images...");
         const uploadRes = await uploadImages(newImages);
         imageUrls = [...remainingImages, ...uploadRes.urls];
       } else {
@@ -188,13 +195,47 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
       }
 
       if (model) {
-        const uploadRes = await uploadModel(model);
+        setUploadStage("Uploading GLB...");
+        
+        let fakeProgressInterval: NodeJS.Timeout | null = null;
+
+        const uploadRes = await uploadModel(model, (progressEvent: any) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            const overallProgress = Math.round(percentCompleted * 0.2); // 0-20%
+            setUploadProgress(overallProgress);
+            
+            if (percentCompleted === 100 && !fakeProgressInterval) {
+              setUploadStage("Optimizing Geometry...");
+              let currentFakeProgress = 20;
+              fakeProgressInterval = setInterval(() => {
+                currentFakeProgress += Math.random() * 3;
+                if (currentFakeProgress > 60 && currentFakeProgress < 85) {
+                  setUploadStage("Uploading To Cloud Storage...");
+                }
+                if (currentFakeProgress > 95) currentFakeProgress = 95;
+                setUploadProgress(Math.round(currentFakeProgress));
+              }, 1500);
+            }
+          }
+        });
+        
+        if (fakeProgressInterval) clearInterval(fakeProgressInterval);
+        
+        setUploadProgress(95);
+        setUploadStage("Finalizing Product...");
         modelUrl = uploadRes.url;
+        if (uploadRes.optimizationStats) {
+          setOptimizationStats(uploadRes.optimizationStats);
+        }
       } else if (product?.model3dUrl) {
         modelUrl = product.model3dUrl;
       }
 
       const productData = { ...data, images: imageUrls, model3dUrl: modelUrl };
+
+      setUploadProgress(100);
+      setUploadStage("Saving to database...");
 
       if (productId) {
         await updateProduct.mutateAsync(productData);
@@ -202,11 +243,20 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         await createProduct.mutateAsync(productData);
       }
 
-      router.push("/admin/products");
-      onSuccess?.();
+      if (optimizationStats || (model && setOptimizationStats !== null)) {
+        // Wait a bit to show stats before redirecting
+        setTimeout(() => {
+          setUploadingFiles(false);
+          router.push("/admin/products");
+          onSuccess?.();
+        }, 4000);
+      } else {
+        setUploadingFiles(false);
+        router.push("/admin/products");
+        onSuccess?.();
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
-    } finally {
       setUploadingFiles(false);
     }
   }
@@ -531,6 +581,77 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
           Cancel
         </button>
       </div>
+
+      {/* Progress Overlay */}
+      {uploadingFiles && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0,0,0,0.8)",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+           <div style={{
+             background: "var(--bg-surface)",
+             padding: "2.5rem",
+             borderRadius: "var(--radius-lg)",
+             width: "100%",
+             maxWidth: "450px",
+             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+             border: "1px solid var(--border)"
+           }}>
+             <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "1.5rem" }}>
+               {optimizationStats ? "Product Saved Successfully" : "3D Model Upload"}
+             </h3>
+             
+             {optimizationStats ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#27ae60", fontWeight: 500, marginBottom: "0.5rem" }}>
+                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                     3D model optimized successfully
+                   </div>
+                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--fg-secondary)", fontSize: "0.9rem" }}>
+                     <span>Original Size:</span>
+                     <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>{(optimizationStats.originalSize / 1024 / 1024).toFixed(2)}MB</span>
+                   </div>
+                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--fg-secondary)", fontSize: "0.9rem" }}>
+                     <span>Optimized Size:</span>
+                     <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>{(optimizationStats.optimizedSize / 1024 / 1024).toFixed(2)}MB</span>
+                   </div>
+                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--fg-secondary)", fontSize: "0.9rem" }}>
+                     <span>Compression:</span>
+                     <span style={{ fontWeight: 600, color: "#27ae60" }}>{optimizationStats.reductionPercentage}%</span>
+                   </div>
+                   <p style={{ marginTop: "1rem", fontSize: "0.85rem", color: "var(--fg-muted)", textAlign: "center" }}>
+                     Redirecting...
+                   </p>
+                </div>
+             ) : (
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem", fontSize: "0.9rem", fontWeight: 500, color: "var(--fg-primary)" }}>
+                    <span>{uploadStage}</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div style={{ width: "100%", background: "var(--bg-elevated)", height: 8, borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ 
+                      width: `${uploadProgress}%`, 
+                      background: "var(--accent)", 
+                      height: "100%", 
+                      borderRadius: 4, 
+                      transition: "width 0.4s ease" 
+                    }} />
+                  </div>
+                  <p style={{ marginTop: "1.5rem", fontSize: "0.85rem", color: "var(--fg-muted)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    Please do not close this window.
+                  </p>
+                </div>
+             )}
+           </div>
+        </div>
+      )}
 
       <style>{`
         @media (max-width: 768px) {

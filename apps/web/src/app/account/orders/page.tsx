@@ -4,6 +4,7 @@ import { useAuthGuard } from "@/features/auth/hooks/use-auth-session";
 import { useOrderHistory } from "@/features/orders/hooks/use-orders";
 import { MainLayout } from "@/components/layout/main-layout";
 import Link from "next/link";
+import { Package } from "lucide-react";
 
 export default function OrdersHistoryPage() {
   // 1. Authenticate user
@@ -45,7 +46,9 @@ export default function OrdersHistoryPage() {
 
           {!orders || orders.length === 0 ? (
             <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "4rem 2rem", textAlign: "center" }}>
-              <span style={{ fontSize: "3rem", display: "block", marginBottom: "1rem" }}>📦</span>
+              <div style={{ display: "flex", justifyContent: "center", color: "var(--fg-muted)", marginBottom: "1.5rem" }}>
+                <Package size={48} strokeWidth={1.2} />
+              </div>
               <h3 style={{ fontSize: "1.2rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No Orders Placed Yet</h3>
               <p style={{ color: "var(--fg-secondary)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>You haven&apos;t ordered any luxury furniture items yet.</p>
               <Link href="/products" style={{ background: "var(--accent-dark)", color: "white", padding: "0.6rem 1.25rem", borderRadius: "var(--radius-md)", textDecoration: "none", fontWeight: 600, fontSize: "0.9rem" }}>

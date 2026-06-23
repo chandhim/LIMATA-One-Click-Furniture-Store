@@ -692,9 +692,17 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
               {/* Contact Seller */}
               <button
-                onClick={() =>
-                  router.push(`/messages?productId=${product.productId}`)
-                }
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("open-chat", {
+                      detail: {
+                        productId: product.productId,
+                        productName: product.name,
+                        origin: window.location.origin,
+                      },
+                    })
+                  );
+                }}
                 style={{
                   height: "44px",
                   background: "transparent",
