@@ -136,7 +136,7 @@ export async function uploadModelController(
       throw new ApiError(400, "Only .glb files are allowed");
     }
 
-    const key = makeKey("models", req.file.originalname);
+    const key = makeKey("products/models", req.file.originalname);
     const url = await uploadToR2(key, req.file.buffer, req.file.mimetype);
 
     return sendResponse(res, 200, { url });

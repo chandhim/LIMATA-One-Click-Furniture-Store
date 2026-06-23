@@ -14,14 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: "/r2-models/:path*",
-        destination: "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
