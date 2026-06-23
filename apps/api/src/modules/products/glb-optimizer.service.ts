@@ -1,10 +1,10 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-// @ts-ignore
-import gltfPipeline from 'gltf-pipeline';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 
-const { processGlb } = gltfPipeline;
+const execFileAsync = promisify(execFile);
 
 export interface OptimizationResult {
   optimizedBuffer: Buffer;
@@ -26,50 +26,67 @@ export async function optimizeGlb(
 
   const tempId = crypto.randomBytes(16).toString('hex');
   const tempInputPath = path.join(tempDir, `${tempId}_in_${originalFilename}`);
+  const tempOutputPath = path.join(tempDir, `${tempId}_out_${originalFilename}`);
 
   try {
     // 1. Temporarily store file
     await fs.writeFile(tempInputPath, buffer);
 
-    // 2. Read it back
-    const fileBuffer = await fs.readFile(tempInputPath);
+    const gltfpackPath = process.platform === "win32"
+      ? path.join(process.cwd(), "binaries", "gltfpack.exe")
+      : path.join(process.cwd(), "binaries", "gltfpack-linux");
 
-    // 3. Optimize / Compress GLB using Draco
-    const options = {
-      dracoOptions: {
-        compressionLevel: 7, // Good balance of compression and speed
-      },
-    };
+    // 2. Execute gltfpack
+    const args = [
+      '-i', tempInputPath,
+      '-o', tempOutputPath,
+      '-cc',
+      '-si', '0.15',
+      '-kn',
+      '-km'
+    ];
 
-    // Promise.race to respect the 120s timeout requirement
-    const optimizationPromise = processGlb(fileBuffer, options);
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Optimization timeout exceeded 120 seconds")), 120000);
-    });
+    try {
+      // 120s timeout
+      await execFileAsync(gltfpackPath, args, { timeout: 120000 });
+      
+      // 3. Read optimized output
+      const optimizedBuffer = await fs.readFile(tempOutputPath);
+      const optimizedSize = optimizedBuffer.length;
+      const durationMs = Date.now() - startTime;
+      const reductionPercentage = (((originalSize - optimizedSize) / originalSize) * 100).toFixed(2);
 
-    const results = await Promise.race([optimizationPromise, timeoutPromise]) as { glb: Buffer };
-    const optimizedBuffer = results.glb;
-    const optimizedSize = optimizedBuffer.length;
-
-    const durationMs = Date.now() - startTime;
-    const reductionPercentage = (((originalSize - optimizedSize) / originalSize) * 100).toFixed(2);
-
-    return {
-      optimizedBuffer,
-      originalSize,
-      optimizedSize,
-      reductionPercentage,
-      durationMs
-    };
+      return {
+        optimizedBuffer,
+        originalSize,
+        optimizedSize,
+        reductionPercentage,
+        durationMs
+      };
+    } catch (optError) {
+      console.warn("gltfpack optimization failed, falling back to original:", optError);
+      // Fallback strategy: return the original buffer
+      return {
+        optimizedBuffer: buffer,
+        originalSize,
+        optimizedSize: originalSize,
+        reductionPercentage: "0.00",
+        durationMs: Date.now() - startTime
+      };
+    }
   } catch (error) {
-    console.error("GLB Optimization failed:", error);
-    throw new Error(`Optimization failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+    console.error("GLB processing error:", error);
+    // Ultimate fallback if disk operations failed
+    return {
+      optimizedBuffer: buffer,
+      originalSize,
+      optimizedSize: originalSize,
+      reductionPercentage: "0.00",
+      durationMs: Date.now() - startTime
+    };
   } finally {
     // 4. Delete Temporary Files
-    try {
-      await fs.unlink(tempInputPath);
-    } catch (e) {
-      console.error(`Failed to delete temporary file ${tempInputPath}:`, e);
-    }
+    await fs.unlink(tempInputPath).catch(() => {});
+    await fs.unlink(tempOutputPath).catch(() => {});
   }
 }

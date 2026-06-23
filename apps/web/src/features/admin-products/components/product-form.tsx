@@ -206,12 +206,12 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
             setUploadProgress(overallProgress);
             
             if (percentCompleted === 100 && !fakeProgressInterval) {
-              setUploadStage("Optimizing 3D Model... this may take a moment.");
+              setUploadStage("Optimizing Geometry...");
               let currentFakeProgress = 20;
               fakeProgressInterval = setInterval(() => {
                 currentFakeProgress += Math.random() * 3;
-                if (currentFakeProgress > 70 && currentFakeProgress < 90) {
-                  setUploadStage("Uploading Optimized GLB To Cloud Storage...");
+                if (currentFakeProgress > 60 && currentFakeProgress < 85) {
+                  setUploadStage("Uploading To Cloud Storage...");
                 }
                 if (currentFakeProgress > 95) currentFakeProgress = 95;
                 setUploadProgress(Math.round(currentFakeProgress));
