@@ -8,7 +8,7 @@ import {
 } from "@/features/admin/hooks/use-admin";
 import { uploadImages } from "@/features/admin-products/services/admin-product.service";
 import Image from "next/image";
-import { Edit, UploadCloud, FolderPlus, Folder, Trash2 } from "lucide-react";
+import { UploadCloud, FolderPlus, Folder, Trash2 } from "lucide-react";
 
 interface AdminCategory {
   categoryId: string;
@@ -66,12 +66,7 @@ export default function AdminCategoriesPage() {
     }
   }
 
-  async function handleEdit(categoryId: string) {
-    const cat = categories.find(
-      (c: AdminCategory) => c.categoryId === categoryId,
-    );
-    alert("Edit functionality coming soon for category " + categoryId);
-  }
+
 
   async function handleDelete(categoryId: string) {
     if (confirm("Are you sure you want to delete this category?")) {

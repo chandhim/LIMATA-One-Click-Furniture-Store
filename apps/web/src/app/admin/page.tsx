@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useAuthStore } from "@/features/auth/store/use-auth-store";
+
 import { useAdminStats } from "@/features/admin/hooks/use-admin";
 import type { Product } from "@/features/products/types/product.types";
 import {
@@ -15,9 +14,6 @@ import {
   AlertTriangle,
   Bell,
   ArrowUpRight,
-  TrendingUp,
-  DollarSign,
-  Package,
   Clock,
   Users,
 } from "lucide-react";
@@ -49,65 +45,9 @@ interface DashboardRecentActivity {
   createdAt: string;
 }
 
-const quickActions = [
-  {
-    icon: PlusCircle,
-    title: "Add Product",
-    desc: "Create a new product listing",
-    href: "/admin/products/new",
-    accent: "rgba(201,169,110,0.08)",
-    accentBorder: "rgba(201,169,110,0.2)",
-    color: "var(--accent-dark)",
-  },
-  {
-    icon: FolderTree,
-    title: "Manage Products",
-    desc: "Edit or delete catalog items",
-    href: "/admin/products",
-    accent: "rgba(100,180,140,0.08)",
-    accentBorder: "rgba(100,180,140,0.2)",
-    color: "#2a7a50",
-  },
-  {
-    icon: Home,
-    title: "Edit Homepage",
-    desc: "Update hero & features",
-    href: "/admin/homepage",
-    accent: "rgba(100,130,220,0.08)",
-    accentBorder: "rgba(100,130,220,0.2)",
-    color: "#2a4a9a",
-  },
-  {
-    icon: Layers,
-    title: "Categories",
-    desc: "Manage room collections",
-    href: "/admin/categories",
-    accent: "rgba(220,140,80,0.08)",
-    accentBorder: "rgba(220,140,80,0.2)",
-    color: "#a85f10",
-  },
-  {
-    icon: FileText,
-    title: "Manage Footer",
-    desc: "Links & company socials",
-    href: "/admin/footer",
-    accent: "rgba(160,100,220,0.08)",
-    accentBorder: "rgba(160,100,220,0.2)",
-    color: "#6a2a9a",
-  },
-  {
-    icon: ShoppingCart,
-    title: "View Orders",
-    desc: "Process sales & shipments",
-    href: "/admin/orders",
-    accent: "rgba(220,80,80,0.08)",
-    accentBorder: "rgba(220,80,80,0.18)",
-    color: "#c0392b",
-  },
-];
+
 
 export default function AdminOverviewPage() {
-  const user = useAuthStore((s) => s.user);
   const { data: stats, isLoading } = useAdminStats();
 
   if (isLoading) {

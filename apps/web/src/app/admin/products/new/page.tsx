@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ProductForm } from "@/features/admin-products/components/product-form";
 
 export default function CreateProductPage() {
