@@ -129,6 +129,10 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
   const { order_id, status_code, payhere_amount: _payhere_amount } = body;
 
+  if (!order_id || !status_code) {
+    throw new ApiError(400, "Missing required fields in payment notification");
+  }
+
   // Retrieve the order details
   const order = await findOrder(order_id);
   if (!order) {

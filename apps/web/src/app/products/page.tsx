@@ -61,7 +61,7 @@ function ProductsPageContent() {
   const { data: dbCategories } = usePublicCategories();
 
   // Map dbCategories to format needed by CategorySidebarNav and pills
-  const allCategories = (dbCategories || []).map((c: { name: string; alt?: string }) => {
+  const allCategories: Array<{ name: string; Icon: LucideIcon }> = (dbCategories || []).map((c: { name: string; alt?: string }) => {
     const IconComponent = CATEGORY_ICONS[c.name] || Armchair;
     return {
       name: c.name,

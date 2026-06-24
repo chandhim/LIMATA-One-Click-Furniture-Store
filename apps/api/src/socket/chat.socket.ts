@@ -90,7 +90,7 @@ export function registerChatSocket(io: SocketIOServer) {
               notificationMessage = "The seller replied to your message";
 
               await createNotification({
-                userId: conversation.customerId,
+                userId: conversation.customerId as string,
                 type: "CHAT_MESSAGE",
                 title: notificationTitle,
                 message: notificationMessage,
