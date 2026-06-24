@@ -19,8 +19,11 @@ interface Product3DViewerProps {
 }
 
 export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
-  const fetchUrl = modelUrl 
-    ? modelUrl.replace("https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models", "/r2-models")
+  const fetchUrl = modelUrl
+    ? modelUrl.replace(
+        "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models",
+        "/r2-models",
+      )
     : null;
 
   useEffect(() => {
@@ -70,8 +73,18 @@ export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
         <Suspense
           fallback={
             <Html center>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", color: "var(--fg-primary)" }}>
-                <Loader2 size={24} style={{ animation: "spin 1s linear infinite" }} />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                  color: "var(--fg-primary)",
+                }}
+              >
+                <Loader2
+                  size={24}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
                 <span style={{ whiteSpace: "nowrap" }}>Loading 3D...</span>
               </div>
             </Html>

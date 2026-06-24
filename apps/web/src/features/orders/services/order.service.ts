@@ -91,7 +91,12 @@ export async function cancelOrder(orderId: string): Promise<Order> {
   return res.data.data;
 }
 
-export async function getPaymentParams(orderId: string): Promise<PayHereCheckoutParams> {
-  const res = await api.post<ApiResponse<PayHereCheckoutParams>>("/payment/create", { orderId });
+export async function getPaymentParams(
+  orderId: string,
+): Promise<PayHereCheckoutParams> {
+  const res = await api.post<ApiResponse<PayHereCheckoutParams>>(
+    "/payment/create",
+    { orderId },
+  );
   return res.data.data;
 }

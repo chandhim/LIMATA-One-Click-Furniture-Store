@@ -3,9 +3,27 @@
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/main-layout";
-import { useAuthBootstrap, useAuthGuard } from "@/features/auth/hooks/use-auth-session";
-import { useProfile, useUpdateProfile, useUploadAvatar } from "@/features/auth/hooks/use-profile";
-import { Camera, Trash2, Edit2, User, MapPin, Mail, Shield, Check, X, LogOut } from "lucide-react";
+import {
+  useAuthBootstrap,
+  useAuthGuard,
+} from "@/features/auth/hooks/use-auth-session";
+import {
+  useProfile,
+  useUpdateProfile,
+  useUploadAvatar,
+} from "@/features/auth/hooks/use-profile";
+import {
+  Camera,
+  Trash2,
+  Edit2,
+  User,
+  MapPin,
+  Mail,
+  Shield,
+  Check,
+  X,
+  LogOut,
+} from "lucide-react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 // Default export wraps content in Suspense so useSearchParams doesn't
@@ -80,8 +98,24 @@ function ProfileContent() {
   if (!isHydrated || isProfileLoading) {
     return (
       <MainLayout>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", background: "var(--bg-base)" }}>
-          <div style={{ fontSize: "1.1rem", color: "var(--fg-secondary)", animation: "pulse 1.5s infinite" }}>Loading your profile...</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "60vh",
+            background: "var(--bg-base)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "1.1rem",
+              color: "var(--fg-secondary)",
+              animation: "pulse 1.5s infinite",
+            }}
+          >
+            Loading your profile...
+          </div>
         </div>
       </MainLayout>
     );
@@ -100,7 +134,10 @@ function ProfileContent() {
       await updateProfileMutation.mutateAsync(formData);
       setIsEditing(false);
     } catch (err) {
-      alert("Failed to update profile: " + (err instanceof Error ? err.message : "Unknown error"));
+      alert(
+        "Failed to update profile: " +
+          (err instanceof Error ? err.message : "Unknown error"),
+      );
     }
   };
 
@@ -130,7 +167,10 @@ function ProfileContent() {
       try {
         await uploadAvatarMutation.mutateAsync(file);
       } catch (err) {
-        alert("Failed to upload photo: " + (err instanceof Error ? err.message : "Unknown error"));
+        alert(
+          "Failed to upload photo: " +
+            (err instanceof Error ? err.message : "Unknown error"),
+        );
       }
     }
   };
@@ -140,7 +180,10 @@ function ProfileContent() {
       try {
         await updateProfileMutation.mutateAsync({ avatarUrl: null });
       } catch (err) {
-        alert("Failed to remove photo: " + (err instanceof Error ? err.message : "Unknown error"));
+        alert(
+          "Failed to remove photo: " +
+            (err instanceof Error ? err.message : "Unknown error"),
+        );
       }
     }
   };
@@ -156,25 +199,70 @@ function ProfileContent() {
 
   return (
     <MainLayout>
-      <div style={{ background: "var(--bg-base)", minHeight: "100vh", padding: "4rem 1.5rem" }}>
+      <div
+        style={{
+          background: "var(--bg-base)",
+          minHeight: "100vh",
+          padding: "4rem 1.5rem",
+        }}
+      >
         <div style={{ maxWidth: "960px", margin: "0 auto" }}>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2.5rem" }}>
-            <div className="profile-grid" style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: "2.5rem", alignItems: "start" }}>
-              
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "2.5rem",
+            }}
+          >
+            <div
+              className="profile-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "280px 1fr",
+                gap: "2.5rem",
+                alignItems: "start",
+              }}
+            >
               {/* Left Column: Avatar & Quick Actions */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "2rem",
+                }}
+              >
                 {/* Profile Card */}
-                <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "2.5rem 2rem", textAlign: "center", boxShadow: "var(--shadow-sm)" }}>
-                  
+                <div
+                  style={{
+                    background: "var(--bg-surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: "2.5rem 2rem",
+                    textAlign: "center",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
                   {/* Avatar wrapper */}
-                  <div style={{ position: "relative", width: "120px", height: "120px", margin: "0 auto 1.5rem" }}>
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "120px",
+                      height: "120px",
+                      margin: "0 auto 1.5rem",
+                    }}
+                  >
                     {profile.avatarUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={profile.avatarUrl}
                         alt={profile.name}
-                        style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "2px solid var(--border)",
+                        }}
                       />
                     ) : (
                       <div
@@ -182,7 +270,8 @@ function ProfileContent() {
                           width: "100%",
                           height: "100%",
                           borderRadius: "50%",
-                          background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                          background:
+                            "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -194,7 +283,7 @@ function ProfileContent() {
                         {profile.name?.[0]?.toUpperCase() ?? "U"}
                       </div>
                     )}
-                    
+
                     {/* Camera Button (upload overlay) */}
                     <button
                       onClick={triggerFileInput}
@@ -214,10 +303,14 @@ function ProfileContent() {
                         justifyContent: "center",
                         cursor: "pointer",
                         boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
-                        transition: "transform 0.2s ease"
+                        transition: "transform 0.2s ease",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.transform = "scale(1.1)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.transform = "scale(1)")
+                      }
                       title="Upload New Photo"
                     >
                       <Camera size={14} />
@@ -231,10 +324,34 @@ function ProfileContent() {
                     />
                   </div>
 
-                  <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.375rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.25rem" }}>{profile.name}</h2>
-                  <p style={{ color: "var(--fg-muted)", fontSize: "0.85rem", marginBottom: "1.5rem" }}>{profile.email}</p>
+                  <h2
+                    style={{
+                      fontFamily: "var(--font-serif)",
+                      fontSize: "1.375rem",
+                      fontWeight: 700,
+                      color: "var(--fg-primary)",
+                      marginBottom: "0.25rem",
+                    }}
+                  >
+                    {profile.name}
+                  </h2>
+                  <p
+                    style={{
+                      color: "var(--fg-muted)",
+                      fontSize: "0.85rem",
+                      marginBottom: "1.5rem",
+                    }}
+                  >
+                    {profile.email}
+                  </p>
 
-                  <div style={{ display: "flex", justifyContent: "center", gap: "0.75rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
                     <button
                       onClick={triggerFileInput}
                       style={{
@@ -262,7 +379,7 @@ function ProfileContent() {
                           cursor: "pointer",
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "center"
+                          justifyContent: "center",
                         }}
                         title="Remove Photo"
                       >
@@ -273,23 +390,87 @@ function ProfileContent() {
                 </div>
 
                 {/* Account Type Panel */}
-                <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", boxShadow: "var(--shadow-sm)", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <div
+                  style={{
+                    background: "var(--bg-surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: "1.5rem",
+                    boxShadow: "var(--shadow-sm)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
                     <Shield size={16} style={{ color: "var(--accent-dark)" }} />
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", textTransform: "uppercase", display: "block" }}>Role Access</span>
-                      <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>{profile.role}</span>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--fg-muted)",
+                          textTransform: "uppercase",
+                          display: "block",
+                        }}
+                      >
+                        Role Access
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          color: "var(--fg-primary)",
+                        }}
+                      >
+                        {profile.role}
+                      </span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                    }}
+                  >
                     <Mail size={16} style={{ color: "var(--accent-dark)" }} />
                     <div>
-                      <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", textTransform: "uppercase", display: "block" }}>Login Email</span>
-                      <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", wordBreak: "break-all" }}>{profile.email}</span>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--fg-muted)",
+                          textTransform: "uppercase",
+                          display: "block",
+                        }}
+                      >
+                        Login Email
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          color: "var(--fg-primary)",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {profile.email}
+                      </span>
                     </div>
                   </div>
 
-                  <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "0.5rem 0" }} />
+                  <hr
+                    style={{
+                      border: 0,
+                      borderTop: "1px solid var(--border)",
+                      margin: "0.5rem 0",
+                    }}
+                  />
 
                   <button
                     onClick={handleLogout}
@@ -306,13 +487,15 @@ function ProfileContent() {
                       fontSize: "0.875rem",
                       fontWeight: 600,
                       cursor: "pointer",
-                      transition: "all 0.2s ease"
+                      transition: "all 0.2s ease",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.15)";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(239,68,68,0.15)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(239,68,68,0.08)";
                     }}
                   >
                     <LogOut size={16} />
@@ -322,11 +505,45 @@ function ProfileContent() {
               </div>
 
               {/* Right Column: Profile Detail Forms */}
-              <div style={{ background: "var(--bg-surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "2.5rem 2.5rem", boxShadow: "var(--shadow-sm)" }}>
-                <div style={{ display: "flex", justifyContent: "between", alignItems: "center", borderBottom: "1px solid var(--border)", paddingBottom: "1.25rem", marginBottom: "2rem" }}>
+              <div
+                style={{
+                  background: "var(--bg-surface)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-lg)",
+                  padding: "2.5rem 2.5rem",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "between",
+                    alignItems: "center",
+                    borderBottom: "1px solid var(--border)",
+                    paddingBottom: "1.25rem",
+                    marginBottom: "2rem",
+                  }}
+                >
                   <div>
-                    <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)" }}>Customer Profile</h1>
-                    <p style={{ color: "var(--fg-muted)", fontSize: "0.875rem", margin: 0 }}>Configure personal details and delivery addresses.</p>
+                    <h1
+                      style={{
+                        fontFamily: "var(--font-serif)",
+                        fontSize: "1.75rem",
+                        fontWeight: 700,
+                        color: "var(--fg-primary)",
+                      }}
+                    >
+                      Customer Profile
+                    </h1>
+                    <p
+                      style={{
+                        color: "var(--fg-muted)",
+                        fontSize: "0.875rem",
+                        margin: 0,
+                      }}
+                    >
+                      Configure personal details and delivery addresses.
+                    </p>
                   </div>
                   {!isEditing && (
                     <button
@@ -343,10 +560,14 @@ function ProfileContent() {
                         fontWeight: 600,
                         color: "var(--fg-primary)",
                         cursor: "pointer",
-                        transition: "all 0.2s ease"
+                        transition: "all 0.2s ease",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.borderColor = "var(--accent)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.borderColor = "var(--border)")
+                      }
                     >
                       <Edit2 size={14} />
                       Edit Profile
@@ -357,14 +578,41 @@ function ProfileContent() {
                 <form onSubmit={handleSave}>
                   {/* Section 1: Personal Details */}
                   <div style={{ marginBottom: "2.5rem" }}>
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <h3
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: 600,
+                        color: "var(--fg-primary)",
+                        marginBottom: "1.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
                       <User size={16} style={{ color: "var(--accent-dark)" }} />
                       Personal Information
                     </h3>
-                    
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }} className="form-grid">
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "1.25rem",
+                      }}
+                      className="form-grid"
+                    >
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>First Name</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          First Name
+                        </label>
                         <input
                           type="text"
                           name="firstName"
@@ -377,14 +625,26 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Last Name</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Last Name
+                        </label>
                         <input
                           type="text"
                           name="lastName"
@@ -397,17 +657,37 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginTop: "1.25rem" }} className="form-grid">
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "1.25rem",
+                        marginTop: "1.25rem",
+                      }}
+                      className="form-grid"
+                    >
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Phone Number</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Phone Number
+                        </label>
                         <input
                           type="tel"
                           name="phoneNumber"
@@ -420,14 +700,26 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Date of Birth (Optional)</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Date of Birth (Optional)
+                        </label>
                         <input
                           type="text"
                           name="dateOfBirth"
@@ -440,9 +732,11 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
@@ -451,14 +745,43 @@ function ProfileContent() {
 
                   {/* Section 2: Address Details */}
                   <div style={{ marginBottom: "2.5rem" }}>
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <MapPin size={16} style={{ color: "var(--accent-dark)" }} />
+                    <h3
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: 600,
+                        color: "var(--fg-primary)",
+                        marginBottom: "1.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <MapPin
+                        size={16}
+                        style={{ color: "var(--accent-dark)" }}
+                      />
                       Address Details
                     </h3>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1.25rem",
+                      }}
+                    >
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Address Line 1</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Address Line 1
+                        </label>
                         <input
                           type="text"
                           name="addressLine1"
@@ -471,15 +794,27 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
 
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Address Line 2 (Optional)</label>
+                        <label
+                          style={{
+                            display: "block",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "var(--fg-secondary)",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Address Line 2 (Optional)
+                        </label>
                         <input
                           type="text"
                           name="addressLine2"
@@ -492,16 +827,35 @@ function ProfileContent() {
                             padding: "0.75rem",
                             border: "1.5px solid var(--border)",
                             borderRadius: "var(--radius-md)",
-                            background: isEditing ? "transparent" : "var(--bg-elevated)",
+                            background: isEditing
+                              ? "transparent"
+                              : "var(--bg-elevated)",
                             color: "var(--fg-primary)",
-                            outline: "none"
+                            outline: "none",
                           }}
                         />
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }} className="form-grid">
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "1.25rem",
+                        }}
+                        className="form-grid"
+                      >
                         <div>
-                          <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>City</label>
+                          <label
+                            style={{
+                              display: "block",
+                              fontSize: "0.8125rem",
+                              fontWeight: 600,
+                              color: "var(--fg-secondary)",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            City
+                          </label>
                           <input
                             type="text"
                             name="city"
@@ -514,14 +868,26 @@ function ProfileContent() {
                               padding: "0.75rem",
                               border: "1.5px solid var(--border)",
                               borderRadius: "var(--radius-md)",
-                              background: isEditing ? "transparent" : "var(--bg-elevated)",
+                              background: isEditing
+                                ? "transparent"
+                                : "var(--bg-elevated)",
                               color: "var(--fg-primary)",
-                              outline: "none"
+                              outline: "none",
                             }}
                           />
                         </div>
                         <div>
-                          <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>District</label>
+                          <label
+                            style={{
+                              display: "block",
+                              fontSize: "0.8125rem",
+                              fontWeight: 600,
+                              color: "var(--fg-secondary)",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            District
+                          </label>
                           <input
                             type="text"
                             name="district"
@@ -534,17 +900,36 @@ function ProfileContent() {
                               padding: "0.75rem",
                               border: "1.5px solid var(--border)",
                               borderRadius: "var(--radius-md)",
-                              background: isEditing ? "transparent" : "var(--bg-elevated)",
+                              background: isEditing
+                                ? "transparent"
+                                : "var(--bg-elevated)",
                               color: "var(--fg-primary)",
-                              outline: "none"
+                              outline: "none",
                             }}
                           />
                         </div>
                       </div>
 
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }} className="form-grid">
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "1.25rem",
+                        }}
+                        className="form-grid"
+                      >
                         <div>
-                          <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Province</label>
+                          <label
+                            style={{
+                              display: "block",
+                              fontSize: "0.8125rem",
+                              fontWeight: 600,
+                              color: "var(--fg-secondary)",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            Province
+                          </label>
                           <input
                             type="text"
                             name="province"
@@ -557,14 +942,26 @@ function ProfileContent() {
                               padding: "0.75rem",
                               border: "1.5px solid var(--border)",
                               borderRadius: "var(--radius-md)",
-                              background: isEditing ? "transparent" : "var(--bg-elevated)",
+                              background: isEditing
+                                ? "transparent"
+                                : "var(--bg-elevated)",
                               color: "var(--fg-primary)",
-                              outline: "none"
+                              outline: "none",
                             }}
                           />
                         </div>
                         <div>
-                          <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 600, color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>Postal Code</label>
+                          <label
+                            style={{
+                              display: "block",
+                              fontSize: "0.8125rem",
+                              fontWeight: 600,
+                              color: "var(--fg-secondary)",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            Postal Code
+                          </label>
                           <input
                             type="text"
                             name="postalCode"
@@ -577,9 +974,11 @@ function ProfileContent() {
                               padding: "0.75rem",
                               border: "1.5px solid var(--border)",
                               borderRadius: "var(--radius-md)",
-                              background: isEditing ? "transparent" : "var(--bg-elevated)",
+                              background: isEditing
+                                ? "transparent"
+                                : "var(--bg-elevated)",
                               color: "var(--fg-primary)",
-                              outline: "none"
+                              outline: "none",
                             }}
                           />
                         </div>
@@ -589,7 +988,15 @@ function ProfileContent() {
 
                   {/* Form Action Buttons */}
                   {isEditing && (
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem", borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: "1rem",
+                        borderTop: "1px solid var(--border)",
+                        paddingTop: "1.5rem",
+                      }}
+                    >
                       <button
                         type="button"
                         onClick={handleCancel}
@@ -641,41 +1048,62 @@ function ProfileContent() {
                   )}
                 </form>
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
 
       {showWelcomePopup && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.5)",
-          backdropFilter: "blur(4px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999
-        }}>
-          <div style={{
-            background: "var(--bg-surface)",
-            padding: "2.5rem",
-            borderRadius: "var(--radius-lg)",
-            maxWidth: "400px",
-            width: "90%",
-            textAlign: "center",
-            boxShadow: "var(--shadow-lg)",
-            border: "1px solid var(--border)"
-          }}>
-            <h2 style={{ fontFamily: "var(--font-serif)", fontSize: "1.5rem", marginBottom: "1rem", color: "var(--fg-primary)" }}>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: "var(--bg-surface)",
+              padding: "2.5rem",
+              borderRadius: "var(--radius-lg)",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+              boxShadow: "var(--shadow-lg)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <h2
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.5rem",
+                marginBottom: "1rem",
+                color: "var(--fg-primary)",
+              }}
+            >
               Welcome to LIMATA!
             </h2>
-            <p style={{ color: "var(--fg-secondary)", marginBottom: "2rem", lineHeight: 1.5 }}>
-              Your account has been created successfully. Would you like to set up your profile details now?
+            <p
+              style={{
+                color: "var(--fg-secondary)",
+                marginBottom: "2rem",
+                lineHeight: 1.5,
+              }}
+            >
+              Your account has been created successfully. Would you like to set
+              up your profile details now?
             </p>
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+            <div
+              style={{ display: "flex", gap: "1rem", justifyContent: "center" }}
+            >
               <button
                 onClick={() => setShowWelcomePopup(false)}
                 style={{

@@ -17,19 +17,27 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
   }, [messages]);
 
   return (
-    <div 
-      style={{ 
-        flex: 1, 
-        overflowY: "auto", 
-        background: "var(--bg-elevated)", 
-        padding: "1.5rem", 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: "1rem" 
+    <div
+      style={{
+        flex: 1,
+        overflowY: "auto",
+        background: "var(--bg-elevated)",
+        padding: "1.5rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
       }}
     >
       {messages.length === 0 ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--fg-muted)" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            color: "var(--fg-muted)",
+          }}
+        >
           <p style={{ fontSize: "0.85rem", margin: 0 }}>
             No messages yet. Send a response to initiate the conversation!
           </p>
@@ -38,50 +46,70 @@ export function MessageList({ messages, currentUserId }: MessageListProps) {
         <>
           {messages.map((message) => {
             const isMe = message.senderId === currentUserId;
-            const productMatch = message.content.match(/I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i);
-            
+            const productMatch = message.content.match(
+              /I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i,
+            );
+
             return (
               <div
                 key={message.messageId}
                 style={{
                   display: "flex",
                   justifyContent: isMe ? "flex-end" : "flex-start",
-                  width: "100%"
+                  width: "100%",
                 }}
               >
                 <div
                   style={{
                     maxWidth: "70%",
                     padding: "0.75rem 1rem",
-                    borderRadius: isMe 
-                      ? "var(--radius-lg) var(--radius-lg) 0 var(--radius-lg)" 
+                    borderRadius: isMe
+                      ? "var(--radius-lg) var(--radius-lg) 0 var(--radius-lg)"
                       : "var(--radius-lg) var(--radius-lg) var(--radius-lg) 0",
                     background: isMe ? "var(--bg-dark)" : "var(--bg-surface)",
                     color: isMe ? "#FAF9F7" : "var(--fg-primary)",
-                    border: isMe ? "1px solid rgba(250,249,247,0.08)" : "1px solid var(--border)",
+                    border: isMe
+                      ? "1px solid rgba(250,249,247,0.08)"
+                      : "1px solid var(--border)",
                     boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                   }}
                 >
                   {productMatch ? (
                     <>
-                      <p style={{ fontSize: "0.85rem", lineHeight: 1.4, margin: "0 0 0.5rem 0" }}>
+                      <p
+                        style={{
+                          fontSize: "0.85rem",
+                          lineHeight: 1.4,
+                          margin: "0 0 0.5rem 0",
+                        }}
+                      >
                         I am interested in this product:
                       </p>
-                      <ProductPreviewCard productId={productMatch[3]} isMine={isMe} />
+                      <ProductPreviewCard
+                        productId={productMatch[3]}
+                        isMine={isMe}
+                      />
                     </>
                   ) : (
-                    <p style={{ margin: 0, fontSize: "0.85rem", lineHeight: 1.4, wordBreak: "break-word" }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "0.85rem",
+                        lineHeight: 1.4,
+                        wordBreak: "break-word",
+                      }}
+                    >
                       {message.content}
                     </p>
                   )}
-                  <span 
-                    style={{ 
-                      fontSize: "0.68rem", 
-                      opacity: 0.6, 
-                      marginTop: "0.375rem", 
+                  <span
+                    style={{
+                      fontSize: "0.68rem",
+                      opacity: 0.6,
+                      marginTop: "0.375rem",
                       display: "block",
                       textAlign: "right",
-                      fontStyle: "italic"
+                      fontStyle: "italic",
                     }}
                   >
                     {new Date(message.createdAt).toLocaleTimeString([], {

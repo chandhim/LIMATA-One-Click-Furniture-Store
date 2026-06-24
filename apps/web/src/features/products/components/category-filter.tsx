@@ -2,14 +2,17 @@
 
 import { useEffect, useRef } from "react";
 
-
 interface CategorySidebarNavProps {
   categories: { name: string; icon?: string }[];
   activeCategory: string | null;
   onCategoryClick: (name: string) => void;
 }
 
-export function CategorySidebarNav({ categories, activeCategory, onCategoryClick }: CategorySidebarNavProps) {
+export function CategorySidebarNav({
+  categories,
+  activeCategory,
+  onCategoryClick,
+}: CategorySidebarNavProps) {
   return (
     <nav
       aria-label="Product categories"
@@ -70,14 +73,18 @@ export function CategorySidebarNav({ categories, activeCategory, onCategoryClick
             }}
             onMouseEnter={(e) => {
               if (!isActive) {
-                (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
-                (e.currentTarget as HTMLElement).style.color = "var(--fg-primary)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "var(--bg-elevated)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--fg-primary)";
               }
             }}
             onMouseLeave={(e) => {
               if (!isActive) {
-                (e.currentTarget as HTMLElement).style.background = "transparent";
-                (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "transparent";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--fg-secondary)";
               }
             }}
           >
@@ -105,8 +112,14 @@ export function CategorySidebarNav({ categories, activeCategory, onCategoryClick
 }
 
 /** CategoryFilter is kept as a simple export alias for backward compat */
-export function CategoryFilter({ onSelect }: { onSelect: (category?: string) => void }) {
+export function CategoryFilter({
+  onSelect,
+}: {
+  onSelect: (category?: string) => void;
+}) {
   const _ = useRef(onSelect);
-  useEffect(() => { _.current = onSelect; }, [onSelect]);
+  useEffect(() => {
+    _.current = onSelect;
+  }, [onSelect]);
   return null;
 }

@@ -1,8 +1,17 @@
 import type { NextFunction, Request, Response } from "express";
 import { Role } from "@prisma/client";
 import { ApiError } from "@/shared/errors/api-error";
-import { loginSchema, registerSchema, updateProfileSchema } from "./auth.validation";
-import { getProfile, loginUser, registerUser, updateUserProfile } from "./auth.service";
+import {
+  loginSchema,
+  registerSchema,
+  updateProfileSchema,
+} from "./auth.validation";
+import {
+  getProfile,
+  loginUser,
+  registerUser,
+  updateUserProfile,
+} from "./auth.service";
 import { uploadToR2, makeKey } from "@/lib/storage";
 import { createNotification } from "../notifications/notification.service";
 
@@ -144,4 +153,4 @@ export async function uploadAvatarController(
   } catch (error) {
     return next(error);
   }
-}
+}

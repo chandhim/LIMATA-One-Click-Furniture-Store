@@ -1,7 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "@/shared/errors/api-error";
 import { findOrder } from "../orders/order.repository";
-import { generatePaymentHash, processPayHereNotification } from "./payment.service";
+import {
+  generatePaymentHash,
+  processPayHereNotification,
+} from "./payment.service";
 
 function sendResponse(res: Response, status: number, data: unknown) {
   return res.status(status).json({ success: true, message: "ok", data });
@@ -10,7 +13,7 @@ function sendResponse(res: Response, status: number, data: unknown) {
 export async function createPaymentParamsController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -39,7 +42,11 @@ export async function createPaymentParamsController(
     // Generate initiation hash
     // PayHere uses LKR currency by default in Sri Lanka
     const currency = "LKR";
-    const paymentParams = generatePaymentHash(order.orderId, order.totalAmount, currency);
+    const paymentParams = generatePaymentHash(
+      order.orderId,
+      order.totalAmount,
+      currency,
+    );
 
     // Fetch buyer details from the order to prefill the checkout form
     const checkoutParams = {
@@ -64,18 +71,20 @@ export async function createPaymentParamsController(
 export async function payHereNotifyController(
   req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   try {
     // PayHere sends form-urlencoded data in POST webhook callbacks.
     // Ensure Express urlencoded parsing is active or handle raw body.
     await processPayHereNotification(req.body);
-    
+
     // Always return HTTP 200 for PayHere webhook acknowledgements
     return res.status(200).send("OK");
   } catch (error) {
     console.error("PayHere notify error:", error);
     // Even if it fails, we can respond to PayHere or log the error
-    return res.status(400).send(error instanceof Error ? error.message : "Error");
+    return res
+      .status(400)
+      .send(error instanceof Error ? error.message : "Error");
   }
 }

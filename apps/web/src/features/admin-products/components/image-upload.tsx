@@ -17,7 +17,10 @@ interface ImageItem {
 
 const EMPTY_ARRAY: string[] = [];
 
-export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUploadProps) {
+export function ImageUpload({
+  onChange,
+  initialImages = EMPTY_ARRAY,
+}: ImageUploadProps) {
   const [items, setItems] = useState<ImageItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,7 +31,9 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
     const imagesArray = initialImagesKey ? initialImagesKey.split(",") : [];
     setItems((prevItems) => {
       // Keep only newly uploaded items that are not in the new initialImages array
-      const newUploadedItems = prevItems.filter((item) => item.file !== undefined);
+      const newUploadedItems = prevItems.filter(
+        (item) => item.file !== undefined,
+      );
       const mappedInitial = imagesArray.map((url) => ({
         id: url,
         src: url,
@@ -57,7 +62,7 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
     const updatedItems = [...items, ...newItems];
     setItems(updatedItems);
     triggerChange(updatedItems);
-    
+
     // Clear the input value so that selecting the same files again still triggers onChange
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -76,15 +81,15 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
 
   return (
     <div>
-      <input 
-        type="file" 
-        multiple 
-        accept="image/*" 
-        onChange={handleChange} 
-        ref={fileInputRef} 
-        style={{ display: "none" }} 
+      <input
+        type="file"
+        multiple
+        accept="image/*"
+        onChange={handleChange}
+        ref={fileInputRef}
+        style={{ display: "none" }}
       />
-      
+
       {/* Custom upload dropzone */}
       <div
         onClick={() => fileInputRef.current?.click()}
@@ -100,7 +105,7 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
           alignItems: "center",
           justifyContent: "center",
           transition: "all 0.2s ease",
-          gap: "0.5rem"
+          gap: "0.5rem",
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget as HTMLElement;
@@ -113,8 +118,17 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
           el.style.background = "var(--bg-elevated)";
         }}
       >
-        <UploadCloud size={24} style={{ color: "var(--fg-muted)", opacity: 0.7 }} />
-        <span style={{ fontSize: "0.85rem", color: "var(--fg-secondary)", fontWeight: 600 }}>
+        <UploadCloud
+          size={24}
+          style={{ color: "var(--fg-muted)", opacity: 0.7 }}
+        />
+        <span
+          style={{
+            fontSize: "0.85rem",
+            color: "var(--fg-secondary)",
+            fontWeight: 600,
+          }}
+        >
           Upload product photos
         </span>
         <span style={{ fontSize: "0.72rem", color: "var(--fg-muted)" }}>
@@ -123,18 +137,25 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
       </div>
 
       {items.length > 0 && (
-        <div style={{ marginTop: "1rem", display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
+        <div
+          style={{
+            marginTop: "1rem",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.625rem",
+          }}
+        >
           {items.map((item) => (
-            <div 
-              key={item.id} 
-              style={{ 
-                position: "relative", 
-                width: 72, 
-                height: 72, 
-                borderRadius: "var(--radius-sm)", 
+            <div
+              key={item.id}
+              style={{
+                position: "relative",
+                width: 72,
+                height: 72,
+                borderRadius: "var(--radius-sm)",
                 border: "1px solid var(--border)",
                 overflow: "hidden",
-                boxShadow: "var(--shadow-sm)"
+                boxShadow: "var(--shadow-sm)",
               }}
             >
               <Image
@@ -164,7 +185,7 @@ export function ImageUpload({ onChange, initialImages = EMPTY_ARRAY }: ImageUplo
                   justifyContent: "center",
                   cursor: "pointer",
                   color: "#fff",
-                  padding: 0
+                  padding: 0,
                 }}
               >
                 <X size={10} />

@@ -1,8 +1,19 @@
 "use client";
 
-import { useAdminReviews, useToggleReviewApproval, useDeleteReview } from "@/features/admin/hooks/use-admin";
+import {
+  useAdminReviews,
+  useToggleReviewApproval,
+  useDeleteReview,
+} from "@/features/admin/hooks/use-admin";
 import Image from "next/image";
-import { Star, MessageSquare, Check, EyeOff, Trash2, Package } from "lucide-react";
+import {
+  Star,
+  MessageSquare,
+  Check,
+  EyeOff,
+  Trash2,
+  Package,
+} from "lucide-react";
 
 interface AdminReview {
   reviewId: string;
@@ -26,16 +37,26 @@ export default function AdminReviewsPage() {
   const toggleApprovalMutation = useToggleReviewApproval();
   const deleteReviewMutation = useDeleteReview();
 
-  async function handleToggleApproval(reviewId: string, currentApproval: boolean) {
+  async function handleToggleApproval(
+    reviewId: string,
+    currentApproval: boolean,
+  ) {
     try {
-      await toggleApprovalMutation.mutateAsync({ reviewId, isApproved: !currentApproval });
+      await toggleApprovalMutation.mutateAsync({
+        reviewId,
+        isApproved: !currentApproval,
+      });
     } catch (err) {
       console.error("Failed to toggle review approval:", err);
     }
   }
 
   async function handleDelete(reviewId: string) {
-    if (confirm("Are you sure you want to delete this review? This action is permanent.")) {
+    if (
+      confirm(
+        "Are you sure you want to delete this review? This action is permanent.",
+      )
+    ) {
       try {
         await deleteReviewMutation.mutateAsync(reviewId);
       } catch (err) {
@@ -46,19 +67,28 @@ export default function AdminReviewsPage() {
 
   if (isLoading) {
     return (
-      <div 
-        style={{ 
-          padding: "4rem", 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
-          minHeight: "80vh", 
-          color: "var(--fg-muted)", 
+      <div
+        style={{
+          padding: "4rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "80vh",
+          color: "var(--fg-muted)",
           gap: "0.75rem",
-          background: "var(--bg-base)"
+          background: "var(--bg-base)",
         }}
       >
-        <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--accent)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            border: "2px solid var(--accent)",
+            borderTopColor: "transparent",
+            animation: "spin 0.7s linear infinite",
+          }}
+        />
         <span>Loading reviews...</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -66,30 +96,65 @@ export default function AdminReviewsPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", overflow: "hidden" }}>
-      
-
-
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 64px)",
+        padding: "1.5rem 2rem",
+        maxWidth: 1400,
+        margin: "0 auto",
+        background: "var(--bg-base)",
+        overflow: "hidden",
+      }}
+    >
       {/* Reviews Table Container */}
-      <div 
-        style={{ 
-          background: "var(--bg-surface)", 
-          border: "1px solid var(--border)", 
-          borderRadius: "var(--radius-lg)", 
+      <div
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
           boxShadow: "var(--shadow-sm)",
           display: "flex",
           flexDirection: "column",
           flex: 1,
-          minHeight: 0
+          minHeight: 0,
         }}
       >
         <div style={{ overflow: "auto", flex: 1 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+            <thead
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
+                background: "var(--bg-elevated)",
+                boxShadow: "0 1px 0 var(--border)",
+              }}
+            >
               <tr>
-                {["Product Details", "Customer Info", "Rating Score", "Review Comment", "Status Badge", "Moderation Actions"].map((h) => (
-                  <th key={h} style={{ padding: "1rem 1.5rem", textAlign: "left", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--fg-secondary)", whiteSpace: "nowrap" }}>
+                {[
+                  "Product Details",
+                  "Customer Info",
+                  "Rating Score",
+                  "Review Comment",
+                  "Status Badge",
+                  "Moderation Actions",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "1rem 1.5rem",
+                      textAlign: "left",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-secondary)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {h}
                   </th>
                 ))}
@@ -98,31 +163,69 @@ export default function AdminReviewsPage() {
             <tbody>
               {reviews.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: "5rem", textAlign: "center", color: "var(--fg-muted)", fontSize: "0.875rem" }}>
-                    <MessageSquare size={32} style={{ color: "var(--fg-muted)", opacity: 0.3, marginBottom: "1rem" }} />
-                    <p style={{ margin: 0, fontWeight: 500 }}>No reviews submitted yet.</p>
+                  <td
+                    colSpan={6}
+                    style={{
+                      padding: "5rem",
+                      textAlign: "center",
+                      color: "var(--fg-muted)",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    <MessageSquare
+                      size={32}
+                      style={{
+                        color: "var(--fg-muted)",
+                        opacity: 0.3,
+                        marginBottom: "1rem",
+                      }}
+                    />
+                    <p style={{ margin: 0, fontWeight: 500 }}>
+                      No reviews submitted yet.
+                    </p>
                   </td>
                 </tr>
               ) : (
                 reviews.map((item: AdminReview, idx: number) => {
                   const isApproved = item.isApproved !== false;
-                  const itemDate = new Date(item.createdAt).toLocaleDateString([], {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  });
+                  const itemDate = new Date(item.createdAt).toLocaleDateString(
+                    [],
+                    {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    },
+                  );
                   const initials = item.user?.name?.[0]?.toUpperCase() ?? "C";
 
                   return (
                     <tr
                       key={item.reviewId}
-                      style={{ borderBottom: idx < reviews.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+                      style={{
+                        borderBottom:
+                          idx < reviews.length - 1
+                            ? "1px solid var(--border)"
+                            : "none",
+                        transition: "background 0.2s ease",
+                      }}
+                      onMouseEnter={(e) =>
+                        ((e.currentTarget as HTMLElement).style.background =
+                          "rgba(250,249,247,0.4)")
+                      }
+                      onMouseLeave={(e) =>
+                        ((e.currentTarget as HTMLElement).style.background =
+                          "transparent")
+                      }
                     >
                       {/* Product */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.875rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.875rem",
+                          }}
+                        >
                           <div
                             style={{
                               width: 48,
@@ -133,27 +236,65 @@ export default function AdminReviewsPage() {
                               overflow: "hidden",
                               position: "relative",
                               flexShrink: 0,
-                              boxShadow: "var(--shadow-sm)"
+                              boxShadow: "var(--shadow-sm)",
                             }}
                           >
                             {item.product?.images?.[0] ? (
-                              <Image src={item.product.images[0]} alt={item.product.name} fill style={{ objectFit: "cover" }} unoptimized />
+                              <Image
+                                src={item.product.images[0]}
+                                alt={item.product.name}
+                                fill
+                                style={{ objectFit: "cover" }}
+                                unoptimized
+                              />
                             ) : (
-                              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", color: "var(--fg-muted)" }}>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  width: "100%",
+                                  height: "100%",
+                                  color: "var(--fg-muted)",
+                                }}
+                              >
                                 <Package size={20} strokeWidth={1.5} />
                               </div>
                             )}
                           </div>
                           <div>
-                            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>{item.product?.name}</div>
-                            <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)", marginTop: "0.125rem" }}>ID: {item.product?.productId.slice(-8).toUpperCase()}</div>
+                            <div
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 600,
+                                color: "var(--fg-primary)",
+                              }}
+                            >
+                              {item.product?.name}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.72rem",
+                                color: "var(--fg-muted)",
+                                marginTop: "0.125rem",
+                              }}
+                            >
+                              ID:{" "}
+                              {item.product?.productId.slice(-8).toUpperCase()}
+                            </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Customer Info */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
                           <div
                             style={{
                               width: 28,
@@ -167,44 +308,102 @@ export default function AdminReviewsPage() {
                               fontSize: "0.75rem",
                               fontWeight: 700,
                               color: "var(--fg-secondary)",
-                              flexShrink: 0
+                              flexShrink: 0,
                             }}
                           >
                             {initials}
                           </div>
                           <div>
-                            <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-primary)" }}>{item.user?.name}</div>
-                            <div style={{ fontSize: "0.72rem", color: "var(--fg-muted)", marginTop: "0.05rem" }}>{item.user?.email}</div>
+                            <div
+                              style={{
+                                fontSize: "0.85rem",
+                                fontWeight: 600,
+                                color: "var(--fg-primary)",
+                              }}
+                            >
+                              {item.user?.name}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.72rem",
+                                color: "var(--fg-muted)",
+                                marginTop: "0.05rem",
+                              }}
+                            >
+                              {item.user?.email}
+                            </div>
                           </div>
                         </div>
                       </td>
 
                       {/* Rating Score */}
-                      <td style={{ padding: "1.25rem 1.5rem", whiteSpace: "nowrap" }}>
-                        <div style={{ display: "flex", gap: "0.125rem", color: "var(--accent)" }}>
+                      <td
+                        style={{
+                          padding: "1.25rem 1.5rem",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "0.125rem",
+                            color: "var(--accent)",
+                          }}
+                        >
                           {[1, 2, 3, 4, 5].map((starIdx) => (
                             <Star
                               key={starIdx}
                               size={14}
-                              fill={starIdx <= item.rating ? "var(--accent)" : "none"}
+                              fill={
+                                starIdx <= item.rating
+                                  ? "var(--accent)"
+                                  : "none"
+                              }
                               style={{
-                                filter: starIdx <= item.rating ? "drop-shadow(0 1px 2px rgba(201,169,110,0.3))" : "none",
-                                strokeWidth: 1.5
+                                filter:
+                                  starIdx <= item.rating
+                                    ? "drop-shadow(0 1px 2px rgba(201,169,110,0.3))"
+                                    : "none",
+                                strokeWidth: 1.5,
                               }}
                             />
                           ))}
                         </div>
-                        <div style={{ fontSize: "0.68rem", color: "var(--fg-muted)", marginTop: "0.25rem", fontWeight: 600 }}>
+                        <div
+                          style={{
+                            fontSize: "0.68rem",
+                            color: "var(--fg-muted)",
+                            marginTop: "0.25rem",
+                            fontWeight: 600,
+                          }}
+                        >
                           {item.rating} / 5 Score
                         </div>
                       </td>
 
                       {/* Review Comment */}
-                      <td style={{ padding: "1.25rem 1.5rem", maxWidth: "24rem" }}>
-                        <p style={{ margin: 0, fontSize: "0.85rem", color: "var(--fg-primary)", lineHeight: 1.5, wordBreak: "break-word" }}>
+                      <td
+                        style={{ padding: "1.25rem 1.5rem", maxWidth: "24rem" }}
+                      >
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "0.85rem",
+                            color: "var(--fg-primary)",
+                            lineHeight: 1.5,
+                            wordBreak: "break-word",
+                          }}
+                        >
                           &ldquo;{item.comment}&rdquo;
                         </p>
-                        <span style={{ display: "block", fontSize: "0.72rem", color: "var(--fg-muted)", marginTop: "0.375rem" }}>
+                        <span
+                          style={{
+                            display: "block",
+                            fontSize: "0.72rem",
+                            color: "var(--fg-muted)",
+                            marginTop: "0.375rem",
+                          }}
+                        >
                           Posted on {itemDate}
                         </span>
                       </td>
@@ -218,9 +417,11 @@ export default function AdminReviewsPage() {
                             fontWeight: 700,
                             padding: "0.2rem 0.625rem",
                             borderRadius: "var(--radius-full)",
-                            background: isApproved ? "rgba(74,166,120,0.12)" : "rgba(220,160,80,0.08)",
+                            background: isApproved
+                              ? "rgba(74,166,120,0.12)"
+                              : "rgba(220,160,80,0.08)",
                             color: isApproved ? "#276e47" : "#a85f10",
-                            border: `1px solid ${isApproved ? "rgba(74,166,120,0.2)" : "rgba(220,160,80,0.15)"}`
+                            border: `1px solid ${isApproved ? "rgba(74,166,120,0.2)" : "rgba(220,160,80,0.15)"}`,
                           }}
                         >
                           {isApproved ? "Approved" : "Pending Action"}
@@ -231,12 +432,16 @@ export default function AdminReviewsPage() {
                       <td style={{ padding: "1.25rem 1.5rem" }}>
                         <div style={{ display: "flex", gap: "0.5rem" }}>
                           <button
-                            onClick={() => handleToggleApproval(item.reviewId, isApproved)}
+                            onClick={() =>
+                              handleToggleApproval(item.reviewId, isApproved)
+                            }
                             style={{
                               padding: "0.4rem 0.875rem",
                               fontSize: "0.78rem",
                               fontWeight: 700,
-                              color: isApproved ? "var(--fg-secondary)" : "var(--accent-dark)",
+                              color: isApproved
+                                ? "var(--fg-secondary)"
+                                : "var(--accent-dark)",
                               background: "var(--bg-surface)",
                               border: "1px solid var(--border)",
                               borderRadius: "var(--radius-full)",
@@ -244,7 +449,8 @@ export default function AdminReviewsPage() {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "0.35rem",
-                              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                              transition:
+                                "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                               whiteSpace: "nowrap",
                             }}
                             onMouseEnter={(e) => {
@@ -275,7 +481,7 @@ export default function AdminReviewsPage() {
                               </>
                             )}
                           </button>
-                          
+
                           <button
                             onClick={() => handleDelete(item.reviewId)}
                             style={{
@@ -290,7 +496,8 @@ export default function AdminReviewsPage() {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "0.35rem",
-                              transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                              transition:
+                                "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
                               whiteSpace: "nowrap",
                             }}
                             onMouseEnter={(e) => {

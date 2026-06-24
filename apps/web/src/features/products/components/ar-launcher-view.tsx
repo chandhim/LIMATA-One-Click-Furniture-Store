@@ -8,10 +8,10 @@ interface ARLauncherViewProps {
   modelUrl: string;
 }
 
-
-
 export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
-  const viewerRef = useRef<(HTMLElement & { activateAR: () => void }) | null>(null);
+  const viewerRef = useRef<(HTMLElement & { activateAR: () => void }) | null>(
+    null,
+  );
   const [isSupported, setIsSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -49,7 +49,10 @@ export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
     );
   }
 
-  const fetchUrl = modelUrl.replace("https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models", "/r2-models");
+  const fetchUrl = modelUrl.replace(
+    "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models",
+    "/r2-models",
+  );
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
@@ -59,7 +62,12 @@ export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
         src: fetchUrl,
         ar: true,
         "ar-modes": "webxr scene-viewer quick-look",
-        style: { position: "absolute", width: 0, height: 0, overflow: "hidden" },
+        style: {
+          position: "absolute",
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+        },
       })}
 
       <button

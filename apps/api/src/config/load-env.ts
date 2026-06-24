@@ -22,7 +22,10 @@ function loadEnvFile(envPath: string) {
     }
 
     const key = trimmedLine.slice(0, separatorIndex).trim();
-    const value = trimmedLine.slice(separatorIndex + 1).trim().replace(/^"|"$/g, "");
+    const value = trimmedLine
+      .slice(separatorIndex + 1)
+      .trim()
+      .replace(/^"|"$/g, "");
 
     if (key && process.env[key] === undefined) {
       process.env[key] = value;

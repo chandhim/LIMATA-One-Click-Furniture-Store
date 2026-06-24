@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
-import type { GetReviewsResponse, ReviewEligibilityResponse } from "../types/review.types";
+import type {
+  GetReviewsResponse,
+  ReviewEligibilityResponse,
+} from "../types/review.types";
 
 export function useProductReviews(productId: string, sort: string = "recent") {
   return useQuery({
@@ -16,7 +19,10 @@ export function useProductReviews(productId: string, sort: string = "recent") {
   });
 }
 
-export function useReviewEligibility(productId: string, isAuthenticated: boolean) {
+export function useReviewEligibility(
+  productId: string,
+  isAuthenticated: boolean,
+) {
   return useQuery({
     queryKey: ["review-eligibility", productId],
     queryFn: async () => {

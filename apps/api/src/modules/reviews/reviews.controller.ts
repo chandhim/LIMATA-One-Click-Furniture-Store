@@ -86,7 +86,10 @@ export async function getReviewEligibilityController(
     });
 
     if (existingReview) {
-      return sendResponse(res, 200, { isEligible: false, reason: "ALREADY_REVIEWED" });
+      return sendResponse(res, 200, {
+        isEligible: false,
+        reason: "ALREADY_REVIEWED",
+      });
     }
 
     // 2. Check if user has purchased the product and order is DELIVERED
@@ -101,7 +104,10 @@ export async function getReviewEligibilityController(
     });
 
     if (!orderWithProduct) {
-      return sendResponse(res, 200, { isEligible: false, reason: "NOT_PURCHASED" });
+      return sendResponse(res, 200, {
+        isEligible: false,
+        reason: "NOT_PURCHASED",
+      });
     }
 
     return sendResponse(res, 200, { isEligible: true });
@@ -156,7 +162,10 @@ export async function createReviewController(
     });
 
     if (!orderWithProduct) {
-      throw new ApiError(403, "You must purchase and receive this product to review it");
+      throw new ApiError(
+        403,
+        "You must purchase and receive this product to review it",
+      );
     }
 
     // 3. Create Review
