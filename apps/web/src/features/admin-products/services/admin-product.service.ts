@@ -51,6 +51,7 @@ export async function uploadImages(files: File[]) {
 
 export async function uploadModel(
   file: File,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUploadProgress?: (progressEvent: any) => void
 ) {
   const formData = new FormData();
