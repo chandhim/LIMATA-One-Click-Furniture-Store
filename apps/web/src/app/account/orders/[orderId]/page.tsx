@@ -199,8 +199,14 @@ export default function OrderDetailsPage() {
           city: payParams.city,
           country: payParams.country,
           notify_url: `${getApiBaseUrl()}/api/payment/notify`,
-          return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${payParams.orderId}` : "",
-          cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${payParams.orderId}` : "",
+          return_url:
+            typeof window !== "undefined"
+              ? `${window.location.origin}/orders/success?orderId=${payParams.orderId}`
+              : "",
+          cancel_url:
+            typeof window !== "undefined"
+              ? `${window.location.origin}/account/orders/${payParams.orderId}`
+              : "",
         };
 
         payhere.startPayment(payment);
@@ -277,7 +283,12 @@ export default function OrderDetailsPage() {
             }}
           >
             <div>
-              <span className="section-label" style={{ marginBottom: "0.5rem" }}>Receipt</span>
+              <span
+                className="section-label"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                Receipt
+              </span>
               <h1
                 className="font-display"
                 style={{
@@ -290,7 +301,13 @@ export default function OrderDetailsPage() {
               >
                 Order #{order.orderId.slice(-8).toUpperCase()}
               </h1>
-              <p style={{ margin: "0.375rem 0 0", fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
+              <p
+                style={{
+                  margin: "0.375rem 0 0",
+                  fontSize: "0.875rem",
+                  color: "var(--fg-secondary)",
+                }}
+              >
                 Placed on {formattedDate}
               </p>
             </div>
@@ -437,7 +454,9 @@ export default function OrderDetailsPage() {
                                 ? "var(--accent)"
                                 : "var(--border-strong)"
                           }`,
-                          color: active ? "var(--fg-inverse)" : "var(--fg-muted)",
+                          color: active
+                            ? "var(--fg-inverse)"
+                            : "var(--fg-muted)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -457,7 +476,9 @@ export default function OrderDetailsPage() {
                         style={{
                           fontSize: "0.72rem",
                           fontWeight: active ? 700 : 500,
-                          color: active ? "var(--fg-primary)" : "var(--fg-muted)",
+                          color: active
+                            ? "var(--fg-primary)"
+                            : "var(--fg-muted)",
                           textTransform: "uppercase",
                           letterSpacing: "0.08em",
                           textAlign: "center",
@@ -473,7 +494,9 @@ export default function OrderDetailsPage() {
           )}
 
           {/* Details split grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr", gap: "2rem" }}
+          >
             <div
               className="order-details-grid"
               style={{
@@ -483,7 +506,13 @@ export default function OrderDetailsPage() {
               }}
             >
               {/* Left Column: Items purchased */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "2rem",
+                }}
+              >
                 <div
                   style={{
                     background: "var(--bg-surface)",
@@ -507,9 +536,23 @@ export default function OrderDetailsPage() {
                   >
                     Items in Order
                   </h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
                     {order.items.map((item) => (
-                      <div key={item.orderItemId} style={{ display: "flex", flexDirection: "column", padding: "1rem 0", borderBottom: "1px solid var(--border)" }}>
+                      <div
+                        key={item.orderItemId}
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          padding: "1rem 0",
+                          borderBottom: "1px solid var(--border)",
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
@@ -532,7 +575,8 @@ export default function OrderDetailsPage() {
                               position: "relative",
                             }}
                           >
-                            {item.product.images && item.product.images.length > 0 ? (
+                            {item.product.images &&
+                            item.product.images.length > 0 ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={item.product.images[0]}
@@ -544,7 +588,10 @@ export default function OrderDetailsPage() {
                                 }}
                               />
                             ) : (
-                              <Armchair size={28} style={{ color: "var(--fg-muted)" }} />
+                              <Armchair
+                                size={28}
+                                style={{ color: "var(--fg-muted)" }}
+                              />
                             )}
                           </div>
                           <div style={{ flex: 1 }}>
@@ -565,7 +612,8 @@ export default function OrderDetailsPage() {
                                 color: "var(--fg-secondary)",
                               }}
                             >
-                              Rs. {item.price.toLocaleString()} × {item.quantity}
+                              Rs. {item.price.toLocaleString()} ×{" "}
+                              {item.quantity}
                             </span>
                           </div>
                           <div
@@ -578,12 +626,15 @@ export default function OrderDetailsPage() {
                             Rs. {(item.price * item.quantity).toLocaleString()}
                           </div>
                         </div>
-                        <OrderProductReview productId={item.productId} orderStatus={order.orderStatus} />
+                        <OrderProductReview
+                          productId={item.productId}
+                          orderStatus={order.orderStatus}
+                        />
                       </div>
                     ))}
                   </div>
 
-                {/* Calculations */}
+                  {/* Calculations */}
                   <div
                     style={{
                       display: "flex",
@@ -603,7 +654,9 @@ export default function OrderDetailsPage() {
                       }}
                     >
                       <span>Subtotal</span>
-                      <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>
+                      <span
+                        style={{ fontWeight: 500, color: "var(--fg-primary)" }}
+                      >
                         Rs.{" "}
                         {(
                           order.totalAmount -
@@ -620,8 +673,12 @@ export default function OrderDetailsPage() {
                       }}
                     >
                       <span>Shipping ({order.deliveryMethod})</span>
-                      <span style={{ fontWeight: 500, color: "var(--fg-primary)" }}>
-                        {order.deliveryMethod === "Express" ? "Rs. 1,000" : "Free"}
+                      <span
+                        style={{ fontWeight: 500, color: "var(--fg-primary)" }}
+                      >
+                        {order.deliveryMethod === "Express"
+                          ? "Rs. 1,000"
+                          : "Free"}
                       </span>
                     </div>
                     <div
@@ -637,14 +694,22 @@ export default function OrderDetailsPage() {
                       }}
                     >
                       <span>Total Amount</span>
-                      <span className="text-gradient">Rs. {order.totalAmount.toLocaleString()}</span>
+                      <span className="text-gradient">
+                        Rs. {order.totalAmount.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Customer Shipping & Payment details */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "2rem",
+                }}
+              >
                 {/* Shipping Details */}
                 <div
                   style={{
@@ -691,7 +756,9 @@ export default function OrderDetailsPage() {
                       >
                         Recipient Name
                       </span>
-                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
+                      <strong
+                        style={{ color: "var(--fg-primary)", fontWeight: 600 }}
+                      >
                         {order.shippingName}
                       </strong>
                     </div>
@@ -708,7 +775,9 @@ export default function OrderDetailsPage() {
                       >
                         Phone Number
                       </span>
-                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
+                      <strong
+                        style={{ color: "var(--fg-primary)", fontWeight: 600 }}
+                      >
                         {order.shippingPhone}
                       </strong>
                     </div>
@@ -725,7 +794,9 @@ export default function OrderDetailsPage() {
                       >
                         Email Address
                       </span>
-                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600 }}>
+                      <strong
+                        style={{ color: "var(--fg-primary)", fontWeight: 600 }}
+                      >
                         {order.shippingEmail}
                       </strong>
                     </div>
@@ -742,7 +813,13 @@ export default function OrderDetailsPage() {
                       >
                         Shipping Address
                       </span>
-                      <strong style={{ color: "var(--fg-primary)", fontWeight: 600, lineHeight: 1.4 }}>
+                      <strong
+                        style={{
+                          color: "var(--fg-primary)",
+                          fontWeight: 600,
+                          lineHeight: 1.4,
+                        }}
+                      >
                         {order.shippingAddress}, {order.shippingCity}
                       </strong>
                     </div>
@@ -782,12 +859,29 @@ export default function OrderDetailsPage() {
                       gap: "0.875rem",
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "var(--fg-secondary)" }}>Payment Method</span>
-                      <strong style={{ color: "var(--fg-primary)" }}>{order.paymentMethod}</strong>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span style={{ color: "var(--fg-secondary)" }}>
+                        Payment Method
+                      </span>
+                      <strong style={{ color: "var(--fg-primary)" }}>
+                        {order.paymentMethod}
+                      </strong>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                      <span style={{ color: "var(--fg-secondary)" }}>Settlement Status</span>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <span style={{ color: "var(--fg-secondary)" }}>
+                        Settlement Status
+                      </span>
                       <span
                         style={{
                           fontWeight: 700,
@@ -842,7 +936,9 @@ export default function OrderDetailsPage() {
                             letterSpacing: "0.02em",
                           }}
                         >
-                          {isPaying ? "Loading Checkout..." : "Pay Now with PayHere"}
+                          {isPaying
+                            ? "Loading Checkout..."
+                            : "Pay Now with PayHere"}
                         </button>
                       )}
                   </div>
@@ -861,7 +957,9 @@ export default function OrderDetailsPage() {
                       color: "rgba(220,80,80,0.9)",
                       borderRadius: "var(--radius-full)",
                       fontWeight: 600,
-                      cursor: cancelOrderMutation.isPending ? "not-allowed" : "pointer",
+                      cursor: cancelOrderMutation.isPending
+                        ? "not-allowed"
+                        : "pointer",
                       fontSize: "0.825rem",
                       transition: "all 0.2s ease",
                     }}
@@ -874,7 +972,9 @@ export default function OrderDetailsPage() {
                       e.currentTarget.style.background = "transparent";
                     }}
                   >
-                    {cancelOrderMutation.isPending ? "Cancelling Order..." : "Cancel Order"}
+                    {cancelOrderMutation.isPending
+                      ? "Cancelling Order..."
+                      : "Cancel Order"}
                   </button>
                 )}
               </div>

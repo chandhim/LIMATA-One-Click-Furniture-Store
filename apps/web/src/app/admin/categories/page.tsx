@@ -67,7 +67,9 @@ export default function AdminCategoriesPage() {
   }
 
   async function handleEdit(categoryId: string) {
-    const cat = categories.find((c: AdminCategory) => c.categoryId === categoryId);
+    const cat = categories.find(
+      (c: AdminCategory) => c.categoryId === categoryId,
+    );
     alert("Edit functionality coming soon for category " + categoryId);
   }
 

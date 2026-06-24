@@ -29,7 +29,9 @@ interface AIFeature {
 export function AIFeaturesSection() {
   const { data: customAiFeatures } = usePublicSetting("homepage_ai");
   const icons = ["🎯", "📱", "✨"];
-  const aiFeatures = ((customAiFeatures as AIFeature[]) || defaultAiFeatures).map((f: AIFeature, idx: number) => ({
+  const aiFeatures = (
+    (customAiFeatures as AIFeature[]) || defaultAiFeatures
+  ).map((f: AIFeature, idx: number) => ({
     ...f,
     icon: icons[idx] || "✨",
   }));

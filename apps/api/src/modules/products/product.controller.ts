@@ -1,7 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "@/shared/errors/api-error";
-import { listQuerySchema, idParamSchema, productCreateSchema, productUpdateSchema } from "./product.validation";
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./product.service";
+import {
+  listQuerySchema,
+  idParamSchema,
+  productCreateSchema,
+  productUpdateSchema,
+} from "./product.validation";
+import {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "./product.service";
 import { uploadToR2, makeKey } from "@/lib/storage";
 import { optimizeGlb } from "./glb-optimizer.service";
 
@@ -167,4 +178,3 @@ export async function uploadModelController(
     return next(error);
   }
 }
-

@@ -1,4 +1,9 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { prisma } from "@/lib/prisma";
 export const publicSettingsRouter = Router();
 
@@ -28,7 +33,7 @@ publicSettingsRouter.get(
     } catch (error) {
       return next(error);
     }
-  }
+  },
 );
 
 // 2. Fetch public categories
@@ -48,5 +53,5 @@ publicSettingsRouter.get(
     } catch (error) {
       return next(error);
     }
-  }
+  },
 );

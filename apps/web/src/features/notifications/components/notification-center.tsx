@@ -1,14 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bell, Check, CheckCheck, MessageSquare, Package, CreditCard, Star, Zap } from "lucide-react";
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  MessageSquare,
+  Package,
+  CreditCard,
+  Star,
+  Zap,
+} from "lucide-react";
 import {
   useNotifications,
   useUnreadCount,
   useMarkNotificationAsRead,
   useMarkAllNotificationsAsRead,
 } from "../hooks/use-notifications";
-import type { Notification, NotificationType } from "../types/notification.types";
+import type {
+  Notification,
+  NotificationType,
+} from "../types/notification.types";
 
 // Icon by notification type
 function NotifIcon({ type }: { type: NotificationType }) {
@@ -31,12 +43,18 @@ function NotifIcon({ type }: { type: NotificationType }) {
 
 function typeColor(type: NotificationType): string {
   switch (type) {
-    case "CHAT_MESSAGE":      return "#6366f1";
-    case "ORDER_STATUS":      return "var(--accent-dark)";
-    case "PAYMENT_STATUS":    return "#10b981";
-    case "REVIEW_STATUS":     return "#f59e0b";
-    case "AI_RECOMMENDATION": return "#8b5cf6";
-    default:                   return "var(--fg-secondary)";
+    case "CHAT_MESSAGE":
+      return "#6366f1";
+    case "ORDER_STATUS":
+      return "var(--accent-dark)";
+    case "PAYMENT_STATUS":
+      return "#10b981";
+    case "REVIEW_STATUS":
+      return "#f59e0b";
+    case "AI_RECOMMENDATION":
+      return "#8b5cf6";
+    default:
+      return "var(--fg-secondary)";
   }
 }
 
@@ -62,7 +80,8 @@ function NotificationItem({
       }}
       onMouseEnter={(e) => {
         if (notification.isRead)
-          (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+          (e.currentTarget as HTMLElement).style.background =
+            "var(--bg-elevated)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.background = !notification.isRead
@@ -91,7 +110,14 @@ function NotificationItem({
 
       {/* Text */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: "0.5rem",
+          }}
+        >
           <p
             style={{
               margin: 0,
@@ -122,17 +148,32 @@ function NotificationItem({
                 (e.currentTarget as HTMLElement).style.color = color;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--fg-muted)";
               }}
             >
               <Check size={13} />
             </button>
           )}
         </div>
-        <p style={{ margin: "0.2rem 0 0", fontSize: "0.75rem", color: "var(--fg-secondary)", lineHeight: 1.4 }}>
+        <p
+          style={{
+            margin: "0.2rem 0 0",
+            fontSize: "0.75rem",
+            color: "var(--fg-secondary)",
+            lineHeight: 1.4,
+          }}
+        >
           {notification.message}
         </p>
-        <span style={{ fontSize: "0.7rem", color: "var(--fg-muted)", display: "block", marginTop: "0.25rem" }}>
+        <span
+          style={{
+            fontSize: "0.7rem",
+            color: "var(--fg-muted)",
+            display: "block",
+            marginTop: "0.25rem",
+          }}
+        >
           {new Date(notification.createdAt).toLocaleString([], {
             month: "short",
             day: "numeric",
@@ -171,9 +212,8 @@ export function NotificationCenter() {
   const { markAsRead } = useMarkNotificationAsRead();
   const { markAllAsRead } = useMarkAllNotificationsAsRead();
 
-  const displayed = tab === "unread"
-    ? notifications.filter((n) => !n.isRead)
-    : notifications;
+  const displayed =
+    tab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
 
   // Close on outside click
   useEffect(() => {
@@ -208,7 +248,8 @@ export function NotificationCenter() {
           transition: "all 0.2s ease",
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+          (e.currentTarget as HTMLElement).style.background =
+            "var(--bg-elevated)";
           (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
           (e.currentTarget as HTMLElement).style.color = "var(--fg-primary)";
         }}
@@ -275,7 +316,9 @@ export function NotificationCenter() {
               justifyContent: "space-between",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            >
               <h3
                 style={{
                   margin: 0,
@@ -320,12 +363,16 @@ export function NotificationCenter() {
                   transition: "color 0.2s ease, background 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = "var(--accent-dark)";
-                  (e.currentTarget as HTMLElement).style.background = "var(--accent-glow)";
+                  (e.currentTarget as HTMLElement).style.color =
+                    "var(--accent-dark)";
+                  (e.currentTarget as HTMLElement).style.background =
+                    "var(--accent-glow)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color =
+                    "var(--fg-muted)";
+                  (e.currentTarget as HTMLElement).style.background =
+                    "transparent";
                 }}
               >
                 <CheckCheck size={13} />
@@ -350,7 +397,10 @@ export function NotificationCenter() {
                 style={{
                   padding: "0.5rem 0.75rem",
                   border: "none",
-                  borderBottom: tab === t ? "2px solid var(--accent)" : "2px solid transparent",
+                  borderBottom:
+                    tab === t
+                      ? "2px solid var(--accent)"
+                      : "2px solid transparent",
                   background: "transparent",
                   cursor: "pointer",
                   fontSize: "0.8rem",
@@ -383,12 +433,18 @@ export function NotificationCenter() {
               >
                 <Bell size={30} style={{ opacity: 0.25 }} />
                 <p style={{ margin: 0, fontSize: "0.875rem" }}>
-                  {tab === "unread" ? "No unread notifications" : "No notifications yet"}
+                  {tab === "unread"
+                    ? "No unread notifications"
+                    : "No notifications yet"}
                 </p>
               </div>
             ) : (
               displayed.map((n) => (
-                <NotificationItem key={n.notificationId} notification={n} onMarkAsRead={markAsRead} />
+                <NotificationItem
+                  key={n.notificationId}
+                  notification={n}
+                  onMarkAsRead={markAsRead}
+                />
               ))
             )}
           </div>
@@ -409,7 +465,8 @@ export function NotificationCenter() {
                   color: "var(--fg-muted)",
                 }}
               >
-                Showing {displayed.length} of {notifications.length} notifications
+                Showing {displayed.length} of {notifications.length}{" "}
+                notifications
               </span>
             </div>
           )}

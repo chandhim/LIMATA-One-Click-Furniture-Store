@@ -1,14 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import type { Conversation, Message } from "@prisma/client";
 
-export async function findConversationById(conversationId: string): Promise<Conversation | null> {
+export async function findConversationById(
+  conversationId: string,
+): Promise<Conversation | null> {
   return prisma.conversation.findUnique({
     where: { conversationId },
     include: { messages: { orderBy: { createdAt: "asc" } } },
   });
 }
 
-export async function findConversationsByCustomerId(customerId: string): Promise<Conversation[]> {
+export async function findConversationsByCustomerId(
+  customerId: string,
+): Promise<Conversation[]> {
   return prisma.conversation.findMany({
     where: { customerId },
     include: {
@@ -21,7 +25,9 @@ export async function findConversationsByCustomerId(customerId: string): Promise
   });
 }
 
-export async function createConversation(customerId: string): Promise<Conversation> {
+export async function createConversation(
+  customerId: string,
+): Promise<Conversation> {
   return prisma.conversation.create({
     data: { customerId },
   });

@@ -11,7 +11,11 @@ export function ProductEmpty() {
         borderRadius: "var(--radius-lg)",
       }}
     >
-      <div style={{ fontSize: "3.5rem", marginBottom: "1.25rem", opacity: 0.5 }}>🔍</div>
+      <div
+        style={{ fontSize: "3.5rem", marginBottom: "1.25rem", opacity: 0.5 }}
+      >
+        🔍
+      </div>
       <h3
         style={{
           fontFamily: "var(--font-serif)",
@@ -24,7 +28,15 @@ export function ProductEmpty() {
       >
         No products found
       </h3>
-      <p style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)", lineHeight: 1.6, maxWidth: "24rem", margin: "0 auto" }}>
+      <p
+        style={{
+          fontSize: "0.9375rem",
+          color: "var(--fg-secondary)",
+          lineHeight: 1.6,
+          maxWidth: "24rem",
+          margin: "0 auto",
+        }}
+      >
         Try adjusting your search term or clearing the category filter.
       </p>
     </div>

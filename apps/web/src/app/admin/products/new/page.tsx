@@ -8,7 +8,6 @@ export default function CreateProductPage() {
     <div style={{ padding: "2.5rem 2rem", maxWidth: 1200 }}>
       {/* Breadcrumb + header */}
 
-
       <ProductForm />
     </div>
   );

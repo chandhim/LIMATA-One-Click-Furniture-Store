@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect } from "react";
-import { Bell, Check, CheckCheck, CreditCard, MessageSquare, Package, Star, Zap } from "lucide-react";
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  CreditCard,
+  MessageSquare,
+  Package,
+  Star,
+  Zap,
+} from "lucide-react";
 import { MainLayout } from "@/components/layout/main-layout";
 import {
   useNotifications,
@@ -14,35 +23,59 @@ import { useRouter } from "next/navigation";
 
 function typeColor(type: NotificationType): string {
   switch (type) {
-    case "CHAT_MESSAGE":      return "#6366f1";
-    case "ORDER_STATUS":      return "var(--accent-dark)";
-    case "PAYMENT_STATUS":    return "#10b981";
-    case "REVIEW_STATUS":     return "#f59e0b";
-    case "AI_RECOMMENDATION": return "#8b5cf6";
-    default:                   return "var(--fg-secondary)";
+    case "CHAT_MESSAGE":
+      return "#6366f1";
+    case "ORDER_STATUS":
+      return "var(--accent-dark)";
+    case "PAYMENT_STATUS":
+      return "#10b981";
+    case "REVIEW_STATUS":
+      return "#f59e0b";
+    case "AI_RECOMMENDATION":
+      return "#8b5cf6";
+    default:
+      return "var(--fg-secondary)";
   }
 }
 
 function typeLabel(type: NotificationType): string {
   switch (type) {
-    case "CHAT_MESSAGE":      return "Message";
-    case "ORDER_STATUS":      return "Order";
-    case "PAYMENT_STATUS":    return "Payment";
-    case "REVIEW_STATUS":     return "Review";
-    case "AI_RECOMMENDATION": return "AI Tip";
-    default:                   return "System";
+    case "CHAT_MESSAGE":
+      return "Message";
+    case "ORDER_STATUS":
+      return "Order";
+    case "PAYMENT_STATUS":
+      return "Payment";
+    case "REVIEW_STATUS":
+      return "Review";
+    case "AI_RECOMMENDATION":
+      return "AI Tip";
+    default:
+      return "System";
   }
 }
 
-function TypeIcon({ type, size = 18 }: { type: NotificationType; size?: number }) {
+function TypeIcon({
+  type,
+  size = 18,
+}: {
+  type: NotificationType;
+  size?: number;
+}) {
   const props = { size };
   switch (type) {
-    case "CHAT_MESSAGE":      return <MessageSquare {...props} />;
-    case "ORDER_STATUS":      return <Package {...props} />;
-    case "PAYMENT_STATUS":    return <CreditCard {...props} />;
-    case "REVIEW_STATUS":     return <Star {...props} />;
-    case "AI_RECOMMENDATION": return <Zap {...props} />;
-    default:                   return <Bell {...props} />;
+    case "CHAT_MESSAGE":
+      return <MessageSquare {...props} />;
+    case "ORDER_STATUS":
+      return <Package {...props} />;
+    case "PAYMENT_STATUS":
+      return <CreditCard {...props} />;
+    case "REVIEW_STATUS":
+      return <Star {...props} />;
+    case "AI_RECOMMENDATION":
+      return <Zap {...props} />;
+    default:
+      return <Bell {...props} />;
   }
 }
 
@@ -135,14 +168,20 @@ export default function NotificationsPage() {
                 transition: "all 0.2s ease",
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
-                (e.currentTarget as HTMLElement).style.color = "var(--accent-dark)";
-                (e.currentTarget as HTMLElement).style.background = "var(--accent-glow)";
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "var(--accent)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--accent-dark)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "var(--accent-glow)";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
-                (e.currentTarget as HTMLElement).style.background = "transparent";
+                (e.currentTarget as HTMLElement).style.borderColor =
+                  "var(--border)";
+                (e.currentTarget as HTMLElement).style.color =
+                  "var(--fg-secondary)";
+                (e.currentTarget as HTMLElement).style.background =
+                  "transparent";
               }}
             >
               <CheckCheck size={15} /> Mark all as read
@@ -198,7 +237,11 @@ export default function NotificationsPage() {
                 justifyContent: "center",
               }}
             >
-              <Bell size={32} color="var(--fg-muted)" style={{ opacity: 0.4 }} />
+              <Bell
+                size={32}
+                color="var(--fg-muted)"
+                style={{ opacity: 0.4 }}
+              />
             </div>
             <div>
               <p
@@ -212,7 +255,13 @@ export default function NotificationsPage() {
               >
                 You&apos;re all caught up!
               </p>
-              <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--fg-muted)" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.875rem",
+                  color: "var(--fg-muted)",
+                }}
+              >
                 No notifications to show right now.
               </p>
             </div>
@@ -226,7 +275,9 @@ export default function NotificationsPage() {
               overflow: "hidden",
               boxShadow: "var(--shadow-sm)",
             }}
-          >            {notifications.map((n, index) => {
+          >
+            {" "}
+            {notifications.map((n, index) => {
               const color = typeColor(n.type);
               return (
                 <div
@@ -249,9 +300,8 @@ export default function NotificationsPage() {
                         "var(--bg-elevated)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = !n.isRead
-                      ? `${color}06`
-                      : "transparent";
+                    (e.currentTarget as HTMLElement).style.background =
+                      !n.isRead ? `${color}06` : "transparent";
                   }}
                 >
                   {/* Icon */}
@@ -271,7 +321,7 @@ export default function NotificationsPage() {
                   >
                     <TypeIcon type={n.type} />
                   </div>
- 
+
                   {/* Text */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -283,7 +333,14 @@ export default function NotificationsPage() {
                         marginBottom: "0.25rem",
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <span
                           style={{
                             fontSize: "0.65rem",
@@ -310,13 +367,26 @@ export default function NotificationsPage() {
                           />
                         )}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
-                        <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", whiteSpace: "nowrap" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "var(--fg-muted)",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           {new Date(n.createdAt).toLocaleString([], {
-                             month: "short",
-                             day: "numeric",
-                             hour: "2-digit",
-                             minute: "2-digit",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </span>
                         {!n.isRead && (
@@ -338,12 +408,18 @@ export default function NotificationsPage() {
                               transition: "all 0.15s ease",
                             }}
                             onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLElement).style.borderColor = color;
-                              (e.currentTarget as HTMLElement).style.color = color;
+                              (
+                                e.currentTarget as HTMLElement
+                              ).style.borderColor = color;
+                              (e.currentTarget as HTMLElement).style.color =
+                                color;
                             }}
                             onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                              (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
+                              (
+                                e.currentTarget as HTMLElement
+                              ).style.borderColor = "var(--border)";
+                              (e.currentTarget as HTMLElement).style.color =
+                                "var(--fg-muted)";
                             }}
                           >
                             <Check size={11} /> Read

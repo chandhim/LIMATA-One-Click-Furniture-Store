@@ -10,7 +10,6 @@ import {
   markAllNotificationsAsRead,
 } from "../api/notification.api";
 
-
 export function useNotifications() {
   return useQuery({
     queryKey: ["notifications"],

@@ -179,8 +179,14 @@ export function useCheckout() {
             city: params.city,
             country: params.country,
             notify_url: `${getApiBaseUrl()}/api/payment/notify`,
-            return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${params.orderId}` : "",
-            cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
+            return_url:
+              typeof window !== "undefined"
+                ? `${window.location.origin}/orders/success?orderId=${params.orderId}`
+                : "",
+            cancel_url:
+              typeof window !== "undefined"
+                ? `${window.location.origin}/account/orders/${params.orderId}`
+                : "",
           };
 
           // Trigger PayHere checkout lightbox modal

@@ -44,7 +44,10 @@ export async function findCartItemById(cartItemId: string) {
 }
 
 /** Find an existing cart item for a given product inside a cart. */
-export async function findCartItemByProductId(cartId: string, productId: string) {
+export async function findCartItemByProductId(
+  cartId: string,
+  productId: string,
+) {
   return prisma.cartItem.findFirst({ where: { cartId, productId } });
 }
 
@@ -56,7 +59,10 @@ export async function insertCartItem(cartId: string, input: AddToCartInput) {
 }
 
 /** Increment the quantity of an existing cart item. */
-export async function incrementCartItemQuantity(cartItemId: string, by: number) {
+export async function incrementCartItemQuantity(
+  cartItemId: string,
+  by: number,
+) {
   return prisma.cartItem.update({
     where: { cartItemId },
     data: { quantity: { increment: by } },
@@ -64,7 +70,10 @@ export async function incrementCartItemQuantity(cartItemId: string, by: number) 
 }
 
 /** Overwrite the quantity of a cart item. */
-export async function updateCartItemQuantity(cartItemId: string, input: UpdateCartItemInput) {
+export async function updateCartItemQuantity(
+  cartItemId: string,
+  input: UpdateCartItemInput,
+) {
   return prisma.cartItem.update({
     where: { cartItemId },
     data: { quantity: input.quantity },
@@ -78,7 +87,10 @@ export async function deleteCartItem(cartItemId: string) {
 
 /** Remove every item from a user's cart (clear cart). */
 export async function deleteAllCartItems(userId: string) {
-  const cart = await prisma.cart.findUnique({ where: { userId }, select: { cartId: true } });
+  const cart = await prisma.cart.findUnique({
+    where: { userId },
+    select: { cartId: true },
+  });
   if (!cart) return;
   return prisma.cartItem.deleteMany({ where: { cartId: cart.cartId } });
 }

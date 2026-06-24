@@ -131,8 +131,8 @@ export default function CartPage() {
                 color: "var(--fg-secondary)",
               }}
             >
-              {cart!.items.length}{" "}
-              {cart!.items.length === 1 ? "item" : "items"} in your cart
+              {cart!.items.length} {cart!.items.length === 1 ? "item" : "items"}{" "}
+              in your cart
             </p>
           )}
         </div>
