@@ -1,14 +1,9 @@
 "use client";
 
-
+import Link from "next/link";
 import { useAdminStats } from "@/features/admin/hooks/use-admin";
 import type { Product } from "@/features/products/types/product.types";
 import {
-  PlusCircle,
-  FolderTree,
-  Home,
-  Layers,
-  FileText,
   ShoppingCart,
   MessageSquare,
   AlertTriangle,
@@ -16,6 +11,8 @@ import {
   ArrowUpRight,
   Clock,
   Users,
+  DollarSign,
+  Package,
 } from "lucide-react";
 
 interface DashboardRecentOrder {
