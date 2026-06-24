@@ -221,7 +221,7 @@ function ProductsPageContent() {
               marginTop: "1.75rem",
             }}
           >
-            {allCategories.map(({ name, Icon }) => {
+            {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
               const isActive = categoryParam === name;
               return (
                 <button
@@ -430,7 +430,7 @@ function ProductsPageContent() {
           {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
             <div>
-              {allCategories.map(({ name, Icon }) => {
+              {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
                 const products = grouped?.get(name) ?? [];
                 if (products.length === 0) return null; // Don't show empty sections
                 return (

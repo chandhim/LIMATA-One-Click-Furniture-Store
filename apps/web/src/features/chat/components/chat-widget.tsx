@@ -515,6 +515,7 @@ export function ChatWidget() {
 
     window.addEventListener("open-chat", handleOpenChat);
     return () => window.removeEventListener("open-chat", handleOpenChat);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations, isAdmin, isLoading]);
 
   // Process pending message when a conversation is selected

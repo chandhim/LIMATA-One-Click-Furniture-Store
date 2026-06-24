@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { AdminSidebar } from "./admin-sidebar";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
-import { Menu, ArrowUpRight, ChevronRight, Search } from "lucide-react";
+import { Menu, ArrowUpRight, ChevronRight } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);

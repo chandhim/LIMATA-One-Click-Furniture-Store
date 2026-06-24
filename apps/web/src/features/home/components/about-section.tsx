@@ -1,7 +1,7 @@
 "use client";
 
 import { MapPin, Clock, Phone, ExternalLink } from "lucide-react";
-import Link from "next/link";
+
 
 export function AboutSection() {
   const stores = [

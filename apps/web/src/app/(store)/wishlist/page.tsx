@@ -7,7 +7,6 @@ import { HeartCrack, ShoppingCart, Trash2, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
 
 export default function WishlistPage() {
   const { data: wishlist, isLoading } = useWishlist();
@@ -116,8 +115,8 @@ export default function WishlistPage() {
               maxWidth: "400px",
             }}
           >
-            Create your dream space by saving the items you love. They'll be
-            right here when you're ready.
+            Create your dream space by saving the items you love. They&apos;ll be
+            right here when you&apos;re ready.
           </p>
           <Link
             href="/products"
