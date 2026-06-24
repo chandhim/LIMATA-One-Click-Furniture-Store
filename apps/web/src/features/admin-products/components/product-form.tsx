@@ -92,9 +92,20 @@ const PRESET_MATERIALS = [
 
 export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const router = useRouter();
-  const { data: product, isLoading: isLoadingProduct } = useAdminProduct(productId || "");
+  const { data: product, isLoading: isLoadingProduct } = useAdminProduct(
+    productId || "",
+  );
   const { data: dbCategories } = useAdminCategories();
-  const CATEGORIES = useMemo(() => Array.from(new Set([...PRESET_CATEGORIES, ...(dbCategories?.map((c: { name: string }) => c.name) || [])])), [dbCategories]);
+  const CATEGORIES = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          ...PRESET_CATEGORIES,
+          ...(dbCategories?.map((c: { name: string }) => c.name) || []),
+        ]),
+      ),
+    [dbCategories],
+  );
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(productId || "");
 
@@ -165,7 +176,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   }, [product, reset, CATEGORIES]);
 
   useEffect(() => {
-    const finalCategory = selectedCategoryOption === "custom" ? customCategory : selectedCategoryOption;
+    const finalCategory =
+      selectedCategoryOption === "custom"
+        ? customCategory
+        : selectedCategoryOption;
     setValue("category", finalCategory);
     if (finalCategory) {
       void trigger("category");
@@ -173,7 +187,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   }, [selectedCategoryOption, customCategory, setValue, trigger]);
 
   useEffect(() => {
-    const finalMaterial = selectedMaterialOption === "custom" ? customMaterial : selectedMaterialOption;
+    const finalMaterial =
+      selectedMaterialOption === "custom"
+        ? customMaterial
+        : selectedMaterialOption;
     setValue("material", finalMaterial || undefined);
   }, [selectedMaterialOption, customMaterial, setValue]);
 
@@ -331,7 +348,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
               Basic Information
             </h3>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.125rem",
+              }}
+            >
               <FormField label="Product Name" error={errors.name?.message}>
                 <input
                   {...register("name")}
@@ -341,7 +364,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 />
               </FormField>
 
-              <FormField label="Description" error={errors.description?.message}>
+              <FormField
+                label="Description"
+                error={errors.description?.message}
+              >
                 <textarea
                   {...register("description")}
                   className="input-base"
@@ -351,17 +377,29 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 />
               </FormField>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "1rem",
+                }}
+              >
                 <FormField label="Category" error={errors.category?.message}>
                   <select
                     value={selectedCategoryOption}
                     onChange={(e) => setSelectedCategoryOption(e.target.value)}
                     className="input-base"
-                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                    style={{
+                      background: "transparent",
+                      color: "var(--fg-primary)",
+                      width: "100%",
+                    }}
                   >
                     <option value="">Select Category</option>
                     {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                     <option value="custom">Other (Specify...)</option>
                   </select>
@@ -381,11 +419,17 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                     value={selectedMaterialOption}
                     onChange={(e) => setSelectedMaterialOption(e.target.value)}
                     className="input-base"
-                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                    style={{
+                      background: "transparent",
+                      color: "var(--fg-primary)",
+                      width: "100%",
+                    }}
                   >
                     <option value="">Select Material</option>
                     {PRESET_MATERIALS.map((mat) => (
-                      <option key={mat} value={mat}>{mat}</option>
+                      <option key={mat} value={mat}>
+                        {mat}
+                      </option>
                     ))}
                     <option value="custom">Other (Specify...)</option>
                   </select>
@@ -425,7 +469,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
             >
               Pricing & Inventory
             </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+              }}
+            >
               <FormField label="Price (Rs.)" error={errors.price?.message}>
                 <input
                   {...register("price", { valueAsNumber: true })}
@@ -452,7 +502,9 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         </div>
 
         {/* Right column — media */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+        >
           <div
             style={{
               background: "var(--bg-surface)",
@@ -551,7 +603,11 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
               }}
             />
           )}
-          {isLoading ? "Saving..." : productId ? "Update Product" : "Create Product"}
+          {isLoading
+            ? "Saving..."
+            : productId
+              ? "Update Product"
+              : "Create Product"}
         </button>
         <button
           type="button"

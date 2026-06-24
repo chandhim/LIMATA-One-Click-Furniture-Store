@@ -4,12 +4,42 @@ const prisma = new PrismaClient();
 
 async function main() {
   const categories = [
-    { name: "Living Room", desc: "Furniture for living room", alt: "🛋️", image: "/images/categories/living_room.png" },
-    { name: "Bedroom", desc: "Furniture for bedroom", alt: "🛏️", image: "/images/categories/bedroom.png" },
-    { name: "Dining Room", desc: "Furniture for dining room", alt: "🍽️", image: "/images/categories/dining_room.png" },
-    { name: "Office", desc: "Office furniture", alt: "💼", image: "/images/categories/office.png" },
-    { name: "Outdoor", desc: "Outdoor furniture", alt: "🌿", image: "/images/categories/outdoor.png" },
-    { name: "Kitchen", desc: "Kitchen items", alt: "🍳", image: "/images/categories/kitchen.png" },
+    {
+      name: "Living Room",
+      desc: "Furniture for living room",
+      alt: "🛋️",
+      image: "/images/categories/living_room.png",
+    },
+    {
+      name: "Bedroom",
+      desc: "Furniture for bedroom",
+      alt: "🛏️",
+      image: "/images/categories/bedroom.png",
+    },
+    {
+      name: "Dining Room",
+      desc: "Furniture for dining room",
+      alt: "🍽️",
+      image: "/images/categories/dining_room.png",
+    },
+    {
+      name: "Office",
+      desc: "Office furniture",
+      alt: "💼",
+      image: "/images/categories/office.png",
+    },
+    {
+      name: "Outdoor",
+      desc: "Outdoor furniture",
+      alt: "🌿",
+      image: "/images/categories/outdoor.png",
+    },
+    {
+      name: "Kitchen",
+      desc: "Kitchen items",
+      alt: "🍳",
+      image: "/images/categories/kitchen.png",
+    },
   ];
 
   for (const c of categories) {
@@ -28,7 +58,11 @@ async function main() {
       stock: 10,
       category: "Living Room",
       material: "Leather",
-      images: ["/images/sofa1.png", "/images/tvstand1.png", "/images/wardrobe1.png"],
+      images: [
+        "/images/sofa1.png",
+        "/images/tvstand1.png",
+        "/images/wardrobe1.png",
+      ],
     },
     {
       name: "Dining Table",
@@ -124,7 +158,7 @@ async function main() {
       email: "amila.j@example.com",
       password: "password123",
       avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Amila",
-    }
+    },
   ];
 
   const createdUsers = [];
@@ -144,7 +178,7 @@ async function main() {
 
   // --- 2. Create Reviews for Products ---
   const allProducts = await prisma.product.findMany();
-  
+
   const reviewTitles = [
     "Great quality!",
     "Highly recommended",
@@ -160,13 +194,13 @@ async function main() {
     "Good product. The assembly took a bit of time but it is very sturdy once built.",
     "Excellent customer service and the product exceeds expectations. Highly recommended!",
     "It's decent for the price. Not the absolute best material but it gets the job done.",
-    "Beautiful piece of furniture. Brought elegance to my living space."
+    "Beautiful piece of furniture. Brought elegance to my living space.",
   ];
 
   // For each product, create 2-4 reviews
   for (const prod of allProducts) {
     const numReviews = Math.floor(Math.random() * 3) + 2; // 2 to 4 reviews
-    
+
     // Pick random users
     const shuffledUsers = [...createdUsers].sort(() => 0.5 - Math.random());
     const selectedUsers = shuffledUsers.slice(0, numReviews);
@@ -177,14 +211,16 @@ async function main() {
         where: {
           productId: prod.productId,
           userId: user.userId,
-        }
+        },
       });
 
       if (!existingReview) {
         const rating = Math.floor(Math.random() * 2) + 4; // 4 or 5 stars mostly
-        const title = reviewTitles[Math.floor(Math.random() * reviewTitles.length)];
-        const comment = reviewComments[Math.floor(Math.random() * reviewComments.length)];
-        
+        const title =
+          reviewTitles[Math.floor(Math.random() * reviewTitles.length)];
+        const comment =
+          reviewComments[Math.floor(Math.random() * reviewComments.length)];
+
         await prisma.review.create({
           data: {
             productId: prod.productId,
@@ -193,7 +229,7 @@ async function main() {
             title,
             comment,
             isApproved: true, // Auto-approve for seed data
-          }
+          },
         });
       }
     }

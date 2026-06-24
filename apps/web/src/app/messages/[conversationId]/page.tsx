@@ -29,7 +29,8 @@ function ConversationPageContent() {
     }
   }, [user, isAdmin, router]);
 
-  const { data: conversation, isLoading: convLoading } = useConversation(conversationId);
+  const { data: conversation, isLoading: convLoading } =
+    useConversation(conversationId);
   const messages = useConversationMessages(conversationId);
   const { sendMessage, isSending } = useSendMessage();
 
@@ -40,12 +41,24 @@ function ConversationPageContent() {
 
   useEffect(() => {
     if (productId && product && !hasSentProduct && !isSending) {
-      const origin = typeof window !== "undefined" ? window.location.origin : "";
-      sendMessage(conversationId, `I am interested in this product: ${product.name} (${origin}/products/${product.productId})`);
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      sendMessage(
+        conversationId,
+        `I am interested in this product: ${product.name} (${origin}/products/${product.productId})`,
+      );
       setHasSentProduct(true);
       router.replace(`/messages/${conversationId}`);
     }
-  }, [productId, product, hasSentProduct, isSending, sendMessage, conversationId, router]);
+  }, [
+    productId,
+    product,
+    hasSentProduct,
+    isSending,
+    sendMessage,
+    conversationId,
+    router,
+  ]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -115,12 +128,16 @@ function ConversationPageContent() {
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--fg-primary)";
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-light)";
+              (e.currentTarget as HTMLElement).style.color =
+                "var(--fg-primary)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--accent-light)";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = "var(--fg-secondary)";
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
+              (e.currentTarget as HTMLElement).style.color =
+                "var(--fg-secondary)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--border)";
             }}
             aria-label="Back to messages"
           >
@@ -133,7 +150,8 @@ function ConversationPageContent() {
               width: 42,
               height: 42,
               borderRadius: "50%",
-              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+              background:
+                "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -160,8 +178,15 @@ function ConversationPageContent() {
               {convLoading ? "Loading…" : otherPartyName}
             </h1>
             {conversation && (
-              <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--fg-muted)" }}>
-                Started {new Date(conversation.createdAt).toLocaleDateString([], {
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  color: "var(--fg-muted)",
+                }}
+              >
+                Started{" "}
+                {new Date(conversation.createdAt).toLocaleDateString([], {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -171,7 +196,14 @@ function ConversationPageContent() {
           </div>
 
           {/* Online indicator */}
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+          <div
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.375rem",
+            }}
+          >
             <div
               style={{
                 width: 8,
@@ -181,7 +213,9 @@ function ConversationPageContent() {
                 boxShadow: "0 0 0 2px rgba(16,185,129,0.3)",
               }}
             />
-            <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)" }}>Online</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)" }}>
+              Online
+            </span>
           </div>
         </div>
 
@@ -207,7 +241,10 @@ function ConversationPageContent() {
                 color: "var(--fg-muted)",
               }}
             >
-              <Loader2 size={24} style={{ animation: "spin 1s linear infinite" }} />
+              <Loader2
+                size={24}
+                style={{ animation: "spin 1s linear infinite" }}
+              />
               <span>Loading messages…</span>
             </div>
           ) : messages.length === 0 ? (
@@ -226,7 +263,14 @@ function ConversationPageContent() {
             >
               <MessageCircle size={40} style={{ opacity: 0.2 }} />
               <div>
-                <p style={{ margin: "0 0 0.25rem", fontSize: "1rem", fontWeight: 600, color: "var(--fg-secondary)" }}>
+                <p
+                  style={{
+                    margin: "0 0 0.25rem",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    color: "var(--fg-secondary)",
+                  }}
+                >
                   No messages yet
                 </p>
                 <p style={{ margin: 0, fontSize: "0.8125rem" }}>
@@ -252,7 +296,8 @@ function ConversationPageContent() {
                           width: 30,
                           height: 30,
                           borderRadius: "50%",
-                          background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                          background:
+                            "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -279,10 +324,18 @@ function ConversationPageContent() {
                           : "var(--bg-surface)",
                         color: isMine ? "#fff" : "var(--fg-primary)",
                         border: isMine ? "none" : "1px solid var(--border)",
-                        boxShadow: isMine ? "var(--shadow-accent)" : "var(--shadow-sm)",
+                        boxShadow: isMine
+                          ? "var(--shadow-accent)"
+                          : "var(--shadow-sm)",
                       }}
                     >
-                      <p style={{ margin: 0, fontSize: "0.9rem", lineHeight: 1.55 }}>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: "0.9rem",
+                          lineHeight: 1.55,
+                        }}
+                      >
                         {msg.content}
                       </p>
                       <span
@@ -359,7 +412,8 @@ function ConversationPageContent() {
               color: "var(--fg-primary)",
               outline: "none",
               fontFamily: "var(--font-sans)",
-              transition: "border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+              transition:
+                "border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
             }}
             onFocus={(e) => {
               e.currentTarget.style.borderColor = "var(--accent)";
@@ -386,9 +440,7 @@ function ConversationPageContent() {
               alignItems: "center",
               justifyContent: "center",
               color: content.trim() ? "var(--fg-primary)" : "#fff",
-              background: content.trim()
-                ? undefined
-                : "var(--bg-elevated)",
+              background: content.trim() ? undefined : "var(--bg-elevated)",
               opacity: content.trim() ? 1 : 0.4,
               flexShrink: 0,
               transition: "opacity 0.2s ease",
@@ -396,7 +448,10 @@ function ConversationPageContent() {
             aria-label="Send message"
           >
             {isSending ? (
-              <Loader2 size={20} style={{ animation: "spin 1s linear infinite" }} />
+              <Loader2
+                size={20}
+                style={{ animation: "spin 1s linear infinite" }}
+              />
             ) : (
               <Send size={20} />
             )}
@@ -410,7 +465,13 @@ function ConversationPageContent() {
 
 export default function ConversationPage() {
   return (
-    <Suspense fallback={<MainLayout><div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div></MainLayout>}>
+    <Suspense
+      fallback={
+        <MainLayout>
+          <div style={{ padding: "5rem", textAlign: "center" }}>Loading...</div>
+        </MainLayout>
+      }
+    >
       <ConversationPageContent />
     </Suspense>
   );

@@ -8,8 +8,13 @@ export function useAddToCart() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity?: number }) =>
-      addToCart(productId, quantity ?? 1),
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string;
+      quantity?: number;
+    }) => addToCart(productId, quantity ?? 1),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
     },

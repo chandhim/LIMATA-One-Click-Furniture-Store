@@ -1,36 +1,62 @@
 "use client";
 
-import { useNotifications, useMarkNotificationAsRead, useMarkAllNotificationsAsRead } from "@/features/notifications/hooks/use-notifications";
-import { Bell, Check, CheckCheck, MessageSquare, Package, CreditCard } from "lucide-react";
+import {
+  useNotifications,
+  useMarkNotificationAsRead,
+  useMarkAllNotificationsAsRead,
+} from "@/features/notifications/hooks/use-notifications";
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  MessageSquare,
+  Package,
+  CreditCard,
+} from "lucide-react";
 
 function typeColor(type: string): string {
   switch (type) {
-    case "CHAT_MESSAGE": return "#6366f1";
-    case "SELLER_ORDER_ALERT": return "var(--accent-dark)";
-    case "CUSTOMER_ORDER_ALERT": return "#276e47";
-    case "PAYMENT_STATUS": return "#276e47";
-    case "ORDER_STATUS": return "#a85f10";
-    default: return "var(--fg-muted)";
+    case "CHAT_MESSAGE":
+      return "#6366f1";
+    case "SELLER_ORDER_ALERT":
+      return "var(--accent-dark)";
+    case "CUSTOMER_ORDER_ALERT":
+      return "#276e47";
+    case "PAYMENT_STATUS":
+      return "#276e47";
+    case "ORDER_STATUS":
+      return "#a85f10";
+    default:
+      return "var(--fg-muted)";
   }
 }
 
 function typeLabel(type: string): string {
   switch (type) {
-    case "CHAT_MESSAGE": return "Support Chat";
-    case "SELLER_ORDER_ALERT": return "Sales Order";
-    case "PAYMENT_STATUS": return "Payment Alert";
-    case "ORDER_STATUS": return "Order status";
-    default: return "System Alert";
+    case "CHAT_MESSAGE":
+      return "Support Chat";
+    case "SELLER_ORDER_ALERT":
+      return "Sales Order";
+    case "PAYMENT_STATUS":
+      return "Payment Alert";
+    case "ORDER_STATUS":
+      return "Order status";
+    default:
+      return "System Alert";
   }
 }
 
 function TypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   const props = { size };
   switch (type) {
-    case "CHAT_MESSAGE": return <MessageSquare {...props} />;
-    case "SELLER_ORDER_ALERT": return <Package {...props} />;
-    case "PAYMENT_STATUS": return <CreditCard {...props} />;
-    default: return <Bell {...props} />;
+    case "CHAT_MESSAGE":
+      return <MessageSquare {...props} />;
+    case "SELLER_ORDER_ALERT":
+      return <Package {...props} />;
+    case "PAYMENT_STATUS":
+      return <CreditCard {...props} />;
+    default:
+      return <Bell {...props} />;
   }
 }
 
@@ -40,26 +66,35 @@ export default function AdminNotificationsPage() {
   const { markAllAsRead } = useMarkAllNotificationsAsRead();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
-  
+
   const sortedNotifications = [...notifications].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   if (isLoading) {
     return (
-      <div 
-        style={{ 
-          padding: "4rem", 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
-          minHeight: "80vh", 
-          color: "var(--fg-muted)", 
+      <div
+        style={{
+          padding: "4rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "80vh",
+          color: "var(--fg-muted)",
           gap: "0.75rem",
-          background: "var(--bg-base)"
+          background: "var(--bg-base)",
         }}
       >
-        <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--accent)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            border: "2px solid var(--accent)",
+            borderTopColor: "transparent",
+            animation: "spin 0.7s linear infinite",
+          }}
+        />
         <span>Loading notifications...</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -67,8 +102,14 @@ export default function AdminNotificationsPage() {
   }
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: 900, margin: "0 auto", background: "var(--bg-base)" }}>
-      
+    <div
+      style={{
+        padding: "1.5rem 2rem",
+        maxWidth: 900,
+        margin: "0 auto",
+        background: "var(--bg-base)",
+      }}
+    >
       {/* Page Header */}
       <div
         style={{
@@ -97,7 +138,7 @@ export default function AdminNotificationsPage() {
               gap: "0.5rem",
             }}
           >
-            <CheckCheck size={14} /> 
+            <CheckCheck size={14} />
             <span>Mark all as read</span>
           </button>
         )}
@@ -105,62 +146,86 @@ export default function AdminNotificationsPage() {
 
       {/* Notifications List Container */}
       {notifications.length === 0 ? (
-        <div 
-          style={{ 
-            padding: "5rem", 
-            textAlign: "center", 
-            background: "var(--bg-surface)", 
-            border: "1px solid var(--border)", 
-            borderRadius: "var(--radius-lg)", 
-            display: "flex", 
-            flexDirection: "column", 
-            alignItems: "center", 
+        <div
+          style={{
+            padding: "5rem",
+            textAlign: "center",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-lg)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             gap: "1.25rem",
-            boxShadow: "var(--shadow-sm)"
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          <div 
-            style={{ 
-              width: 56, 
-              height: 56, 
-              borderRadius: "50%", 
-              background: "var(--bg-elevated)", 
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: "50%",
+              background: "var(--bg-elevated)",
               border: "1px solid var(--border)",
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              color: "var(--accent)"
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--accent)",
             }}
           >
             <Bell size={24} />
           </div>
           <div>
-            <p style={{ margin: "0 0 0.375rem", fontSize: "1rem", fontWeight: 700, color: "var(--fg-primary)" }}>You are all caught up!</p>
-            <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--fg-muted)" }}>No admin alerts require attention at this time.</p>
+            <p
+              style={{
+                margin: "0 0 0.375rem",
+                fontSize: "1rem",
+                fontWeight: 700,
+                color: "var(--fg-primary)",
+              }}
+            >
+              You are all caught up!
+            </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "0.8rem",
+                color: "var(--fg-muted)",
+              }}
+            >
+              No admin alerts require attention at this time.
+            </p>
           </div>
         </div>
       ) : (
-        <div 
-          style={{ 
-            background: "var(--bg-surface)", 
-            border: "1px solid var(--border)", 
-            borderRadius: "var(--radius-lg)", 
+        <div
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "var(--radius-lg)",
             overflow: "hidden",
-            boxShadow: "var(--shadow-sm)" 
+            boxShadow: "var(--shadow-sm)",
           }}
         >
           {sortedNotifications.map((n, idx) => {
             const color = typeColor(n.type);
             const isUnread = !n.isRead;
-            
+
             return (
               <div
                 key={n.notificationId}
                 style={{
                   padding: "1.375rem 1.5rem",
-                  borderBottom: idx < sortedNotifications.length - 1 ? "1px solid var(--border)" : "none",
-                  background: isUnread ? "rgba(201,169,110,0.03)" : "transparent",
-                  borderLeft: isUnread ? "3px solid var(--accent)" : "3px solid transparent",
+                  borderBottom:
+                    idx < sortedNotifications.length - 1
+                      ? "1px solid var(--border)"
+                      : "none",
+                  background: isUnread
+                    ? "rgba(201,169,110,0.03)"
+                    : "transparent",
+                  borderLeft: isUnread
+                    ? "3px solid var(--accent)"
+                    : "3px solid transparent",
                   display: "flex",
                   gap: "1.25rem",
                   alignItems: "flex-start",
@@ -187,32 +252,72 @@ export default function AdminNotificationsPage() {
 
                 {/* Content Details */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem", marginBottom: "0.375rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <span 
-                        style={{ 
-                          fontSize: "0.65rem", 
-                          fontWeight: 700, 
-                          textTransform: "uppercase", 
-                          letterSpacing: "0.08em", 
-                          color, 
-                          background: `${color}12`, 
-                          padding: "0.15rem 0.45rem", 
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: "0.5rem",
+                      marginBottom: "0.375rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.65rem",
+                          fontWeight: 700,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.08em",
+                          color,
+                          background: `${color}12`,
+                          padding: "0.15rem 0.45rem",
                           borderRadius: "4px",
-                          border: `1px solid ${color}18`
+                          border: `1px solid ${color}18`,
                         }}
                       >
                         {typeLabel(n.type)}
                       </span>
                       {isUnread && (
-                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#dc2626" }} />
+                        <span
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: "50%",
+                            background: "#dc2626",
+                          }}
+                        />
                       )}
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexShrink: 0 }}>
-                      <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", fontWeight: 500 }}>
-                        {new Date(n.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}{" "}
-                        {new Date(n.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--fg-muted)",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {new Date(n.createdAt).toLocaleDateString([], {
+                          month: "short",
+                          day: "numeric",
+                        })}{" "}
+                        {new Date(n.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                       {isUnread && (
                         <button
@@ -244,25 +349,32 @@ export default function AdminNotificationsPage() {
                             el.style.background = "var(--bg-surface)";
                           }}
                         >
-                          <Check size={11} /> 
+                          <Check size={11} />
                           <span>Read</span>
                         </button>
                       )}
                     </div>
                   </div>
 
-                  <h3 
-                    style={{ 
-                      margin: "0 0 0.25rem", 
-                      fontSize: "0.9rem", 
-                      fontWeight: isUnread ? 700 : 600, 
+                  <h3
+                    style={{
+                      margin: "0 0 0.25rem",
+                      fontSize: "0.9rem",
+                      fontWeight: isUnread ? 700 : 600,
                       color: "var(--fg-primary)",
-                      letterSpacing: "-0.01em" 
+                      letterSpacing: "-0.01em",
                     }}
                   >
                     {n.title}
                   </h3>
-                  <p style={{ margin: 0, fontSize: "0.825rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.825rem",
+                      color: "var(--fg-secondary)",
+                      lineHeight: 1.5,
+                    }}
+                  >
                     {n.message}
                   </p>
                 </div>

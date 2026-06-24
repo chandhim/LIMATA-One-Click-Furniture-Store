@@ -3,13 +3,14 @@
 import { ProductCard } from "@/features/products/components/product-card";
 import Link from "next/link";
 
-
 import { useProducts } from "@/features/products/hooks/use-products";
 import type { Product } from "@/features/products/types/product.types";
 
 export function FeaturedProducts() {
   const { data: dbProducts } = useProducts();
-  const products: Product[] = dbProducts ? (dbProducts.slice(0, 4) as Product[]) : [];
+  const products: Product[] = dbProducts
+    ? (dbProducts.slice(0, 4) as Product[])
+    : [];
 
   if (products.length === 0) {
     return null;
@@ -36,7 +37,10 @@ export function FeaturedProducts() {
           }}
         >
           <div>
-            <div className="section-label animate-fade-up" style={{ marginBottom: "1rem" }}>
+            <div
+              className="section-label animate-fade-up"
+              style={{ marginBottom: "1rem" }}
+            >
               Editor&apos;s Pick
             </div>
             <h2
@@ -70,16 +74,27 @@ export function FeaturedProducts() {
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLElement).style.gap = "0.75rem";
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--accent)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.gap = "0.5rem";
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-light)";
+              (e.currentTarget as HTMLElement).style.borderColor =
+                "var(--accent-light)";
             }}
           >
             View all products
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </Link>
         </div>

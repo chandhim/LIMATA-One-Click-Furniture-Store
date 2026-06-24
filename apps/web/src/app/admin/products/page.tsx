@@ -5,7 +5,18 @@ import { ProductTable } from "@/features/admin-products/components/product-table
 
 export default function AdminProductsPage() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", overflow: "hidden" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 64px)",
+        padding: "1.5rem 2rem",
+        maxWidth: 1400,
+        margin: "0 auto",
+        background: "var(--bg-base)",
+        overflow: "hidden",
+      }}
+    >
       {/* Page header */}
       <div
         style={{
@@ -17,8 +28,6 @@ export default function AdminProductsPage() {
           gap: "1rem",
         }}
       >
-
-
         <Link
           href="/admin/products/new"
           className="btn-shimmer"

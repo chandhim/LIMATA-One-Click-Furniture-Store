@@ -33,7 +33,8 @@ const defaultFeatures: HomeFeature[] = [
 
 export function FeaturesSection() {
   const { data: customFeatures } = usePublicSetting("homepage_features");
-  const features: HomeFeature[] = (customFeatures as HomeFeature[]) || defaultFeatures;
+  const features: HomeFeature[] =
+    (customFeatures as HomeFeature[]) || defaultFeatures;
   return (
     <section
       id="about"
@@ -56,7 +57,10 @@ export function FeaturesSection() {
       >
         {/* Left: text */}
         <div>
-          <div className="section-label animate-fade-up" style={{ marginBottom: "1.25rem" }}>
+          <div
+            className="section-label animate-fade-up"
+            style={{ marginBottom: "1.25rem" }}
+          >
             Why LIMATA
           </div>
           <h2
@@ -87,7 +91,9 @@ export function FeaturesSection() {
                   gap: "1.25rem",
                   padding: "1.5rem 0",
                   borderBottom:
-                    i < features.length - 1 ? "1px solid var(--border)" : "none",
+                    i < features.length - 1
+                      ? "1px solid var(--border)"
+                      : "none",
                   cursor: "default",
                 }}
               >

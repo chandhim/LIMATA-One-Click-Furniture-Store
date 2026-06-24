@@ -31,7 +31,10 @@ function getErrorMessage(error: unknown): string {
 
 export async function login(values: LoginValues) {
   try {
-    const response = await api.post<ApiResponse<AuthSession>>("/auth/login", values);
+    const response = await api.post<ApiResponse<AuthSession>>(
+      "/auth/login",
+      values,
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -40,7 +43,10 @@ export async function login(values: LoginValues) {
 
 export async function register(values: RegisterValues) {
   try {
-    const response = await api.post<ApiResponse<AuthSession>>("/auth/register", values);
+    const response = await api.post<ApiResponse<AuthSession>>(
+      "/auth/register",
+      values,
+    );
     return response.data.data;
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -49,7 +55,8 @@ export async function register(values: RegisterValues) {
 
 export async function getProfile() {
   try {
-    const response = await api.get<ApiResponse<{ user: AuthUser }>>("/auth/profile");
+    const response =
+      await api.get<ApiResponse<{ user: AuthUser }>>("/auth/profile");
     return response.data.data.user;
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -58,7 +65,10 @@ export async function getProfile() {
 
 export async function getAdminAccess() {
   try {
-    const response = await api.get<ApiResponse<{ userId: string; role: string }>>("/auth/admin");
+    const response =
+      await api.get<ApiResponse<{ userId: string; role: string }>>(
+        "/auth/admin",
+      );
     return response.data.data;
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -67,7 +77,10 @@ export async function getAdminAccess() {
 
 export async function updateProfile(values: Partial<AuthUser>) {
   try {
-    const response = await api.put<ApiResponse<{ user: AuthUser }>>("/auth/profile", values);
+    const response = await api.put<ApiResponse<{ user: AuthUser }>>(
+      "/auth/profile",
+      values,
+    );
     return response.data.data.user;
   } catch (error) {
     throw new Error(getErrorMessage(error));
@@ -78,13 +91,17 @@ export async function uploadAvatar(file: File) {
   try {
     const formData = new FormData();
     formData.append("avatar", file);
-    const response = await api.post<ApiResponse<{ url: string }>>("/auth/profile/avatar", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await api.post<ApiResponse<{ url: string }>>(
+      "/auth/profile/avatar",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
     return response.data.data.url;
   } catch (error) {
     throw new Error(getErrorMessage(error));
   }
-}
+}

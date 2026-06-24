@@ -24,46 +24,65 @@ export function ReviewForm({ productId }: ReviewFormProps) {
         onSuccess: () => {
           setIsSubmitted(true);
         },
-      }
+      },
     );
   };
 
   if (isSubmitted) {
     return (
-      <div style={{
-        background: "rgba(34, 197, 94, 0.05)",
-        border: "1px solid rgba(34, 197, 94, 0.2)",
-        borderRadius: "var(--radius-lg)",
-        padding: "2rem",
-        textAlign: "center",
-        color: "var(--fg-primary)",
-      }}>
+      <div
+        style={{
+          background: "rgba(34, 197, 94, 0.05)",
+          border: "1px solid rgba(34, 197, 94, 0.2)",
+          borderRadius: "var(--radius-lg)",
+          padding: "2rem",
+          textAlign: "center",
+          color: "var(--fg-primary)",
+        }}
+      >
         <div style={{ color: "#16a34a", marginBottom: "0.5rem" }}>
           <Star size={32} fill="#16a34a" />
         </div>
-        <h3 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+        <h3
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: 600,
+            marginBottom: "0.5rem",
+          }}
+        >
           Review Submitted
         </h3>
         <p style={{ color: "var(--fg-secondary)", fontSize: "0.9375rem" }}>
-          Thank you for sharing your experience! Your review is pending approval and will be visible shortly.
+          Thank you for sharing your experience! Your review is pending approval
+          and will be visible shortly.
         </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{
-      background: "var(--bg-surface)",
-      border: "1px solid var(--border)",
-      borderRadius: "var(--radius-lg)",
-      padding: "2rem",
-      display: "flex",
-      flexDirection: "column",
-      gap: "1.5rem",
-      boxShadow: "var(--shadow-sm)"
-    }}>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        background: "var(--bg-surface)",
+        border: "1px solid var(--border)",
+        borderRadius: "var(--radius-lg)",
+        padding: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+        boxShadow: "var(--shadow-sm)",
+      }}
+    >
       <div>
-        <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+        <h3
+          style={{
+            fontSize: "1.125rem",
+            fontWeight: 600,
+            color: "var(--fg-primary)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Write a Review
         </h3>
         <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
@@ -72,13 +91,31 @@ export function ReviewForm({ productId }: ReviewFormProps) {
       </div>
 
       {error && (
-        <div style={{ color: "#dc2626", fontSize: "0.875rem", background: "rgba(239, 68, 68, 0.1)", padding: "0.75rem", borderRadius: "var(--radius-md)" }}>
-          {error instanceof Error ? error.message : "Failed to submit review. Please try again."}
+        <div
+          style={{
+            color: "#dc2626",
+            fontSize: "0.875rem",
+            background: "rgba(239, 68, 68, 0.1)",
+            padding: "0.75rem",
+            borderRadius: "var(--radius-md)",
+          }}
+        >
+          {error instanceof Error
+            ? error.message
+            : "Failed to submit review. Please try again."}
         </div>
       )}
 
       <div>
-        <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+        <label
+          style={{
+            display: "block",
+            fontSize: "0.875rem",
+            fontWeight: 600,
+            color: "var(--fg-primary)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Overall Rating *
         </label>
         <div style={{ display: "flex", gap: "0.25rem" }}>
@@ -94,18 +131,33 @@ export function ReviewForm({ productId }: ReviewFormProps) {
                 border: "none",
                 cursor: "pointer",
                 padding: "0.25rem",
-                color: (hoverRating || rating) >= star ? "#f59e0b" : "var(--border-strong)",
-                transition: "color 0.2s"
+                color:
+                  (hoverRating || rating) >= star
+                    ? "#f59e0b"
+                    : "var(--border-strong)",
+                transition: "color 0.2s",
               }}
             >
-              <Star size={28} fill={(hoverRating || rating) >= star ? "#f59e0b" : "none"} />
+              <Star
+                size={28}
+                fill={(hoverRating || rating) >= star ? "#f59e0b" : "none"}
+              />
             </button>
           ))}
         </div>
       </div>
 
       <div>
-        <label htmlFor="title" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+        <label
+          htmlFor="title"
+          style={{
+            display: "block",
+            fontSize: "0.875rem",
+            fontWeight: 600,
+            color: "var(--fg-primary)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Review Title *
         </label>
         <input
@@ -124,15 +176,24 @@ export function ReviewForm({ productId }: ReviewFormProps) {
             color: "var(--fg-primary)",
             fontSize: "0.9375rem",
             outline: "none",
-            transition: "border-color 0.2s"
+            transition: "border-color 0.2s",
           }}
-          onFocus={(e) => e.target.style.borderColor = "var(--accent-dark)"}
-          onBlur={(e) => e.target.style.borderColor = "var(--border-strong)"}
+          onFocus={(e) => (e.target.style.borderColor = "var(--accent-dark)")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
         />
       </div>
 
       <div>
-        <label htmlFor="comment" style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+        <label
+          htmlFor="comment"
+          style={{
+            display: "block",
+            fontSize: "0.875rem",
+            fontWeight: 600,
+            color: "var(--fg-primary)",
+            marginBottom: "0.5rem",
+          }}
+        >
           Your Review *
         </label>
         <textarea
@@ -152,10 +213,10 @@ export function ReviewForm({ productId }: ReviewFormProps) {
             fontSize: "0.9375rem",
             outline: "none",
             resize: "vertical",
-            transition: "border-color 0.2s"
+            transition: "border-color 0.2s",
           }}
-          onFocus={(e) => e.target.style.borderColor = "var(--accent-dark)"}
-          onBlur={(e) => e.target.style.borderColor = "var(--border-strong)"}
+          onFocus={(e) => (e.target.style.borderColor = "var(--accent-dark)")}
+          onBlur={(e) => (e.target.style.borderColor = "var(--border-strong)")}
         />
       </div>
 
@@ -170,8 +231,11 @@ export function ReviewForm({ productId }: ReviewFormProps) {
           padding: "0.875rem 2rem",
           fontSize: "0.9375rem",
           fontWeight: 600,
-          cursor: (rating === 0 || !title || !comment || isPending) ? "not-allowed" : "pointer",
-          opacity: (rating === 0 || !title || !comment || isPending) ? 0.6 : 1,
+          cursor:
+            rating === 0 || !title || !comment || isPending
+              ? "not-allowed"
+              : "pointer",
+          opacity: rating === 0 || !title || !comment || isPending ? 0.6 : 1,
           transition: "opacity 0.2s",
           alignSelf: "flex-start",
         }}

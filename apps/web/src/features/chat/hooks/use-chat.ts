@@ -116,7 +116,8 @@ export function useStartConversation() {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       return conversation;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to start conversation";
+      const message =
+        err instanceof Error ? err.message : "Failed to start conversation";
       // If user already has an active conversation, fetch existing ones instead
       if (message.includes("already have")) {
         try {

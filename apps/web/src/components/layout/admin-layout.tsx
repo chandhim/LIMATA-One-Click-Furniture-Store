@@ -29,11 +29,28 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const getPageCategory = (path: string) => {
     if (path === "/admin") return "Core";
-    if (path.startsWith("/admin/products") || path.startsWith("/admin/categories")) return "Catalog";
+    if (
+      path.startsWith("/admin/products") ||
+      path.startsWith("/admin/categories")
+    )
+      return "Catalog";
     if (path.startsWith("/admin/orders")) return "Sales";
-    if (path.startsWith("/admin/customers") || path.startsWith("/admin/reviews")) return "Users";
-    if (path.startsWith("/admin/chats") || path.startsWith("/admin/notifications")) return "Communication";
-    if (path.startsWith("/admin/homepage") || path.startsWith("/admin/footer") || path.startsWith("/admin/settings")) return "Settings";
+    if (
+      path.startsWith("/admin/customers") ||
+      path.startsWith("/admin/reviews")
+    )
+      return "Users";
+    if (
+      path.startsWith("/admin/chats") ||
+      path.startsWith("/admin/notifications")
+    )
+      return "Communication";
+    if (
+      path.startsWith("/admin/homepage") ||
+      path.startsWith("/admin/footer") ||
+      path.startsWith("/admin/settings")
+    )
+      return "Settings";
     return "Admin";
   };
 
@@ -114,7 +131,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           }}
         >
           {/* Left: Hamburger (mobile) or Breadcrumbs (desktop) */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+          >
             <button
               className="admin-hamburger"
               onClick={() => setSidebarOpen(true)}
@@ -128,23 +147,61 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 borderRadius: "var(--radius-sm)",
                 transition: "background 0.2s ease",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(28,26,23,0.05)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+              onMouseEnter={(e) =>
+                ((e.currentTarget as HTMLElement).style.background =
+                  "rgba(28,26,23,0.05)")
+              }
+              onMouseLeave={(e) =>
+                ((e.currentTarget as HTMLElement).style.background =
+                  "transparent")
+              }
             >
               <Menu size={20} />
             </button>
 
             {/* Breadcrumbs for desktop, Logo for mobile */}
-            <div className="admin-header-breadcrumbs" style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.825rem", color: "var(--fg-secondary)" }}>
-              <Link href="/admin" style={{ color: "var(--fg-secondary)", textDecoration: "none" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>Admin</Link>
+            <div
+              className="admin-header-breadcrumbs"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.375rem",
+                fontSize: "0.825rem",
+                color: "var(--fg-secondary)",
+              }}
+            >
+              <Link
+                href="/admin"
+                style={{ color: "var(--fg-secondary)", textDecoration: "none" }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.textDecoration = "underline")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.textDecoration = "none")
+                }
+              >
+                Admin
+              </Link>
               <ChevronRight size={12} style={{ opacity: 0.5 }} />
               <span>{category}</span>
               <ChevronRight size={12} style={{ opacity: 0.5 }} />
-              <span style={{ fontWeight: 600, color: "var(--fg-primary)" }}>{title}</span>
+              <span style={{ fontWeight: 600, color: "var(--fg-primary)" }}>
+                {title}
+              </span>
             </div>
 
-            <div className="admin-header-logo-mobile" style={{ display: "none", alignItems: "center", gap: "0.5rem" }}>
-              <span className="font-serif" style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--fg-primary)" }}>
+            <div
+              className="admin-header-logo-mobile"
+              style={{ display: "none", alignItems: "center", gap: "0.5rem" }}
+            >
+              <span
+                className="font-serif"
+                style={{
+                  fontSize: "1.125rem",
+                  fontWeight: 700,
+                  color: "var(--fg-primary)",
+                }}
+              >
                 LIMATA
               </span>
               <span
@@ -164,7 +221,6 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
           </div>
-
 
           {/* Right: Storefront quick link and profile */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -219,7 +275,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                   width: 26,
                   height: 26,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                  background:
+                    "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -231,7 +288,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               >
                 {user?.name?.[0]?.toUpperCase() ?? "A"}
               </div>
-              <span className="admin-header-username" style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--fg-primary)" }}>
+              <span
+                className="admin-header-username"
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                  color: "var(--fg-primary)",
+                }}
+              >
                 {user?.name ?? "Admin"}
               </span>
             </div>

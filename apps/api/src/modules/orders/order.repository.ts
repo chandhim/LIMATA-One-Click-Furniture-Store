@@ -37,7 +37,7 @@ export async function updateOrder(
   data: {
     orderStatus?: OrderStatus;
     paymentStatus?: PaymentStatus;
-  }
+  },
 ) {
   return prisma.order.update({
     where: { orderId },

@@ -16,7 +16,7 @@ function sendResponse(res: Response, status: number, data: unknown) {
 export async function createOrderController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -34,7 +34,7 @@ export async function createOrderController(
 export async function listOrdersController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -50,7 +50,7 @@ export async function listOrdersController(
 export async function getOrderController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -67,7 +67,7 @@ export async function getOrderController(
 export async function cancelOrderController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -84,7 +84,7 @@ export async function cancelOrderController(
 export async function updateOrderStatusController(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     if (!req.user) {
@@ -96,7 +96,11 @@ export async function updateOrderStatusController(
       throw new ApiError(400, "Missing orderStatus parameter");
     }
 
-    const order = await updateOrderStatusByAdmin(orderId, orderStatus, req.user.id);
+    const order = await updateOrderStatusByAdmin(
+      orderId,
+      orderStatus,
+      req.user.id,
+    );
     return sendResponse(res, 200, order);
   } catch (error) {
     return next(error);
