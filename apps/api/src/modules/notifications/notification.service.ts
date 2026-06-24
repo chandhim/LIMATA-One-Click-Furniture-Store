@@ -8,27 +8,35 @@ export type CreateNotificationInput = {
   message: string;
 };
 
-export async function createNotification(input: CreateNotificationInput): Promise<Notification> {
+export async function createNotification(
+  input: CreateNotificationInput,
+): Promise<Notification> {
   return prisma.notification.create({
     data: input,
   });
 }
 
-export async function getUserNotifications(userId: string): Promise<Notification[]> {
+export async function getUserNotifications(
+  userId: string,
+): Promise<Notification[]> {
   return prisma.notification.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function markNotificationAsRead(notificationId: string): Promise<Notification> {
+export async function markNotificationAsRead(
+  notificationId: string,
+): Promise<Notification> {
   return prisma.notification.update({
     where: { notificationId },
     data: { isRead: true },
   });
 }
 
-export async function markAllNotificationsAsRead(userId: string): Promise<{ count: number }> {
+export async function markAllNotificationsAsRead(
+  userId: string,
+): Promise<{ count: number }> {
   const result = await prisma.notification.updateMany({
     where: { userId, isRead: false },
     data: { isRead: true },
@@ -43,13 +51,17 @@ export async function getUnreadCount(userId: string): Promise<number> {
   });
 }
 
-export async function deleteNotification(notificationId: string): Promise<Notification> {
+export async function deleteNotification(
+  notificationId: string,
+): Promise<Notification> {
   return prisma.notification.delete({
     where: { notificationId },
   });
 }
 
-export async function getNotificationById(notificationId: string): Promise<Notification | null> {
+export async function getNotificationById(
+  notificationId: string,
+): Promise<Notification | null> {
   return prisma.notification.findUnique({
     where: { notificationId },
   });

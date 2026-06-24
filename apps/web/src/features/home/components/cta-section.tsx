@@ -102,8 +102,8 @@ export function CTASection() {
             margin: "0 auto 2.5rem",
           }}
         >
-          Browse our curated collection of 2,400+ quality pieces and bring
-          your dream space to life — one click at a time.
+          Browse our curated collection of 2,400+ quality pieces and bring your
+          dream space to life — one click at a time.
         </p>
 
         {/* Single CTA */}

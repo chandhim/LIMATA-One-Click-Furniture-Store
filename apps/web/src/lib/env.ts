@@ -6,7 +6,10 @@ export function getApiBaseUrl(): string {
 
   // Fallback to older NEXT_PUBLIC_API_URL and strip any /api path
   if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api(\/v\d+)?\/?$/, "").replace(/\/$/, "");
+    return process.env.NEXT_PUBLIC_API_URL.replace(
+      /\/api(\/v\d+)?\/?$/,
+      "",
+    ).replace(/\/$/, "");
   }
 
   // Local development fallback

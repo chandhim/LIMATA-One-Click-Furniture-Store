@@ -32,7 +32,10 @@ export function useCart() {
       return;
     }
     if (query.data) {
-      const total = query.data.items.reduce((sum, item) => sum + item.quantity, 0);
+      const total = query.data.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0,
+      );
       setCount(total);
     }
   }, [query.data, isAuthenticated, setCount, resetCount]);

@@ -68,7 +68,8 @@ This file is a prompt-style snapshot of the workspace. It includes the readable 
 ## Root Files
 
 ### LICENSE
-~~~text
+
+```text
 MIT License
 
 Copyright (c) 2026 Manula Chandupa
@@ -90,10 +91,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-~~~
+```
 
 ### README.md
-~~~md
+
+````md
 # LIMATA-One-Click-Furniture-Store
 
 Beginner-friendly modular monorepo starter for LIMATA (AI-assisted furniture ecommerce platform).
@@ -113,10 +115,11 @@ Beginner-friendly modular monorepo starter for LIMATA (AI-assisted furniture eco
 pnpm install
 pnpm dev
 ```
-~~~
+````
 
 ### .env.example
-~~~env
+
+```env
 # Web
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 
@@ -126,10 +129,11 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/limata
 
 # AI Service
 AI_SERVICE_PORT=8000
-~~~
+```
 
 ### .gitignore
-~~~gitignore
+
+```gitignore
 # Logs
 logs
 *.log
@@ -279,24 +283,27 @@ __pycache__/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
-~~~
+```
 
 ### .prettierignore
-~~~text
+
+```text
 node_modules
 .next
 dist
 coverage
 pnpm-lock.yaml
-~~~
+```
 
 ### .prettierrc.cjs
-~~~js
+
+```js
 module.exports = require("@limata/config/prettier");
-~~~
+```
 
 ### package.json
-~~~json
+
+```json
 {
   "name": "limata-monorepo",
   "private": true,
@@ -315,17 +322,19 @@ module.exports = require("@limata/config/prettier");
     "turbo": "^2.5.8"
   }
 }
-~~~
+```
 
 ### pnpm-workspace.yaml
-~~~yaml
+
+```yaml
 packages:
   - apps/*
   - packages/*
-~~~
+```
 
 ### turbo.json
-~~~json
+
+```json
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
@@ -345,12 +354,13 @@ packages:
     }
   }
 }
-~~~
+```
 
 ## apps/ai-service
 
 ### apps/ai-service/package.json
-~~~json
+
+```json
 {
   "name": "ai-service",
   "version": "0.1.0",
@@ -360,21 +370,24 @@ packages:
     "start": "python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000"
   }
 }
-~~~
+```
 
 ### apps/ai-service/requirements.txt
-~~~text
+
+```text
 fastapi==0.121.1
 uvicorn[standard]==0.38.0
-~~~
+```
 
 ### apps/ai-service/.env.example
-~~~text
+
+```text
 AI_SERVICE_PORT=8000
-~~~
+```
 
 ### apps/ai-service/app/main.py
-~~~python
+
+```python
 from fastapi import FastAPI
 
 app = FastAPI(title="LIMATA AI Service")
@@ -383,12 +396,13 @@ app = FastAPI(title="LIMATA AI Service")
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "ai-service"}
-~~~
+```
 
 ## apps/api
 
 ### apps/api/package.json
-~~~json
+
+```json
 {
   "name": "api",
   "version": "0.1.0",
@@ -421,23 +435,26 @@ def health() -> dict[str, str]:
     "typescript": "^5.9.3"
   }
 }
-~~~
+```
 
 ### apps/api/.env.example
-~~~text
+
+```text
 API_PORT=4000
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/limata
-~~~
+```
 
 ### apps/api/eslint.config.mjs
-~~~js
+
+```js
 import nodeConfig from "@limata/config/eslint/node";
 
 export default nodeConfig;
-~~~
+```
 
 ### apps/api/tsconfig.json
-~~~json
+
+```json
 {
   "extends": "@limata/config/typescript/node",
   "compilerOptions": {
@@ -448,10 +465,11 @@ export default nodeConfig;
   "include": ["src/**/*.ts", "prisma/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
-~~~
+```
 
 ### apps/api/prisma/schema.prisma
-~~~prisma
+
+```prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -465,10 +483,11 @@ model HealthCheck {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 }
-~~~
+```
 
 ### apps/api/src/index.ts
-~~~ts
+
+```ts
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -486,10 +505,11 @@ app.use("/api", healthRouter);
 app.listen(port, () => {
   console.log(`API server listening on http://localhost:${port}`);
 });
-~~~
+```
 
 ### apps/api/src/features/health/health.route.ts
-~~~ts
+
+```ts
 import { Router } from "express";
 
 export const healthRouter = Router();
@@ -497,12 +517,13 @@ export const healthRouter = Router();
 healthRouter.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok", service: "api" });
 });
-~~~
+```
 
 ## apps/web
 
 ### apps/web/package.json
-~~~json
+
+```json
 {
   "name": "web",
   "version": "0.1.0",
@@ -533,10 +554,11 @@ healthRouter.get("/health", (_req, res) => {
     "typescript": "^5.9.3"
   }
 }
-~~~
+```
 
 ### apps/web/.gitignore
-~~~gitignore
+
+```gitignore
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -578,17 +600,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-~~~
+```
 
 ### apps/web/.eslintrc.json
-~~~json
+
+```json
 {
   "extends": ["next/core-web-vitals", "next/typescript"]
 }
-~~~
+```
 
 ### apps/web/components.json
-~~~json
+
+```json
 {
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "new-york",
@@ -606,10 +630,11 @@ next-env.d.ts
     "utils": "@/lib/utils"
   }
 }
-~~~
+```
 
 ### apps/web/next.config.ts
-~~~ts
+
+```ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -617,10 +642,11 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-~~~
+```
 
 ### apps/web/postcss.config.mjs
-~~~js
+
+```js
 const config = {
   plugins: {
     "@tailwindcss/postcss": {},
@@ -628,10 +654,11 @@ const config = {
 };
 
 export default config;
-~~~
+```
 
 ### apps/web/tsconfig.json
-~~~json
+
+```json
 {
   "extends": "@limata/config/typescript/nextjs",
   "compilerOptions": {
@@ -647,10 +674,11 @@ export default config;
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
-~~~
+```
 
 ### apps/web/src/app/globals.css
-~~~css
+
+```css
 @import "tailwindcss";
 @source "../../../packages/ui/src/**/*.{ts,tsx}";
 
@@ -671,10 +699,11 @@ export default config;
 body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
-~~~
+```
 
 ### apps/web/src/app/layout.tsx
-~~~tsx
+
+```tsx
 import type { Metadata } from "next";
 import { ReactQueryProvider } from "@/components/providers/react-query-provider";
 import "./globals.css";
@@ -697,10 +726,11 @@ export default function RootLayout({
     </html>
   );
 }
-~~~
+```
 
 ### apps/web/src/app/page.tsx
-~~~tsx
+
+```tsx
 import { Button } from "@limata/ui";
 
 export default function Home() {
@@ -717,10 +747,11 @@ export default function Home() {
     </main>
   );
 }
-~~~
+```
 
 ### apps/web/src/components/providers/react-query-provider.tsx
-~~~tsx
+
+```tsx
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -737,10 +768,11 @@ export function ReactQueryProvider({
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
-~~~
+```
 
 ### apps/web/src/features/app/store/use-ui-store.ts
-~~~ts
+
+```ts
 import { create } from "zustand";
 
 type UiStore = {
@@ -752,17 +784,19 @@ export const useUiStore = create<UiStore>((set) => ({
   sidebarOpen: false,
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 }));
-~~~
+```
 
 ### apps/web/src/lib/utils.ts
-~~~ts
+
+```ts
 export { cn } from "@limata/ui";
-~~~
+```
 
 ## packages/config
 
 ### packages/config/package.json
-~~~json
+
+```json
 {
   "name": "@limata/config",
   "version": "0.1.0",
@@ -786,10 +820,11 @@ export { cn } from "@limata/ui";
     "typescript-eslint": "^8.46.4"
   }
 }
-~~~
+```
 
 ### packages/config/eslint/node.mjs
-~~~js
+
+```js
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
@@ -814,10 +849,11 @@ export default tseslint.config(
     ignores: ["dist/**", "node_modules/**"],
   },
 );
-~~~
+```
 
 ### packages/config/eslint/next.mjs
-~~~js
+
+```js
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals.js";
 import nextTs from "eslint-config-next/typescript.js";
@@ -827,19 +863,21 @@ export default defineConfig([
   nextTs,
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
 ]);
-~~~
+```
 
 ### packages/config/prettier/prettier.config.cjs
-~~~js
+
+```js
 module.exports = {
   semi: true,
   singleQuote: false,
   trailingComma: "all",
 };
-~~~
+```
 
 ### packages/config/typescript/base.json
-~~~json
+
+```json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
@@ -853,10 +891,11 @@ module.exports = {
     "noEmit": true
   }
 }
-~~~
+```
 
 ### packages/config/typescript/node.json
-~~~json
+
+```json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./base.json",
@@ -867,10 +906,11 @@ module.exports = {
     "module": "NodeNext"
   }
 }
-~~~
+```
 
 ### packages/config/typescript/nextjs.json
-~~~json
+
+```json
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./base.json",
@@ -882,12 +922,13 @@ module.exports = {
     "jsx": "preserve"
   }
 }
-~~~
+```
 
 ## packages/types
 
 ### packages/types/package.json
-~~~json
+
+```json
 {
   "name": "@limata/types",
   "version": "0.1.0",
@@ -903,31 +944,34 @@ module.exports = {
     "typescript": "^5.9.3"
   }
 }
-~~~
+```
 
 ### packages/types/tsconfig.json
-~~~json
+
+```json
 {
   "extends": "@limata/config/typescript/base",
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
-~~~
+```
 
 ### packages/types/src/index.ts
-~~~ts
+
+```ts
 export type ServiceStatus = "ok" | "error";
 
 export type HealthResponse = {
   status: ServiceStatus;
   service: string;
 };
-~~~
+```
 
 ## packages/ui
 
 ### packages/ui/package.json
-~~~json
+
+```json
 {
   "name": "@limata/ui",
   "version": "0.1.0",
@@ -955,10 +999,11 @@ export type HealthResponse = {
     "react-dom": "^19.0.0"
   }
 }
-~~~
+```
 
 ### packages/ui/tsconfig.json
-~~~json
+
+```json
 {
   "extends": "@limata/config/typescript/base",
   "compilerOptions": {
@@ -967,26 +1012,29 @@ export type HealthResponse = {
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }
-~~~
+```
 
 ### packages/ui/src/index.ts
-~~~ts
+
+```ts
 export * from "./components/button";
 export * from "./lib/utils";
-~~~
+```
 
 ### packages/ui/src/lib/utils.ts
-~~~ts
+
+```ts
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-~~~
+```
 
 ### packages/ui/src/components/button.tsx
-~~~tsx
+
+```tsx
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -1034,7 +1082,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
-~~~
+```
 
 ## Omitted Binary Assets
 

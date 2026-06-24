@@ -65,7 +65,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     if (item.product.stock < item.quantity) {
       throw new ApiError(
         400,
-        `Insufficient stock for product "${item.product.name}"`
+        `Insufficient stock for product "${item.product.name}"`,
       );
     }
     totalAmount += item.product.price * item.quantity;
@@ -130,31 +130,31 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your COD order #${order.orderId} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your COD order #${order.orderId} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifySellers(
       "New Order",
-      `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifySellers(
       "Order Requires Processing",
-      `COD order #${order.orderId} is pending processing.`
+      `COD order #${order.orderId} is pending processing.`,
     );
   } else {
     // PayHere
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifyCustomer(
       userId,
       "Payment Initiated",
-      `Payment checkout page loaded for order #${order.orderId}.`
+      `Payment checkout page loaded for order #${order.orderId}.`,
     );
     await notifySellers(
       "New Order",
-      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
   }
 
@@ -239,7 +239,7 @@ export async function cancelOrder(orderId: string, userId: string) {
   if (!validStatusForCancellation.includes(order.orderStatus)) {
     throw new ApiError(
       400,
-      `Cannot cancel order in its current status: ${order.orderStatus}`
+      `Cannot cancel order in its current status: ${order.orderStatus}`,
     );
   }
 
@@ -269,11 +269,11 @@ export async function cancelOrder(orderId: string, userId: string) {
     await notifyCustomer(
       order.userId,
       "Order Cancelled",
-      `Your COD order #${order.orderId} has been cancelled.`
+      `Your COD order #${order.orderId} has been cancelled.`,
     );
     await notifySellers(
       "Order Cancelled",
-      `COD order #${order.orderId} has been cancelled by the user.`
+      `COD order #${order.orderId} has been cancelled by the user.`,
     );
   } else {
     // PayHere -> CANCELLATION_REQUESTED
@@ -284,11 +284,11 @@ export async function cancelOrder(orderId: string, userId: string) {
     await notifyCustomer(
       order.userId,
       "Cancellation Requested",
-      `Cancellation request received for PayHere order #${order.orderId}.`
+      `Cancellation request received for PayHere order #${order.orderId}.`,
     );
     await notifySellers(
       "Cancellation Requested",
-      `Customer requested cancellation for PayHere order #${order.orderId}.`
+      `Customer requested cancellation for PayHere order #${order.orderId}.`,
     );
   }
 
@@ -298,7 +298,7 @@ export async function cancelOrder(orderId: string, userId: string) {
 export async function updateOrderStatusByAdmin(
   orderId: string,
   newStatus: OrderStatus,
-  adminUserId: string
+  adminUserId: string,
 ) {
   // Confirm user is Admin
   const admin = await prisma.user.findUnique({
@@ -329,7 +329,7 @@ export async function updateOrderStatusByAdmin(
   await notifyCustomer(
     order.userId,
     statusLabel,
-    `Your order #${order.orderId} status is now ${newStatus}.`
+    `Your order #${order.orderId} status is now ${newStatus}.`,
   );
 
   return updatedOrder;

@@ -36,7 +36,10 @@ export async function findProducts(opts: {
   });
 
   return products as Array<
-    Pick<Product, "productId" | "name" | "price" | "category" | "images" | "stock">
+    Pick<
+      Product,
+      "productId" | "name" | "price" | "category" | "images" | "stock"
+    >
   >;
 }
 
@@ -70,7 +73,10 @@ export async function insertProduct(data: ProductCreate) {
 /**
  * Update an existing product by id.
  */
-export async function updateProductById(productId: string, data: ProductUpdate) {
+export async function updateProductById(
+  productId: string,
+  data: ProductUpdate,
+) {
   return prisma.product.update({ where: { productId }, data });
 }
 

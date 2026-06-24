@@ -285,50 +285,50 @@ LIMATA-One-Click-Furniture-Store/
 
 ## API Layer Responsibility Matrix
 
-| Layer | File pattern | Responsibility |
-|-------|-------------|----------------|
-| **Routes** | `*.route.ts` | Register endpoints only — zero logic |
-| **Controllers** | `*.controller.ts` | Parse request → call service → send HTTP response |
-| **Services** | `*.service.ts` | Business logic, orchestration, workflow |
-| **Repositories** | `*.repository.ts` | Prisma DB queries only — zero business logic |
-| **Validation** | `*.validation.ts` | Zod input schemas |
-| **Types** | `*.types.ts` | Module-scoped DTOs and interfaces |
-| **Barrel** | `index.ts` | Re-exports the module's public API |
+| Layer            | File pattern      | Responsibility                                    |
+| ---------------- | ----------------- | ------------------------------------------------- |
+| **Routes**       | `*.route.ts`      | Register endpoints only — zero logic              |
+| **Controllers**  | `*.controller.ts` | Parse request → call service → send HTTP response |
+| **Services**     | `*.service.ts`    | Business logic, orchestration, workflow           |
+| **Repositories** | `*.repository.ts` | Prisma DB queries only — zero business logic      |
+| **Validation**   | `*.validation.ts` | Zod input schemas                                 |
+| **Types**        | `*.types.ts`      | Module-scoped DTOs and interfaces                 |
+| **Barrel**       | `index.ts`        | Re-exports the module's public API                |
 
 ---
 
 ## Active API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| `GET` | `/api/v1/health` | Public | Health check |
-| `POST` | `/api/auth/register` | Public | Register new user |
-| `POST` | `/api/auth/login` | Public | Login — returns JWT |
-| `GET` | `/api/auth/profile` | 🔒 User | Get own profile |
-| `GET` | `/api/auth/admin` | 🔒 Admin | Admin access check |
-| `GET` | `/api/products` | Public | List products (`?search=`, `?category=`) |
-| `GET` | `/api/products/:productId` | Public | Get product detail |
-| `POST` | `/api/products` | 🔒 Admin | Create product |
-| `PUT` | `/api/products/:productId` | 🔒 Admin | Update product |
-| `DELETE` | `/api/products/:productId` | 🔒 Admin | Delete product |
-| `POST` | `/api/products/upload-images` | 🔒 Admin | Upload product images (multipart) |
-| `POST` | `/api/products/upload-model` | 🔒 Admin | Upload 3D model `.glb` (multipart) |
+| Method   | Endpoint                      | Auth     | Description                              |
+| -------- | ----------------------------- | -------- | ---------------------------------------- |
+| `GET`    | `/api/v1/health`              | Public   | Health check                             |
+| `POST`   | `/api/auth/register`          | Public   | Register new user                        |
+| `POST`   | `/api/auth/login`             | Public   | Login — returns JWT                      |
+| `GET`    | `/api/auth/profile`           | 🔒 User  | Get own profile                          |
+| `GET`    | `/api/auth/admin`             | 🔒 Admin | Admin access check                       |
+| `GET`    | `/api/products`               | Public   | List products (`?search=`, `?category=`) |
+| `GET`    | `/api/products/:productId`    | Public   | Get product detail                       |
+| `POST`   | `/api/products`               | 🔒 Admin | Create product                           |
+| `PUT`    | `/api/products/:productId`    | 🔒 Admin | Update product                           |
+| `DELETE` | `/api/products/:productId`    | 🔒 Admin | Delete product                           |
+| `POST`   | `/api/products/upload-images` | 🔒 Admin | Upload product images (multipart)        |
+| `POST`   | `/api/products/upload-model`  | 🔒 Admin | Upload 3D model `.glb` (multipart)       |
 
 ---
 
 ## Placeholder Modules (Not Yet Implemented)
 
-| Module | Planned API prefix | Purpose |
-|--------|--------------------|---------|
-| `wishlist` | `/api/wishlist` | User product wishlist |
-| `cart` | `/api/cart` | Shopping cart |
-| `orders` | `/api/orders` | Order lifecycle management |
-| `payments` | `/api/payments` | Payment processing & webhooks |
-| `reviews` | `/api/products/:id/reviews` | Product review system |
-| `chat` | `/api/chat` | Real-time messaging |
-| `notifications` | `/api/notifications` | In-app notifications |
-| `recommendations` | `/api/recommendations` | AI-powered recommendations |
-| `placement` | `/api/placement` | AR/3D furniture placement |
+| Module            | Planned API prefix          | Purpose                       |
+| ----------------- | --------------------------- | ----------------------------- |
+| `wishlist`        | `/api/wishlist`             | User product wishlist         |
+| `cart`            | `/api/cart`                 | Shopping cart                 |
+| `orders`          | `/api/orders`               | Order lifecycle management    |
+| `payments`        | `/api/payments`             | Payment processing & webhooks |
+| `reviews`         | `/api/products/:id/reviews` | Product review system         |
+| `chat`            | `/api/chat`                 | Real-time messaging           |
+| `notifications`   | `/api/notifications`        | In-app notifications          |
+| `recommendations` | `/api/recommendations`      | AI-powered recommendations    |
+| `placement`       | `/api/placement`            | AR/3D furniture placement     |
 
 ---
 
@@ -369,17 +369,17 @@ enum Role {
 
 ## Key Environment Variables
 
-| Variable | Used by | Purpose |
-|----------|---------|---------|
-| `DATABASE_URL` | Prisma | PostgreSQL pooled connection |
-| `DIRECT_URL` | Prisma | PostgreSQL direct connection |
-| `JWT_SECRET` | `lib/jwt.ts` | JWT signing secret |
-| `API_PORT` | `server.ts` | HTTP port (default: 4000) |
-| `FRONTEND_URL` | `app.ts` | CORS allowed origins (comma-separated) |
-| `API_PUBLIC_URL` | `lib/storage.ts` | Public base URL for local file uploads |
-| `R2_ENDPOINT` | `lib/storage.ts` | Cloudflare R2 endpoint |
-| `R2_ACCESS_KEY_ID` | `lib/storage.ts` | R2 access key |
-| `R2_SECRET_ACCESS_KEY` | `lib/storage.ts` | R2 secret key |
-| `R2_BUCKET_NAME` | `lib/storage.ts` | R2 bucket name |
-| `R2_PUBLIC_URL` | `lib/storage.ts` | R2 public CDN URL |
-| `NEXT_PUBLIC_API_BASE_URL` | Next.js web | API base URL consumed by frontend |
+| Variable                   | Used by          | Purpose                                |
+| -------------------------- | ---------------- | -------------------------------------- |
+| `DATABASE_URL`             | Prisma           | PostgreSQL pooled connection           |
+| `DIRECT_URL`               | Prisma           | PostgreSQL direct connection           |
+| `JWT_SECRET`               | `lib/jwt.ts`     | JWT signing secret                     |
+| `API_PORT`                 | `server.ts`      | HTTP port (default: 4000)              |
+| `FRONTEND_URL`             | `app.ts`         | CORS allowed origins (comma-separated) |
+| `API_PUBLIC_URL`           | `lib/storage.ts` | Public base URL for local file uploads |
+| `R2_ENDPOINT`              | `lib/storage.ts` | Cloudflare R2 endpoint                 |
+| `R2_ACCESS_KEY_ID`         | `lib/storage.ts` | R2 access key                          |
+| `R2_SECRET_ACCESS_KEY`     | `lib/storage.ts` | R2 secret key                          |
+| `R2_BUCKET_NAME`           | `lib/storage.ts` | R2 bucket name                         |
+| `R2_PUBLIC_URL`            | `lib/storage.ts` | R2 public CDN URL                      |
+| `NEXT_PUBLIC_API_BASE_URL` | Next.js web      | API base URL consumed by frontend      |

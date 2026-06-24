@@ -12,7 +12,9 @@ export function HeroSection() {
   const { data: heroData } = usePublicSetting("homepage_hero");
 
   const title = heroData?.title ?? "Crafted for the Way You Live.";
-  const subtitle = heroData?.subtitle ?? "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.";
+  const subtitle =
+    heroData?.subtitle ??
+    "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.";
   const primaryBtn = heroData?.primaryBtn ?? "Browse Collection";
   const secondaryBtn = heroData?.secondaryBtn ?? "Explore Rooms";
 

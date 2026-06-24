@@ -54,7 +54,8 @@ export function Footer() {
           left: 0,
           right: 0,
           height: 1,
-          background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
+          background:
+            "linear-gradient(90deg, transparent, var(--accent), transparent)",
         }}
       />
 
@@ -67,12 +68,15 @@ export function Footer() {
           width: "24rem",
           height: "24rem",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)",
           pointerEvents: "none",
         }}
       />
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+      <div
+        style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}
+      >
         {/* Main Grid */}
         <div
           style={{
@@ -130,7 +134,8 @@ export function Footer() {
                   linkedin: "LN",
                   tiktok: "TT",
                 };
-                const label = labelMap[platform] || platform.slice(0, 2).toUpperCase();
+                const label =
+                  labelMap[platform] || platform.slice(0, 2).toUpperCase();
 
                 return (
                   <a
@@ -148,21 +153,28 @@ export function Footer() {
                       fontSize: "0.8rem",
                       fontWeight: 600,
                       cursor: "pointer",
-                      transition: "border-color 0.2s, color 0.2s, background 0.2s",
+                      transition:
+                        "border-color 0.2s, color 0.2s, background 0.2s",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       textDecoration: "none",
                     }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
-                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(201,169,110,0.1)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "var(--accent)";
+                      (e.currentTarget as HTMLElement).style.color =
+                        "var(--accent)";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(201,169,110,0.1)";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.borderColor = "rgba(250,249,247,0.12)";
-                      (e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.5)";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.05)";
+                      (e.currentTarget as HTMLElement).style.borderColor =
+                        "rgba(250,249,247,0.12)";
+                      (e.currentTarget as HTMLElement).style.color =
+                        "rgba(250,249,247,0.5)";
+                      (e.currentTarget as HTMLElement).style.background =
+                        "rgba(250,249,247,0.05)";
                     }}
                   >
                     {label}
@@ -186,7 +198,13 @@ export function Footer() {
             >
               Navigate
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+              }}
+            >
               {links.map((link) => (
                 <Link
                   key={link.label}
@@ -197,8 +215,14 @@ export function Footer() {
                     textDecoration: "none",
                     transition: "color 0.2s ease",
                   }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-inverse)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.55)")}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-inverse)")
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLElement).style.color =
+                      "rgba(250,249,247,0.55)")
+                  }
                 >
                   {link.label}
                 </Link>
@@ -220,22 +244,36 @@ export function Footer() {
             >
               Legal
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map((label) => (
-                <span
-                  key={label}
-                  style={{
-                    fontSize: "0.9rem",
-                    color: "rgba(250,249,247,0.55)",
-                    cursor: "pointer",
-                    transition: "color 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-inverse)")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "rgba(250,249,247,0.55)")}
-                >
-                  {label}
-                </span>
-              ))}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+              }}
+            >
+              {["Privacy Policy", "Terms of Service", "Cookie Policy"].map(
+                (label) => (
+                  <span
+                    key={label}
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "rgba(250,249,247,0.55)",
+                      cursor: "pointer",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLElement).style.color =
+                        "var(--fg-inverse)")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLElement).style.color =
+                        "rgba(250,249,247,0.55)")
+                    }
+                  >
+                    {label}
+                  </span>
+                ),
+              )}
             </div>
           </div>
         </div>

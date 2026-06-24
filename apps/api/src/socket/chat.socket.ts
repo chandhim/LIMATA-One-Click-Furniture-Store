@@ -1,6 +1,9 @@
 import type { Server as SocketIOServer } from "socket.io";
 import { Role } from "@prisma/client";
-import { sendMessage, getConversationDetail } from "@/modules/chat/chat.service";
+import {
+  sendMessage,
+  getConversationDetail,
+} from "@/modules/chat/chat.service";
 import { createNotification } from "@/modules/notifications/notification.service";
 
 export function registerChatSocket(io: SocketIOServer) {
@@ -37,15 +40,16 @@ export function registerChatSocket(io: SocketIOServer) {
           });
 
           // Broadcast message to conversation room
-          io
-            .to(`conversation:${data.conversationId}`)
-            .emit("message_received", {
+          io.to(`conversation:${data.conversationId}`).emit(
+            "message_received",
+            {
               messageId: message.messageId,
               conversationId: message.conversationId,
               senderId: message.senderId,
               content: message.content,
               createdAt: message.createdAt,
-            });
+            },
+          );
 
           // Emit confirmation back to sender
           socket.emit("message_sent", {
@@ -90,20 +94,18 @@ export function registerChatSocket(io: SocketIOServer) {
               notificationMessage = "The seller replied to your message";
 
               await createNotification({
-                userId: conversation.customerId,
+                userId: conversation.customerId as string,
                 type: "CHAT_MESSAGE",
                 title: notificationTitle,
                 message: notificationMessage,
               });
 
               // Send notification to customer
-              io
-                .to(`user:${conversation.customerId}`)
-                .emit("notification", {
-                  type: "CHAT_MESSAGE",
-                  title: notificationTitle,
-                  message: notificationMessage,
-                });
+              io.to(`user:${conversation.customerId}`).emit("notification", {
+                type: "CHAT_MESSAGE",
+                title: notificationTitle,
+                message: notificationMessage,
+              });
             }
           }
         } catch (error) {

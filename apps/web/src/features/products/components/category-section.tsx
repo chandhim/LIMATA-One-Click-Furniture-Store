@@ -10,7 +10,11 @@ interface CategorySectionProps {
   products: ProductSummary[];
 }
 
-export function CategorySection({ category, Icon, products }: CategorySectionProps) {
+export function CategorySection({
+  category,
+  Icon,
+  products,
+}: CategorySectionProps) {
   if (products.length === 0) return null;
 
   return (

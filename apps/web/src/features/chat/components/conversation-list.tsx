@@ -39,14 +39,17 @@ export function ConversationList({
                 : `/messages/${conversation.conversationId}`
             }
             className={`block p-4 hover:bg-slate-50 transition ${
-              selectedConversationId === conversation.conversationId ? "bg-slate-100" : ""
+              selectedConversationId === conversation.conversationId
+                ? "bg-slate-100"
+                : ""
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="font-medium text-slate-900">
                   {isAdmin
-                    ? conversation.customer?.name || `Customer #${conversation.customerId.slice(-6).toUpperCase()}`
+                    ? conversation.customer?.name ||
+                      `Customer #${conversation.customerId.slice(-6).toUpperCase()}`
                     : "Seller"}
                 </p>
                 {lastMessage && (

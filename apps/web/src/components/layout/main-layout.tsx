@@ -4,11 +4,7 @@ import { Footer } from "./footer";
 import { Navbar } from "./navbar";
 import { ChatWidget } from "@/features/chat/components/chat-widget";
 
-export function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />

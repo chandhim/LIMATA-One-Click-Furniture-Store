@@ -158,7 +158,8 @@ export function CartItemCard({ item }: CartItemCardProps) {
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.color = "#dc2626";
-          (e.currentTarget as HTMLElement).style.background = "rgba(220,38,38,0.06)";
+          (e.currentTarget as HTMLElement).style.background =
+            "rgba(220,38,38,0.06)";
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
