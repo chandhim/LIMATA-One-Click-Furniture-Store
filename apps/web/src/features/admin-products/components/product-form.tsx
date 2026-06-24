@@ -104,6 +104,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [optimizationStats, setOptimizationStats] = useState<any>(null);
 
   const [selectedCategoryOption, setSelectedCategoryOption] = useState("");
@@ -199,6 +200,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         
         let fakeProgressInterval: NodeJS.Timeout | null = null;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const uploadRes = await uploadModel(model, (progressEvent: any) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
