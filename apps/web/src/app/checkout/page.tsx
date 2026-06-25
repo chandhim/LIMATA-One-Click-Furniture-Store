@@ -971,9 +971,7 @@ export default function CheckoutPage() {
                       <span
                         style={{ color: "var(--fg-primary)", fontWeight: 500 }}
                       >
-                        {shippingCharge === 0
-                          ? "Free"
-                          : `Rs. ${shippingCharge.toLocaleString()}`}
+                        {`Rs. ${shippingCharge.toLocaleString()}`}
                       </span>
                     </div>
                     <div
