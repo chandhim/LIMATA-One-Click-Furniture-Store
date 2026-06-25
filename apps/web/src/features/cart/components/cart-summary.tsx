@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
 import type { CartItem } from "../types/cart.types";
 
 interface CartSummaryProps {
@@ -78,7 +78,7 @@ export function CartSummary({ items }: CartSummaryProps) {
             Calculated at checkout
           </span>
         </div>
-{/* 
+
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)" }}>
             Tax
@@ -93,7 +93,6 @@ export function CartSummary({ items }: CartSummaryProps) {
             Calculated at checkout
           </span>
         </div>
-      </div> */}
       </div>
 
       {/* Divider */}
