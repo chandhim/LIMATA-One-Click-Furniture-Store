@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, ShieldCheck, Truck, RefreshCcw } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { CartItem } from "../types/cart.types";
 
 interface CartSummaryProps {
