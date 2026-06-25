@@ -207,7 +207,7 @@ export default function OrdersHistoryPage() {
                               fontSize: "1rem",
                             }}
                           >
-                            Order #{order.orderId}
+                            Order #{order.orderId.slice(-5).toUpperCase()}
                           </span>
                           <span
                             style={{

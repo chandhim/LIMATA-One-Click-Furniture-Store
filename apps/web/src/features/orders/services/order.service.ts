@@ -100,3 +100,10 @@ export async function getPaymentParams(
   );
   return res.data.data;
 }
+
+export async function deleteDraftOrder(orderId: string): Promise<boolean> {
+  const res = await api.delete<ApiResponse<{ deleted: boolean }>>(
+    `/orders/${orderId}/draft`,
+  );
+  return res.data.success;
+}

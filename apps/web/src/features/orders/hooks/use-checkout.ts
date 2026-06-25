@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useCreateOrder, ORDERS_QUERY_KEY } from "./use-orders";
-import { getPaymentParams } from "../services/order.service";
+import { getPaymentParams, deleteDraftOrder } from "../services/order.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartStore } from "@/store/use-cart-store";
 import { updateProfile } from "@/features/auth/api/auth";
@@ -147,20 +147,26 @@ export function useCheckout() {
             router.push(`/orders/success?orderId=${orderId}`);
           };
 
-          payhere.onDismissed = function () {
+          payhere.onDismissed = async function () {
             console.log("Payment dismissed");
             setIsProcessing(false);
-            alert(
-              "Payment dismissed. You can pay later from your order details page.",
-            );
-            router.push(`/account/orders/${order.orderId}`);
+            try {
+              await deleteDraftOrder(order.orderId);
+            } catch (e) {
+              console.error("Failed to delete draft order:", e);
+            }
+            alert("Payment dismissed. The order has not been placed.");
           };
 
-          payhere.onError = function (error: string) {
+          payhere.onError = async function (error: string) {
             console.error("PayHere Error:", error);
             setIsProcessing(false);
+            try {
+              await deleteDraftOrder(order.orderId);
+            } catch (e) {
+              console.error("Failed to delete draft order:", e);
+            }
             alert(`Payment error: ${error}`);
-            router.push(`/account/orders/${order.orderId}`);
           };
 
           const payment = {

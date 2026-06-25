@@ -386,7 +386,7 @@ export default function AdminOrdersPage() {
                           fontFamily: "monospace",
                         }}
                       >
-                        {order.orderId}
+                        #{order.orderId.slice(-5).toUpperCase()}
                       </td>
 
                       {/* Customer Details */}

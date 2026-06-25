@@ -326,7 +326,7 @@ export default function AdminOverviewPage() {
                                 fontFamily: "monospace",
                               }}
                             >
-                              {order.orderId}
+                              #{order.orderId.slice(-5).toUpperCase()}
                             </td>
                             <td style={{ padding: "1.125rem 1.75rem" }}>
                               <div
