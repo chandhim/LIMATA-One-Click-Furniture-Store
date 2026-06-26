@@ -57,7 +57,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
   }
 
   // 2. Validate stock availability and calculate backend pricing
-  let totalAmount = 0;
+  let subtotal = 0;
   for (const item of cart.items) {
     if (!item.product) {
       throw new ApiError(404, `Product for item ${item.productId} not found`);
@@ -68,8 +68,13 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         `Insufficient stock for product "${item.product.name}"`,
       );
     }
-    totalAmount += item.product.price * item.quantity;
+    subtotal += item.product.price * item.quantity;
   }
+
+  const standardCharge = subtotal < 8000 ? 1000 : 5000;
+  const expressCharge = subtotal < 5000 ? 2000 : 10000;
+  const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
+  const totalAmount = subtotal + shippingCharge;
 
   // 3. Execute database transaction
   const order = await prisma.$transaction(async (tx) => {
@@ -333,4 +338,39 @@ export async function updateOrderStatusByAdmin(
   );
 
   return updatedOrder;
+}
+
+export async function deleteDraftOrder(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Authorization check
+  if (order.userId !== userId) {
+    const user = await prisma.user.findUnique({
+      where: { userId },
+      select: { role: true },
+    });
+    if (user?.role !== "ADMIN") {
+      throw new ApiError(403, "Forbidden");
+    }
+  }
+
+  // Only allow deleting PENDING PayHere orders
+  if (order.paymentMethod !== "PAYHERE" || order.orderStatus !== "PENDING") {
+    throw new ApiError(400, "Only pending PayHere orders can be deleted");
+  }
+
+  // Hard delete the order items and order
+  await prisma.$transaction(async (tx) => {
+    await tx.orderItem.deleteMany({
+      where: { orderId },
+    });
+    await tx.order.delete({
+      where: { orderId },
+    });
+  });
+
+  return { success: true };
 }

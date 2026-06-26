@@ -106,7 +106,7 @@ function OrderSuccessContent() {
                   fontWeight: 700,
                 }}
               >
-                {order.orderId}
+                #{order.orderId.slice(-5).toUpperCase()}
               </span>
             </div>
             <div
