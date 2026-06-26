@@ -25,7 +25,7 @@ export function RegisterForm() {
     try {
       const session = await signUp(values);
       setSession(session);
-      router.replace("/profile?registered=true");
+      router.replace("/profile/setup");
     } catch (error) {
       form.setError("root", {
         message: error instanceof Error ? error.message : "Registration failed",
