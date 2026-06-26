@@ -1238,7 +1238,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           fontFamily: "monospace",
                         }}
                       >
-                        {product.productId}
+                        {product.productId.slice(-5).toUpperCase()}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
