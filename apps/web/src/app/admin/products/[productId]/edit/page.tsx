@@ -1,6 +1,5 @@
 "use client";
 
-import { MainLayout } from "@/components/layout/main-layout";
 import { ProductForm } from "@/features/admin-products/components/product-form";
 import {
   useAuthBootstrap,
@@ -23,17 +22,15 @@ export default function EditProductPage({
   }
 
   return (
-    <MainLayout>
-      <section className="mx-auto max-w-4xl px-6 py-16">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-slate-950">
-            Edit Product
-          </h1>
-          <p className="mt-2 text-slate-600">Update product details</p>
-        </div>
+    <section className="mx-auto max-w-4xl px-6 py-16">
+      <div className="mb-8">
+        <h1 className="text-3xl font-semibold text-slate-950">
+          Edit Product
+        </h1>
+        <p className="mt-2 text-slate-600">Update product details</p>
+      </div>
 
-        <ProductForm productId={productId} />
-      </section>
-    </MainLayout>
+      <ProductForm productId={productId} />
+    </section>
   );
 }
