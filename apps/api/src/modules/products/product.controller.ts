@@ -141,10 +141,9 @@ export async function uploadModelController(
       throw new ApiError(400, "No file uploaded");
     }
 
-    const validMimes = ["model/gltf-binary", "application/octet-stream"];
     const isValidExt = req.file.originalname.toLowerCase().endsWith(".glb");
 
-    if (!isValidExt || !validMimes.includes(req.file.mimetype)) {
+    if (!isValidExt) {
       throw new ApiError(400, "Only .glb files are allowed");
     }
 
