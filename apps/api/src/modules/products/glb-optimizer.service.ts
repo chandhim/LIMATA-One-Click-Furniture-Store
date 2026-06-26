@@ -48,7 +48,8 @@ export async function optimizeGlb(
       '-i', tempInputPath,
       '-o', tempOutputPath,
       '-cc',
-      '-si', '0.15',
+      '-si', '0.1',
+      '-tl', '1024',
       '-kn',
       '-km'
     ];

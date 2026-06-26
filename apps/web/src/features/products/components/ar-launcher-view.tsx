@@ -62,6 +62,8 @@ export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
         src: fetchUrl,
         ar: true,
         "ar-modes": "webxr scene-viewer quick-look",
+        loading: "lazy",
+        reveal: "manual",
         style: {
           position: "absolute",
           width: 0,
