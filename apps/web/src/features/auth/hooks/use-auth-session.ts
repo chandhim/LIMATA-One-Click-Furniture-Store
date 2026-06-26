@@ -31,7 +31,7 @@ export function useAuthGuard(requiredRole?: AuthRole) {
     }
 
     if (requiredRole && user?.role !== requiredRole) {
-      router.replace("/dashboard");
+      router.replace("/profile");
     }
   }, [isHydrated, isAuthenticated, requiredRole, router, user]);
 
@@ -44,9 +44,9 @@ export function useAuthGuard(requiredRole?: AuthRole) {
 
 /**
  * Redirects already-authenticated users away from guest-only pages
- * (e.g. /login, /register) to /dashboard once the store has hydrated.
+ * (e.g. /login, /register) to / once the store has hydrated.
  */
-export function useRedirectIfAuthenticated(redirectTo = "/dashboard") {
+export function useRedirectIfAuthenticated(redirectTo = "/") {
   const router = useRouter();
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
