@@ -64,7 +64,9 @@ export default function CheckoutPage() {
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  const shippingCharge = deliveryMethod === "Express" ? 1000 : 0;
+  const standardCharge = cartSubtotal < 8000 ? 1000 : 5000;
+  const expressCharge = cartSubtotal < 5000 ? 2000 : 10000;
+  const shippingCharge = deliveryMethod === "Express" ? expressCharge : standardCharge;
   const cartTotal = cartSubtotal + shippingCharge;
 
   if (items.length === 0) {
@@ -578,7 +580,7 @@ export default function CheckoutPage() {
                           margin: 0,
                         }}
                       >
-                        Takes 3-5 business days. Free shipping.
+                        Within 20 days.
                       </p>
                       <div
                         style={{
@@ -588,7 +590,7 @@ export default function CheckoutPage() {
                           color: "var(--fg-primary)",
                         }}
                       >
-                        FREE
+                        Rs. {standardCharge.toLocaleString()}
                       </div>
                     </div>
 
@@ -637,7 +639,7 @@ export default function CheckoutPage() {
                           margin: 0,
                         }}
                       >
-                        Takes 1-2 business days. Flat-rate fee.
+                        Within 7 working days.
                       </p>
                       <div
                         style={{
@@ -647,7 +649,7 @@ export default function CheckoutPage() {
                           color: "var(--fg-primary)",
                         }}
                       >
-                        Rs. 1,000
+                        Rs. {expressCharge.toLocaleString()}
                       </div>
                     </div>
                   </div>
@@ -969,9 +971,7 @@ export default function CheckoutPage() {
                       <span
                         style={{ color: "var(--fg-primary)", fontWeight: 500 }}
                       >
-                        {shippingCharge === 0
-                          ? "Free"
-                          : `Rs. ${shippingCharge.toLocaleString()}`}
+                        {`Rs. ${shippingCharge.toLocaleString()}`}
                       </span>
                     </div>
                     <div

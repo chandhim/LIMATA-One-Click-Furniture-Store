@@ -1120,7 +1120,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 }}
               >
                 Your order is processed securely. Includes transparent delivery
-                updates and support for returns within 30 days.
+                updates.
               </p>
             </div>
           </div>
@@ -1354,24 +1354,6 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                     range from 5 to 10 business days depending on location. You
                     will receive a tracking link and a coordinator call to book
                     a delivery timeframe.
-                  </p>
-                </div>
-                <div>
-                  <h4
-                    style={{
-                      fontWeight: 600,
-                      color: "var(--fg-primary)",
-                      fontSize: "0.9375rem",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Return Policy
-                  </h4>
-                  <p>
-                    We offer a 30-day return policy. If you aren&apos;t
-                    completely happy with your purchase, you can return it
-                    within 30 days of receipt. Items must be in new condition.
-                    Returns will incur delivery charges.
                   </p>
                 </div>
               </div>

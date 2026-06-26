@@ -106,7 +106,7 @@ export default function OrderDetailsPage() {
               Order Not Found
             </h2>
             <p style={{ color: "var(--fg-secondary)", marginBottom: "2rem" }}>
-              We couldn&apos;t retrieve the details for order #{orderId}. It
+              We couldn&apos;t retrieve the details for order #{orderId.slice(-5).toUpperCase()}. It
               might not exist or you might not have access to it.
             </p>
             <Link
@@ -299,7 +299,7 @@ export default function OrderDetailsPage() {
                   letterSpacing: "-0.02em",
                 }}
               >
-                Order #{order.orderId.slice(-8).toUpperCase()}
+                Order #{order.orderId.slice(-5).toUpperCase()}
               </h1>
               <p
                 style={{
@@ -658,10 +658,7 @@ export default function OrderDetailsPage() {
                         style={{ fontWeight: 500, color: "var(--fg-primary)" }}
                       >
                         Rs.{" "}
-                        {(
-                          order.totalAmount -
-                          (order.deliveryMethod === "Express" ? 1000 : 0)
-                        ).toLocaleString()}
+                        {order.items.reduce((acc, item) => acc + item.price * item.quantity, 0).toLocaleString()}
                       </span>
                     </div>
                     <div
@@ -676,8 +673,8 @@ export default function OrderDetailsPage() {
                       <span
                         style={{ fontWeight: 500, color: "var(--fg-primary)" }}
                       >
-                        {order.deliveryMethod === "Express"
-                          ? "Rs. 1,000"
+                        {order.totalAmount - order.items.reduce((acc, item) => acc + item.price * item.quantity, 0) > 0
+                          ? `Rs. ${(order.totalAmount - order.items.reduce((acc, item) => acc + item.price * item.quantity, 0)).toLocaleString()}`
                           : "Free"}
                       </span>
                     </div>
