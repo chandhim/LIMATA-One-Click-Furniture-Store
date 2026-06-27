@@ -56,19 +56,21 @@ export function ARLauncherView({ modelUrl }: ARLauncherViewProps) {
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {/* Hidden model-viewer just for triggering AR */}
+      {/* Visually hidden model-viewer just for triggering AR. 
+          Avoid 0x0 dimensions to prevent iOS Safari WebGL context crashes. */}
       {React.createElement("model-viewer", {
         ref: viewerRef,
         src: fetchUrl,
         ar: true,
         "ar-modes": "webxr scene-viewer quick-look",
         loading: "lazy",
-        reveal: "manual",
         style: {
           position: "absolute",
-          width: 0,
-          height: 0,
-          overflow: "hidden",
+          width: "1px",
+          height: "1px",
+          opacity: 0,
+          pointerEvents: "none",
+          zIndex: -1,
         },
       })}
 
