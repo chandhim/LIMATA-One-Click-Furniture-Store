@@ -84,7 +84,7 @@ function ConversationPageContent() {
 
   const otherPartyName = isAdmin
     ? conversation
-      ? `Customer #${conversation.customerId.slice(-6)}`
+      ? `Customer #${conversation.customerId.slice(-5)}`
       : "Customer"
     : "LIMATA Support";
 

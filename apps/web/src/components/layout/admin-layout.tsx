@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AdminSidebar } from "./admin-sidebar";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { Menu, ArrowUpRight, ChevronRight } from "lucide-react";
+import { NotificationCenter } from "@/features/notifications/components/notification-center";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -257,6 +258,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <span>Storefront</span>
               <ArrowUpRight size={13} />
             </Link>
+
+            {/* Notification Center */}
+            <NotificationCenter />
 
             {/* Profile Avatar Pill */}
             <div
