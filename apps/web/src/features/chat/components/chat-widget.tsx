@@ -409,7 +409,7 @@ function ConversationListView({
                 }}
               >
                 {isAdmin
-                  ? `Customer #${conv.customerId.slice(-4)}`
+                  ? `Customer #${conv.customerId.slice(-5)}`
                   : "LIMATA Support"}
               </p>
               {lastMsg && (
@@ -699,7 +699,7 @@ export function ChatWidget() {
                 currentUserId={user.userId}
                 title={
                   isAdmin
-                    ? `Customer #${selectedConversation.customerId.slice(-4)}`
+                    ? `Customer #${selectedConversation.customerId.slice(-5)}`
                     : "LIMATA Support"
                 }
                 onBack={

@@ -447,7 +447,7 @@ export function Navbar() {
                           }}
                           className="dropdown-item"
                         >
-                          🛡️ Admin Dashboard
+                          Admin Dashboard
                         </Link>
                       )}
                       <Link
@@ -700,7 +700,7 @@ export function Navbar() {
                         borderColor: "var(--accent)",
                       }}
                     >
-                      🛡️ Admin Dashboard
+                      Admin Dashboard
                     </Link>
                   ) : (
                     <Link

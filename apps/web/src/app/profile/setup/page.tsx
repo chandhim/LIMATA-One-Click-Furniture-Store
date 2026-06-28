@@ -120,7 +120,7 @@ export default function ProfileSetupPage() {
             </Link>
 
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/")}
               style={{
                 background: "transparent",
                 border: "1.5px solid var(--border)",

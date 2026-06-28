@@ -61,7 +61,7 @@ export function ChatWindow({ conversationId, currentUserId }: ChatWindowProps) {
     sendMessage(conversationId, content);
   };
 
-  const customerCode = conversation.customerId.slice(-6).toUpperCase();
+  const customerCode = conversation.customerId.slice(-5).toUpperCase();
 
   return (
     <div

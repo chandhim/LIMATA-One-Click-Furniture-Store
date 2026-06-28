@@ -64,10 +64,7 @@ export default function CheckoutPage() {
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
-  const standardCharge = cartSubtotal < 8000 ? 1000 : 5000;
-  const expressCharge = cartSubtotal < 5000 ? 2000 : 10000;
-  const shippingCharge = deliveryMethod === "Express" ? expressCharge : standardCharge;
-  const cartTotal = cartSubtotal + shippingCharge;
+
 
   if (items.length === 0) {
     return (
@@ -585,12 +582,9 @@ export default function CheckoutPage() {
                       <div
                         style={{
                           marginTop: "0.75rem",
-                          fontWeight: 700,
-                          fontSize: "0.9rem",
-                          color: "var(--fg-primary)",
                         }}
                       >
-                        Rs. {standardCharge.toLocaleString()}
+                        Fee calculated at payment
                       </div>
                     </div>
 
@@ -643,13 +637,9 @@ export default function CheckoutPage() {
                       </p>
                       <div
                         style={{
-                          marginTop: "0.75rem",
-                          fontWeight: 700,
-                          fontSize: "0.9rem",
-                          color: "var(--fg-primary)",
                         }}
                       >
-                        Rs. {expressCharge.toLocaleString()}
+                        Fee calculated at payment
                       </div>
                     </div>
                   </div>
@@ -971,7 +961,7 @@ export default function CheckoutPage() {
                       <span
                         style={{ color: "var(--fg-primary)", fontWeight: 500 }}
                       >
-                        {`Rs. ${shippingCharge.toLocaleString()}`}
+                        Calculated at payment
                       </span>
                     </div>
                     <div
@@ -988,12 +978,9 @@ export default function CheckoutPage() {
                     >
                       <span>Total Amount</span>
                       <span
-                        style={{
-                          fontFamily: "var(--font-serif)",
-                          color: "var(--fg-primary)",
-                        }}
+                        style={{ color: "var(--accent)" }}
                       >
-                        Rs. {cartTotal.toLocaleString()}
+                        Rs. {cartSubtotal.toLocaleString()} + Shipping
                       </span>
                     </div>
                   </div>

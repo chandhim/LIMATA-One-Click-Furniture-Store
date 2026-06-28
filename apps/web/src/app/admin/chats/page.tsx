@@ -196,7 +196,7 @@ export default function AdminChatsPage() {
                       parts[0][0] + parts[parts.length - 1][0]
                     ).toUpperCase();
                   })()
-                : conv.customerId.slice(-4).toUpperCase();
+                : conv.customerId.slice(-5).toUpperCase();
 
               return (
                 <div

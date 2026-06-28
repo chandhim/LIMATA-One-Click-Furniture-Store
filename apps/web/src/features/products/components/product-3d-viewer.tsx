@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Stage, PresentationControls, useGLTF, Html } from "@react-three/drei";
+import { Environment, PresentationControls, useGLTF, Html, Bounds } from "@react-three/drei";
 import { Loader2 } from "lucide-react";
 
 interface ModelProps {
@@ -67,9 +67,10 @@ export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
         background: "linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)",
         border: "1px solid rgba(255,255,255,0.4)",
         boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+        touchAction: "none"
       }}
     >
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 4], fov: 50 }}>
+      <Canvas shadows={false} dpr={[1, 1.5]} camera={{ position: [0, 0, 4], fov: 50 }}>
         <Suspense
           fallback={
             <Html center>
@@ -96,9 +97,12 @@ export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
             polar={[-Math.PI / 3, Math.PI / 3]}
             azimuth={[-Math.PI / 1.4, Math.PI / 2]}
           >
-            <Stage environment="city" intensity={0.6}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 10]} intensity={1} />
+            <Environment preset="city" />
+            <Bounds fit clip observe margin={1.2}>
               <Model url={fetchUrl!} />
-            </Stage>
+            </Bounds>
           </PresentationControls>
         </Suspense>
       </Canvas>

@@ -32,16 +32,24 @@ export async function optimizeGlb(
     // 1. Temporarily store file
     await fs.writeFile(tempInputPath, buffer);
 
-    const gltfpackPath = process.platform === "win32"
+    let gltfpackPath = process.platform === "win32"
       ? path.join(process.cwd(), "binaries", "gltfpack.exe")
       : path.join(process.cwd(), "binaries", "gltfpack-linux");
+
+    const fsSync = require("fs");
+    if (!fsSync.existsSync(gltfpackPath)) {
+      gltfpackPath = process.platform === "win32"
+        ? path.join(process.cwd(), "apps", "api", "binaries", "gltfpack.exe")
+        : path.join(process.cwd(), "apps", "api", "binaries", "gltfpack-linux");
+    }
 
     // 2. Execute gltfpack
     const args = [
       '-i', tempInputPath,
       '-o', tempOutputPath,
       '-cc',
-      '-si', '0.15',
+      '-si', '0.1',
+      '-tl', '1024',
       '-kn',
       '-km'
     ];
