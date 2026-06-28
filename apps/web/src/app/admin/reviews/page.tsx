@@ -280,7 +280,7 @@ export default function AdminReviewsPage() {
                               }}
                             >
                               ID:{" "}
-                              {item.product?.productId.slice(-8).toUpperCase()}
+                              {item.product?.productId.slice(-5).toUpperCase()}
                             </div>
                           </div>
                         </div>

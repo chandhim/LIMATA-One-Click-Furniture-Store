@@ -85,7 +85,7 @@ function ConversationCard({
           }}
         >
           {isAdmin
-            ? `Customer #${conversation.customerId.slice(-6)}`
+            ? `Customer #${conversation.customerId.slice(-5)}`
             : "LIMATA Support"}
         </p>
         {lastMsg ? (

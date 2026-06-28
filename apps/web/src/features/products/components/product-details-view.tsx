@@ -1238,7 +1238,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           fontFamily: "monospace",
                         }}
                       >
-                        {product.productId}
+                        {product.productId.slice(-5).toUpperCase()}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
@@ -1351,7 +1351,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   </h4>
                   <p>
                     Standard processing takes 2-3 business days. Delivery dates
-                    range from 5 to 10 business days depending on location. You
+                    range from 15 to 25 business days depending on location. You
                     will receive a tracking link and a coordinator call to book
                     a delivery timeframe.
                   </p>

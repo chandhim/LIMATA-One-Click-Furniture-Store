@@ -25,7 +25,7 @@ export function LoginForm() {
     try {
       const session = await login(values);
       setSession(session);
-      router.replace(session.user.role === "ADMIN" ? "/admin" : "/dashboard");
+      router.replace(session.user.role === "ADMIN" ? "/admin" : "/");
     } catch (error) {
       form.setError("root", {
         message: error instanceof Error ? error.message : "Login failed",

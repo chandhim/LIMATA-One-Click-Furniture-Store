@@ -71,8 +71,16 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     subtotal += item.product.price * item.quantity;
   }
 
-  const standardCharge = subtotal < 8000 ? 1000 : 5000;
-  const expressCharge = subtotal < 5000 ? 2000 : 10000;
+  let standardCharge = 0;
+  if (subtotal < 5000) standardCharge = 1000;
+  else if (subtotal <= 15000) standardCharge = 3000;
+  else standardCharge = 5000;
+
+  let expressCharge = 0;
+  if (subtotal < 5000) expressCharge = 3000;
+  else if (subtotal <= 15000) expressCharge = 5000;
+  else expressCharge = 10000;
+
   const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
   const totalAmount = subtotal + shippingCharge;
 
@@ -174,6 +182,12 @@ export async function getUserOrders(userId: string) {
 
   if (user?.role === "ADMIN") {
     return prisma.order.findMany({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
       include: {
         items: {
           include: {

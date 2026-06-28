@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Star, ShieldCheck } from "lucide-react";
 import type { Review } from "../types/review.types";
 import Image from "next/image";
@@ -7,6 +10,7 @@ interface ReviewItemProps {
 }
 
 export function ReviewItem({ review }: ReviewItemProps) {
+  const [imgError, setImgError] = useState(false);
   const date = new Date(review.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -48,12 +52,13 @@ export function ReviewItem({ review }: ReviewItemProps) {
               position: "relative",
             }}
           >
-            {review.user.avatarUrl ? (
+            {review.user.avatarUrl && !imgError ? (
               <Image
                 src={review.user.avatarUrl}
                 alt={review.user.name}
                 fill
                 className="object-cover"
+                onError={() => setImgError(true)}
               />
             ) : (
               review.user.name.charAt(0).toUpperCase()
