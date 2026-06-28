@@ -80,7 +80,7 @@ export async function getAdminStatsController(
     });
 
     // Recent customer messages
-    const recentMessages = await prisma.message.findMany({
+    const recentMessagesRaw = await prisma.message.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
       include: {
@@ -88,6 +88,32 @@ export async function getAdminStatsController(
           select: { customerId: true },
         },
       },
+    });
+
+    const customerIds = recentMessagesRaw
+      .map((m) => m.conversation?.customerId)
+      .filter(Boolean) as string[];
+
+    const customers = await prisma.user.findMany({
+      where: { userId: { in: customerIds } },
+      select: { userId: true, name: true },
+    });
+
+    const customerMap = new Map(customers.map((c) => [c.userId, c.name]));
+
+    const recentMessages = recentMessagesRaw.map((m) => {
+      const customerName = m.conversation?.customerId
+        ? customerMap.get(m.conversation.customerId)
+        : undefined;
+      return {
+        ...m,
+        conversation: m.conversation
+          ? {
+              ...m.conversation,
+              customerName: customerName || null,
+            }
+          : null,
+      };
     });
 
     // Calculate revenue for the last 7 days

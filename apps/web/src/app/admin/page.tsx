@@ -32,6 +32,7 @@ interface DashboardRecentMessage {
   createdAt: string;
   conversation?: {
     customerId: string;
+    customerName?: string;
   };
 }
 
@@ -495,10 +496,10 @@ export default function AdminOverviewPage() {
                               color: "var(--fg-primary)",
                             }}
                           >
-                            Customer #
-                            {msg.conversation?.customerId
-                              .slice(-5)
-                              .toUpperCase()}
+                            {msg.conversation?.customerName ||
+                              `Customer #${msg.conversation?.customerId
+                                ?.slice(-5)
+                                .toUpperCase()}`}
                           </span>
                           <span style={{ color: "var(--fg-muted)" }}>
                             {new Date(msg.createdAt).toLocaleTimeString([], {
