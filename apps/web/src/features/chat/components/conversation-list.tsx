@@ -49,7 +49,7 @@ export function ConversationList({
                 <p className="font-medium text-slate-900">
                   {isAdmin
                     ? conversation.customer?.name ||
-                      `Customer #${conversation.customerId.slice(-6).toUpperCase()}`
+                      `Customer #${conversation.customerId.slice(-5).toUpperCase()}`
                     : "Seller"}
                 </p>
                 {lastMessage && (

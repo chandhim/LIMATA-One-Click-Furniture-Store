@@ -15,9 +15,22 @@ export async function getAdminStatsController(
 ) {
   try {
     const totalProducts = await prisma.product.count();
-    const totalOrders = await prisma.order.count();
+    const totalOrders = await prisma.order.count({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      }
+    });
     const pendingOrders = await prisma.order.count({
-      where: { orderStatus: "PENDING" },
+      where: { 
+        orderStatus: "PENDING",
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
     });
     const totalCustomers = await prisma.user.count({
       where: { role: Role.CUSTOMER },
@@ -38,6 +51,12 @@ export async function getAdminStatsController(
 
     // Recent 5 orders
     const recentOrders = await prisma.order.findMany({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
       orderBy: { createdAt: "desc" },
       take: 5,
       include: {
@@ -79,6 +98,10 @@ export async function getAdminStatsController(
         createdAt: { gte: sevenDaysAgo },
         paymentStatus: "PAID",
         orderStatus: { in: ["DELIVERED"] },
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
       },
       select: { createdAt: true, totalAmount: true },
     });

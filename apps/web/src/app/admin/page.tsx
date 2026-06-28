@@ -42,8 +42,6 @@ interface DashboardRecentActivity {
   createdAt: string;
 }
 
-
-
 export default function AdminOverviewPage() {
   const { data: stats, isLoading } = useAdminStats();
 
@@ -78,12 +76,6 @@ export default function AdminOverviewPage() {
   }
 
   const statCards = [
-    {
-      label: "Revenue",
-      value: `Rs. ${(stats?.totalRevenue ?? 0).toLocaleString()}`,
-      icon: <DollarSign size={16} />,
-      color: "var(--accent)",
-    },
     {
       label: "Products",
       value: stats?.totalProducts ?? 0,
@@ -120,7 +112,7 @@ export default function AdminOverviewPage() {
       }}
     >
       {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         {statCards.map((stat, idx) => (
           <div
             key={stat.label}
@@ -505,7 +497,7 @@ export default function AdminOverviewPage() {
                           >
                             Customer #
                             {msg.conversation?.customerId
-                              .slice(-6)
+                              .slice(-5)
                               .toUpperCase()}
                           </span>
                           <span style={{ color: "var(--fg-muted)" }}>

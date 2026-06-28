@@ -19,7 +19,13 @@ const orderInclude = {
 
 export async function findOrders(userId: string) {
   return prisma.order.findMany({
-    where: { userId },
+    where: { 
+      userId,
+      NOT: {
+        paymentMethod: "PAYHERE",
+        paymentStatus: "PENDING",
+      }
+    },
     include: orderInclude,
     orderBy: { createdAt: "desc" },
   });
