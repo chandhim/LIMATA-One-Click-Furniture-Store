@@ -4,9 +4,7 @@ import {
   getAdminUsers,
   updateAdminUserRole,
   toggleAdminUserStatus,
-  getAdminReviews,
-  toggleReviewApproval,
-  deleteAdminReview,
+
   getAdminCategories,
   createAdminCategory,
   deleteAdminCategory,
@@ -57,39 +55,6 @@ export function useToggleUserStatus() {
   });
 }
 
-// 3. Reviews
-export function useAdminReviews() {
-  return useQuery({
-    queryKey: ["admin-reviews"],
-    queryFn: getAdminReviews,
-  });
-}
-
-export function useToggleReviewApproval() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({
-      reviewId,
-      isApproved,
-    }: {
-      reviewId: string;
-      isApproved: boolean;
-    }) => toggleReviewApproval(reviewId, isApproved),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
-    },
-  });
-}
-
-export function useDeleteReview() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (reviewId: string) => deleteAdminReview(reviewId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
-    },
-  });
-}
 
 // 4. Categories
 export function useAdminCategories() {

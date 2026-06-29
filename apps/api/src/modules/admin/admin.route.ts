@@ -7,9 +7,7 @@ import {
   listAdminUsersController,
   updateAdminUserRoleController,
   toggleAdminUserStatusController,
-  listAdminReviewsController,
-  toggleReviewApprovalController,
-  deleteAdminReviewController,
+
   listAdminCategoriesController,
   createAdminCategoryController,
   deleteAdminCategoryController,
@@ -30,10 +28,7 @@ adminRouter.get("/users", listAdminUsersController);
 adminRouter.patch("/users/:userId/role", updateAdminUserRoleController);
 adminRouter.patch("/users/:userId/status", toggleAdminUserStatusController);
 
-// Reviews management
-adminRouter.get("/reviews", listAdminReviewsController);
-adminRouter.patch("/reviews/:reviewId/approve", toggleReviewApprovalController);
-adminRouter.delete("/reviews/:reviewId", deleteAdminReviewController);
+
 
 // Categories CRUD
 adminRouter.get("/categories", listAdminCategoriesController);

@@ -23,7 +23,8 @@ export function createSocketServer(httpServer: HTTPServer) {
     transports: ["websocket", "polling"],
   });
 
-  // Authentication middleware
+  // Authentication middleware to intercept incoming WebSocket connection requests
+  // It ensures only authenticated users can establish a real-time socket connection
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
 
@@ -32,6 +33,7 @@ export function createSocketServer(httpServer: HTTPServer) {
     }
 
     try {
+      // Validate the JWT token and attach the decoded user payload to the socket instance for future event handlers
       const payload = verifyToken(token) as SocketAuthPayload;
       (socket as typeof socket & { user?: SocketAuthPayload }).user = payload;
       next();

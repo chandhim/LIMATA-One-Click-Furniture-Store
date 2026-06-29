@@ -228,7 +228,6 @@ async function main() {
             rating,
             title,
             comment,
-            isApproved: true, // Auto-approve for seed data
           },
         });
       }

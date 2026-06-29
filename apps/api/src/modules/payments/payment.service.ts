@@ -41,6 +41,8 @@ export function generatePaymentHash(
   amount: number,
   currency: string,
 ) {
+  // Generate the MD5 hash required by PayHere to securely initiate a payment session from the client
+  // The hash prevents tampering with the order amount and ID during the checkout redirect
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
@@ -78,6 +80,8 @@ interface PayHereNotification {
   [key: string]: unknown;
 }
 
+// Verifies the authenticity of server-to-server notifications sent by PayHere (webhook payload)
+// It recalculates the MD5 signature using the secret and compares it to the provided md5sig
 export function verifyPayHereSignature(body: PayHereNotification): boolean {
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
@@ -139,7 +143,8 @@ export async function processPayHereNotification(body: PayHereNotification) {
     throw new ApiError(404, `Order ${order_id} not found`);
   }
 
-  // Idempotency: if already paid, skip reprocessing
+  // Idempotency check: If the PayHere webhook sends duplicate notifications for the same payment,
+  // we skip reprocessing to avoid double-deducting stock or sending duplicate emails.
   if (order.paymentStatus === "PAID") {
     return { status: "ignored", reason: "order already paid" };
   }
@@ -148,6 +153,8 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
   if (statusCodeNum === 2) {
     // Payment Success
+    // Execute a database transaction to ensure Atomicity.
+    // If any step (stock check, order update, stock decrement) fails, all changes are rolled back automatically.
     await prisma.$transaction(async (tx) => {
       // 1. Double check stock for final checkout
       for (const item of order.items) {

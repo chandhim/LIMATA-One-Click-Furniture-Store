@@ -27,7 +27,6 @@ export async function getProductReviewsController(
     const reviews = await prisma.review.findMany({
       where: {
         productId,
-        isApproved: true,
       },
       orderBy,
       include: {
@@ -43,12 +42,11 @@ export async function getProductReviewsController(
     const totalReviews = await prisma.review.count({
       where: {
         productId,
-        isApproved: true,
       },
     });
 
     const averageRatingRaw = await prisma.review.aggregate({
-      where: { productId, isApproved: true },
+      where: { productId },
       _avg: { rating: true },
     });
 
@@ -176,7 +174,6 @@ export async function createReviewController(
         rating: Number(rating),
         title,
         comment,
-        isApproved: false, // requires admin approval
       },
     });
 
