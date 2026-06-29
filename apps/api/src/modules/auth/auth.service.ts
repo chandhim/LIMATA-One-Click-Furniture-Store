@@ -46,6 +46,7 @@ export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
     throw new ApiError(409, "Email is already registered");
   }
 
+  // Hash the plaintext password using bcrypt before storing it in the database for security
   const hashedPassword = await bcrypt.hash(input.password, 10);
 
   const user = await createUser({
@@ -75,6 +76,7 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
     );
   }
 
+  // Securely compare the provided plaintext password against the stored bcrypt hash
   const passwordMatches = await bcrypt.compare(input.password, user.password);
 
   if (!passwordMatches) {
