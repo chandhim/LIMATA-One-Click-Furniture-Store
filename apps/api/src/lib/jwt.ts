@@ -19,7 +19,7 @@ function getJwtSecret() {
 export function generateToken(payload: AuthTokenPayload) {
   // Generate a signed JSON Web Token (JWT) that encodes the user's ID and role, valid for 7 days
   return jwt.sign(payload, getJwtSecret(), {
-    expiresIn: "7d",
+    expiresIn: "30d",
   });
 }
 
