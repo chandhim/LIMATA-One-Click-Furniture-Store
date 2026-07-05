@@ -6,7 +6,7 @@ import {
   useCancelOrder,
   ORDERS_QUERY_KEY,
 } from "@/features/orders/hooks/use-orders";
-import { getPaymentParams } from "@/features/orders/services/order.service";
+import { getPaymentParams, confirmPaymentClientSide } from "@/features/orders/services/order.service";
 import { MainLayout } from "@/components/layout/main-layout";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -165,8 +165,13 @@ export default function OrderDetailsPage() {
       ).payhere;
 
       if (typeof window !== "undefined" && payhere) {
-        payhere.onCompleted = function (completedOrderId: string) {
+        payhere.onCompleted = async function (completedOrderId: string) {
           console.log("Payment completed. OrderID:", completedOrderId);
+          try {
+            await confirmPaymentClientSide(completedOrderId);
+          } catch (err) {
+            console.error("Failed to confirm payment on client side:", err);
+          }
           queryClient.invalidateQueries({
             queryKey: ["order", completedOrderId],
           });
