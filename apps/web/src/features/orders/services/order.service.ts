@@ -107,3 +107,11 @@ export async function deleteDraftOrder(orderId: string): Promise<boolean> {
   );
   return res.data.success;
 }
+
+export async function confirmPaymentClientSide(orderId: string): Promise<Order> {
+  const res = await api.patch<ApiResponse<Order>>(
+    `/orders/${orderId}/confirm-payment`,
+  );
+  return res.data.data;
+}
+

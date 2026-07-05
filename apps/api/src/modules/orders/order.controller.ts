@@ -8,6 +8,7 @@ import {
   cancelOrder,
   updateOrderStatusByAdmin,
   deleteDraftOrder,
+  confirmPayherePaymentClientSide,
 } from "./order.service";
 
 function sendResponse(res: Response, status: number, data: unknown) {
@@ -120,6 +121,23 @@ export async function deleteDraftOrderController(
     const { orderId } = req.params;
     await deleteDraftOrder(orderId, req.user.id);
     return sendResponse(res, 200, { deleted: true });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function confirmPayherePaymentClientSideController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+    const { orderId } = req.params;
+    const order = await confirmPayherePaymentClientSide(orderId, req.user.id);
+    return sendResponse(res, 200, order);
   } catch (error) {
     return next(error);
   }

@@ -388,3 +388,96 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
 
   return { success: true };
 }
+
+export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Ensure user owns the order
+  if (order.userId !== userId) {
+    throw new ApiError(403, "Forbidden");
+  }
+
+  // Ensure it's PayHere and pending
+  if (order.paymentMethod !== "PAYHERE") {
+    throw new ApiError(400, "Order is not a PayHere order");
+  }
+
+  if (order.paymentStatus === "PAID") {
+    return order; // Already paid
+  }
+
+  // Perform the same transaction as the webhook
+  await prisma.$transaction(async (tx) => {
+    // 1. Double check stock for final checkout
+    for (const item of order.items) {
+      const product = await tx.product.findUnique({
+        where: { productId: item.productId },
+        select: { stock: true, name: true },
+      });
+      if (!product || product.stock < item.quantity) {
+        throw new ApiError(
+          400,
+          `Stock check failed for "${product?.name || item.productId}" during payment settlement.`,
+        );
+      }
+    }
+
+    // 2. Update order statuses
+    await tx.order.update({
+      where: { orderId: order.orderId },
+      data: {
+        paymentStatus: "PAID",
+        orderStatus: "CONFIRMED",
+      },
+    });
+
+    // 3. Decrement product stocks
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { productId: item.productId },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
+    }
+
+    // 4. Clear User Cart
+    const cart = await tx.cart.findUnique({
+      where: { userId: order.userId },
+      select: { cartId: true },
+    });
+    if (cart) {
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.cartId },
+      });
+    }
+  });
+
+  // Send notifications
+  await notifyCustomer(
+    order.userId,
+    "Payment Successful",
+    `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
+  );
+  await notifyCustomer(
+    order.userId,
+    "Order Confirmed",
+    `Your order #${order.orderId} has been confirmed.`,
+  );
+  await notifySellers(
+    "Payment Received",
+    `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
+  );
+  await notifySellers(
+    "Order Requires Processing",
+    `Order #${order.orderId} is confirmed and requires processing.`,
+  );
+
+  return findOrder(orderId);
+}
+

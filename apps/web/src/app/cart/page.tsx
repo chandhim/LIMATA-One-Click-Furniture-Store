@@ -108,7 +108,8 @@ export default function CartPage() {
                   marginBottom: "0.25rem",
                 }}
               >
-                Shopping Bag
+                <ShoppingCart size={40} />
+                Your Cart
               </h1>
               {hasItems && (
                 <p
