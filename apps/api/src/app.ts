@@ -15,6 +15,7 @@ import { adminRouter } from "./modules/admin/admin.route";
 import { wishlistRouter } from "./modules/wishlist";
 import { publicSettingsRouter } from "./modules/admin/public-settings.route";
 import { reviewsRouter } from "./modules/reviews/reviews.route";
+import { aiRouter } from "./modules/ai";
 
 loadProjectEnv();
 
@@ -44,6 +45,7 @@ app.use("/api/payment", paymentsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/public", publicSettingsRouter);
 app.use("/api/wishlist", wishlistRouter);
+app.use("/api/ai", aiRouter);
 
 app.use(errorHandler);
 

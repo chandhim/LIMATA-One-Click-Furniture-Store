@@ -168,7 +168,6 @@ desktop.ini
 npm-debug.log*
 .cache/
 
-```gitignore
 # =========================
 # LIMATA Specific
 # =========================
@@ -197,4 +196,3 @@ env/
 # Optional generated Python runtime folders
 Python/
 Python/**
-```
