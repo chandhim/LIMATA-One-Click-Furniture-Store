@@ -23,3 +23,4 @@ class ModelMetadata(BaseModel):
     supported_devices: List[DeviceType] = Field(default_factory=lambda: [DeviceType.CPU], description="Devices supported by this model")
     expected_input_type: str = Field(..., description="Type of input the model expects (e.g., Image, Text, Tensor)")
     expected_output_type: str = Field(..., description="Type of output the model returns")
+    weights_path: str = Field(default="", description="Path to the model weights file")
