@@ -11,9 +11,10 @@ def test_convert_empty_results():
     assert result.inference_time_ms == 10.0
 
 def test_convert_yolo_results_with_detections():
-    # Mocking ultralytics Results object
     mock_box = Mock()
-    mock_box.xyxy = [[10.0, 20.0, 30.0, 40.0]]
+    mock_tensor = Mock()
+    mock_tensor.tolist.return_value = [10.0, 20.0, 30.0, 40.0]
+    mock_box.xyxy = [mock_tensor]
     mock_box.conf = [0.95]
     mock_box.cls = [0]
     
