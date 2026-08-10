@@ -9,7 +9,13 @@ import { useRemoveWishlistItem } from "@/features/wishlist/hooks/use-remove-wish
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { toast } from "sonner";
 
-export function ProductCard({ product }: { product: ProductSummary }) {
+export function ProductCard({ 
+  product,
+  badge
+}: { 
+  product: ProductSummary;
+  badge?: React.ReactNode;
+}) {
   const inStock = product.stock > 0;
   const { data: wishlist } = useWishlist();
   const { mutate: addToWishlist, isPending: isAdding } = useAddToWishlist();
@@ -215,6 +221,12 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             {inStock ? "In Stock" : "Out of Stock"}
           </span>
         </div>
+
+        {badge && (
+          <div style={{ position: "absolute", bottom: "0.75rem", left: "0.75rem", right: "0.75rem", zIndex: 10 }}>
+            {badge}
+          </div>
+        )}
 
         {/* Wishlist Button */}
         <button

@@ -15,3 +15,19 @@ export function validateFileUpload(req: Request) {
     throw new ApiError(400, `Invalid file type: ${req.file.mimetype}. Allowed types: JPEG, PNG, WEBP.`);
   }
 }
+
+export function validateRecommendRequest(req: Request) {
+  if (!req.body || typeof req.body !== 'object') {
+    throw new ApiError(400, "Invalid request body.");
+  }
+  if (!req.body.preferences || typeof req.body.preferences !== 'object') {
+    throw new ApiError(400, "Missing or invalid 'preferences' in request body.");
+  }
+}
+
+export function validatePlacementRequest(req: Request) {
+  validateFileUpload(req);
+  if (!req.body.productId || typeof req.body.productId !== 'string') {
+    throw new ApiError(400, "Missing or invalid 'productId' in request body.");
+  }
+}

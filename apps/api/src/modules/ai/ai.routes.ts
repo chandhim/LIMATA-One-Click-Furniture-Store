@@ -8,6 +8,8 @@ import {
   analyzeController,
   recommendController,
   chatController,
+  placementController,
+  visualRecommendationController,
 } from "./ai.controller";
 
 export const aiRouter = Router();
@@ -24,4 +26,6 @@ aiRouter.post("/detect", authenticate, upload.single("image"), detectController)
 aiRouter.post("/depth", authenticate, upload.single("image"), depthController);
 aiRouter.post("/analyze", authenticate, upload.single("image"), analyzeController);
 aiRouter.post("/recommend", authenticate, recommendController);
+aiRouter.post("/placement", authenticate, upload.single("image"), placementController);
 aiRouter.post("/chat", authenticate, chatController);
+aiRouter.post("/visual-recommend", authenticate, upload.single("image"), visualRecommendationController);

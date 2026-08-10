@@ -58,6 +58,9 @@ async function main() {
       stock: 10,
       category: "Living Room",
       material: "Leather",
+      width: 220,
+      depth: 90,
+      height: 85,
       images: [
         "/images/sofa1.png",
         "/images/tvstand1.png",
@@ -71,6 +74,9 @@ async function main() {
       stock: 5,
       category: "Dining Room",
       material: "Wood",
+      width: 180,
+      depth: 90,
+      height: 76,
       images: ["/images/dining1.png"],
     },
     {
@@ -80,6 +86,9 @@ async function main() {
       stock: 20,
       category: "Office",
       material: "Mesh",
+      width: 65,
+      depth: 65,
+      height: 110,
       images: ["/images/chair1.png", "/images/bed1.png", "/images/dining1.png"],
     },
     {
@@ -89,6 +98,9 @@ async function main() {
       stock: 7,
       category: "Living Room",
       material: "MDF",
+      width: 150,
+      depth: 40,
+      height: 50,
       images: ["/images/tvstand1.png"],
     },
     {
@@ -98,6 +110,9 @@ async function main() {
       stock: 3,
       category: "Bedroom",
       material: "Wood",
+      width: 160,
+      depth: 210,
+      height: 120,
       images: ["/images/bed1.png"],
     },
     {
@@ -107,6 +122,9 @@ async function main() {
       stock: 4,
       category: "Bedroom",
       material: "Wood",
+      width: 120,
+      depth: 60,
+      height: 200,
       images: ["/images/wardrobe1.png"],
     },
   ];
