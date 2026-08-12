@@ -7,7 +7,8 @@ function Bone({ w, h, r = 8 }: { w: string; h: number; r?: number }) {
         width: w,
         height: h,
         borderRadius: r,
-        background: "linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%)",
+        background:
+          "linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%)",
         backgroundSize: "200% 100%",
         animation: "cartSkeletonShimmer 1.4s infinite linear",
         flexShrink: 0,
@@ -31,7 +32,14 @@ function SkeletonItem() {
       }}
     >
       <Bone w="96px" h={96} r={12} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.6rem",
+        }}
+      >
         <Bone w="40%" h={12} />
         <Bone w="65%" h={16} />
         <Bone w="30%" h={12} />
@@ -77,7 +85,14 @@ export function CartSkeleton() {
         }}
       >
         {/* Header skeleton */}
-        <div style={{ marginBottom: "2.5rem", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+        <div
+          style={{
+            marginBottom: "2.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.6rem",
+          }}
+        >
           <Bone w="80px" h={12} />
           <Bone w="200px" h={36} />
           <Bone w="140px" h={14} />
@@ -85,7 +100,9 @@ export function CartSkeleton() {
 
         {/* Grid skeleton */}
         <div className="cart-grid">
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
             <SkeletonItem />
             <SkeletonItem />
             <SkeletonItem />

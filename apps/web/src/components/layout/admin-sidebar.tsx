@@ -16,7 +16,7 @@ import {
   MessageSquare,
   Bell,
   ArrowUpRight,
-  LogOut
+  LogOut,
 } from "lucide-react";
 
 type NavGroup = {
@@ -31,45 +31,40 @@ type NavGroup = {
 const navGroups: NavGroup[] = [
   {
     group: "Core",
-    items: [
-      { label: "Overview", href: "/admin", icon: LayoutDashboard }
-    ]
+    items: [{ label: "Overview", href: "/admin", icon: LayoutDashboard }],
   },
   {
     group: "Catalog",
     items: [
       { label: "Products", href: "/admin/products", icon: ShoppingBag },
-      { label: "Categories", href: "/admin/categories", icon: FolderTree }
-    ]
+      { label: "Categories", href: "/admin/categories", icon: FolderTree },
+    ],
   },
   {
     group: "Sales",
-    items: [
-      { label: "Orders", href: "/admin/orders", icon: ShoppingCart }
-    ]
+    items: [{ label: "Orders", href: "/admin/orders", icon: ShoppingCart }],
   },
   {
     group: "Users",
     items: [
       { label: "Customers", href: "/admin/customers", icon: Users },
-      { label: "Reviews", href: "/admin/reviews", icon: Star }
-    ]
+    ],
   },
   {
     group: "Communication",
     items: [
       { label: "Chats", href: "/admin/chats", icon: MessageSquare },
-      { label: "Notifications", href: "/admin/notifications", icon: Bell }
-    ]
+      { label: "Notifications", href: "/admin/notifications", icon: Bell },
+    ],
   },
   {
     group: "Settings",
     items: [
       { label: "Homepage Content", href: "/admin/homepage", icon: Home },
       { label: "Footer Links", href: "/admin/footer", icon: FileText },
-      { label: "Store Settings", href: "/admin/settings", icon: Settings }
-    ]
-  }
+      { label: "Store Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function AdminSidebar({ onClose }: { onClose?: () => void }) {
@@ -147,18 +142,21 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Navigation Options */}
-      <nav 
-        style={{ 
-          flex: 1, 
-          padding: "1.25rem 0.75rem", 
+      <nav
+        style={{
+          flex: 1,
+          padding: "1.25rem 0.75rem",
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: "1rem"
+          gap: "1rem",
         }}
       >
         {navGroups.map(({ group, items }) => (
-          <div key={group} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <div
+            key={group}
+            style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+          >
             {/* Group Label Title */}
             <div
               style={{
@@ -188,7 +186,9 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
                     padding: "0.625rem 0.75rem",
                     fontSize: "0.875rem",
                     fontWeight: active ? 600 : 500,
-                    color: active ? "var(--accent-dark)" : "var(--fg-secondary)",
+                    color: active
+                      ? "var(--accent-dark)"
+                      : "var(--fg-secondary)",
                     textDecoration: "none",
                     background: active
                       ? "rgba(201,169,110,0.12)"
@@ -267,7 +267,8 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
               width: 34,
               height: 34,
               borderRadius: "50%",
-              background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+              background:
+                "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -357,8 +358,13 @@ export function AdminSidebar({ onClose }: { onClose?: () => void }) {
             textDecoration: "none",
             transition: "color 0.2s ease",
           }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--accent-dark)")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = "var(--fg-muted)")}
+          onMouseEnter={(e) =>
+            ((e.currentTarget as HTMLElement).style.color =
+              "var(--accent-dark)")
+          }
+          onMouseLeave={(e) =>
+            ((e.currentTarget as HTMLElement).style.color = "var(--fg-muted)")
+          }
         >
           <span>View Storefront</span>
           <ArrowUpRight size={12} />

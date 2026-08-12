@@ -12,7 +12,9 @@ export function HeroSection() {
   const { data: heroData } = usePublicSetting("homepage_hero");
 
   const title = heroData?.title ?? "Crafted for the Way You Live.";
-  const subtitle = heroData?.subtitle ?? "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.";
+  const subtitle =
+    heroData?.subtitle ??
+    "Browse 2,400+ curated quality pieces — visualize them in your space with AR and order in one click.";
   const primaryBtn = heroData?.primaryBtn ?? "Browse Collection";
   const secondaryBtn = heroData?.secondaryBtn ?? "Explore Rooms";
 
@@ -197,54 +199,6 @@ export function HeroSection() {
             </a>
           </div>
 
-          {/* Stats */}
-          <div
-            className="animate-fade-up delay-400"
-            style={{
-              display: "flex",
-              gap: "0",
-              alignItems: "center",
-            }}
-          >
-            {[
-              { value: "2,400+", label: "Pieces" },
-              { value: "98%", label: "Happy Clients" },
-              { value: "5★", label: "Avg Rating" },
-            ].map((stat, i) => (
-              <div
-                key={stat.label}
-                style={{
-                  paddingRight: "1.5rem",
-                  marginRight: "1.5rem",
-                  borderRight:
-                    i < 2 ? "1px solid rgba(250,249,247,0.15)" : "none",
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "var(--font-serif)",
-                    fontSize: "1.375rem",
-                    fontWeight: 700,
-                    color: "#FAF9F7",
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1,
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "0.72rem",
-                    color: "rgba(250,249,247,0.5)",
-                    marginTop: "0.25rem",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Right: minimal floating product card */}

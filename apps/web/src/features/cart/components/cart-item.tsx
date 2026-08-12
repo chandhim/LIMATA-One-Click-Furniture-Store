@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Trash2, Armchair } from "lucide-react";
 import { QuantitySelector } from "./quantity-selector";
 import { useUpdateCartItem } from "../hooks/use-update-cart";
@@ -31,30 +32,27 @@ export function CartItemCard({ item }: CartItemCardProps) {
     <div
       style={{
         background: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        borderRadius: "var(--radius-lg)",
-        padding: "1.25rem",
+        padding: "1.5rem",
         display: "flex",
-        gap: "1.25rem",
-        alignItems: "center",
-        boxShadow: "var(--shadow-sm)",
+        gap: "1.5rem",
+        alignItems: "stretch",
         opacity: isUpdating ? 0.6 : 1,
         transition: "opacity 0.2s ease",
         position: "relative",
-        overflow: "hidden",
+        borderBottom: "1px solid var(--border)",
       }}
     >
       {/* Product Image */}
-      <div
+      <Link
+        href={`/products/${product.productId}`}
         style={{
           position: "relative",
-          width: 96,
-          height: 96,
+          width: 140,
+          height: 140,
           flexShrink: 0,
           borderRadius: "var(--radius-md)",
           overflow: "hidden",
           background: "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
-          border: "1px solid var(--border)",
         }}
       >
         {product.images?.[0] ? (
@@ -62,7 +60,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
             src={product.images[0]}
             alt={product.name}
             fill
-            sizes="96px"
+            sizes="140px"
             className="object-cover"
           />
         ) : (
@@ -76,42 +74,70 @@ export function CartItemCard({ item }: CartItemCardProps) {
               color: "var(--fg-muted)",
             }}
           >
-            <Armchair size={36} strokeWidth={1.2} />
+            <Armchair size={48} strokeWidth={1.2} />
           </div>
         )}
-      </div>
+      </Link>
 
-      {/* Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h3
-          style={{
-            fontSize: "0.9375rem",
-            fontWeight: 600,
-            color: "var(--fg-primary)",
-            marginBottom: "0.375rem",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {product.name}
-        </h3>
-        <div
-          style={{
-            fontSize: "0.875rem",
-            color: "var(--fg-secondary)",
-            marginBottom: "0.875rem",
-          }}
-        >
-          Rs.&nbsp;{product.price.toLocaleString()} each
+      {/* Info & Actions */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        
+        {/* Top: Title & Price */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
+          <div>
+            <Link
+              href={`/products/${product.productId}`}
+              style={{
+                textDecoration: "none",
+                color: "var(--fg-primary)",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "1.0625rem",
+                  fontWeight: 600,
+                  marginBottom: "0.25rem",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {product.name}
+              </h3>
+            </Link>
+            <div
+              style={{
+                fontSize: "0.9375rem",
+                color: "var(--fg-secondary)",
+                marginTop: "0.25rem",
+              }}
+            >
+              Rs.&nbsp;{product.price.toLocaleString()}
+            </div>
+          </div>
+          
+          <div
+            className="font-serif font-numeric"
+            style={{
+              fontSize: "1.125rem",
+              fontWeight: 700,
+              color: "var(--fg-primary)",
+              letterSpacing: "-0.01em",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Rs.&nbsp;{subtotal.toLocaleString()}
+          </div>
         </div>
 
+        {/* Bottom: Quantity & Remove */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "1rem",
-            flexWrap: "wrap",
+            justifyContent: "space-between",
+            marginTop: "1.5rem",
           }}
         >
           <QuantitySelector
@@ -122,51 +148,47 @@ export function CartItemCard({ item }: CartItemCardProps) {
             onChange={handleQuantityChange}
           />
 
-          <div
-            className="font-serif"
+          <button
+            onClick={handleRemove}
+            disabled={isUpdating}
+            aria-label="Remove item"
             style={{
-              fontSize: "1rem",
-              fontWeight: 700,
-              color: "var(--fg-primary)",
-              letterSpacing: "-0.01em",
+              background: "none",
+              border: "none",
+              cursor: isUpdating ? "not-allowed" : "pointer",
+              color: "var(--fg-muted)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.375rem",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              padding: "0.375rem 0.5rem",
+              borderRadius: "var(--radius-sm)",
+              transition: "all 0.2s ease",
+              outline: "none",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "#dc2626";
+              (e.currentTarget as HTMLElement).style.background = "rgba(220,38,38,0.05)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
+              (e.currentTarget as HTMLElement).style.background = "none";
             }}
           >
-            Rs.&nbsp;{subtotal.toLocaleString()}
-          </div>
+            <Trash2 size={16} />
+            <span style={{ display: "none" }} className="sm:inline">Remove</span>
+          </button>
         </div>
       </div>
-
-      {/* Remove Button */}
-      <button
-        onClick={handleRemove}
-        disabled={isUpdating}
-        aria-label="Remove item"
-        style={{
-          alignSelf: "flex-start",
-          background: "none",
-          border: "none",
-          cursor: isUpdating ? "not-allowed" : "pointer",
-          color: "var(--fg-muted)",
-          padding: "0.375rem",
-          borderRadius: "var(--radius-sm)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "color 0.2s ease, background 0.2s ease",
-          outline: "none",
-          flexShrink: 0,
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color = "#dc2626";
-          (e.currentTarget as HTMLElement).style.background = "rgba(220,38,38,0.06)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.color = "var(--fg-muted)";
-          (e.currentTarget as HTMLElement).style.background = "none";
-        }}
-      >
-        <Trash2 size={16} />
-      </button>
+      
+      <style>{`
+        @media (min-width: 640px) {
+          .sm\\:inline {
+            display: inline-block !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

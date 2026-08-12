@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
@@ -10,6 +11,50 @@ import { Edit3, Trash2, Plus, Search, Package } from "lucide-react";
 export function ProductTable() {
   const { data: products, isLoading } = useAdminProducts();
   const deleteProduct = useDeleteProduct();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [stockFilter, setStockFilter] = useState("all");
+
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    return products.filter((product) => {
+      // Search
+      const matchesSearch =
+        searchTerm === "" ||
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.productId.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Category filter (values: "all", "living", "bedroom", "dining", "office")
+      let matchesCategory = true;
+      if (categoryFilter !== "all") {
+        const dbCategory = product.category.toLowerCase();
+        if (categoryFilter === "living") {
+          matchesCategory = dbCategory.includes("living");
+        } else if (categoryFilter === "bedroom") {
+          matchesCategory = dbCategory.includes("bedroom");
+        } else if (categoryFilter === "dining") {
+          matchesCategory = dbCategory.includes("dining");
+        } else if (categoryFilter === "office") {
+          matchesCategory = dbCategory.includes("office");
+        }
+      }
+
+      // Stock filter (values: "all", "in-stock", "low", "out")
+      let matchesStock = true;
+      if (stockFilter !== "all") {
+        if (stockFilter === "out") {
+          matchesStock = product.stock === 0;
+        } else if (stockFilter === "low") {
+          matchesStock = product.stock > 0 && product.stock <= 5;
+        } else if (stockFilter === "in-stock") {
+          matchesStock = product.stock > 0; 
+        }
+      }
+
+      return matchesSearch && matchesCategory && matchesStock;
+    });
+  }, [products, searchTerm, categoryFilter, stockFilter]);
 
   if (isLoading) {
     return (
@@ -22,7 +67,7 @@ export function ProductTable() {
           color: "var(--fg-muted)",
           fontSize: "0.875rem",
           gap: "0.75rem",
-          background: "var(--bg-base)"
+          background: "var(--bg-base)",
         }}
       >
         <div
@@ -55,29 +100,38 @@ export function ProductTable() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "1.25rem"
+          gap: "1.25rem",
         }}
       >
-        <div 
-          style={{ 
-            width: 56, 
-            height: 56, 
-            borderRadius: "50%", 
-            background: "var(--bg-elevated)", 
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            background: "var(--bg-elevated)",
             border: "1px solid var(--border)",
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center", 
-            color: "var(--fg-muted)" 
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--fg-muted)",
           }}
         >
           <Package size={28} strokeWidth={1.2} />
         </div>
         <div>
-          <p style={{ fontWeight: 700, color: "var(--fg-primary)", fontSize: "1rem", margin: "0 0 0.25rem" }}>
+          <p
+            style={{
+              fontWeight: 700,
+              color: "var(--fg-primary)",
+              fontSize: "1rem",
+              margin: "0 0 0.25rem",
+            }}
+          >
             No products listed yet
           </p>
-          <p style={{ fontSize: "0.8rem", color: "var(--fg-muted)", margin: 0 }}>
+          <p
+            style={{ fontSize: "0.8rem", color: "var(--fg-muted)", margin: 0 }}
+          >
             Get started by populating your design catalog.
           </p>
         </div>
@@ -94,7 +148,7 @@ export function ProductTable() {
             color: "var(--fg-primary)",
             textDecoration: "none",
             borderRadius: "var(--radius-full)",
-            boxShadow: "var(--shadow-accent)"
+            boxShadow: "var(--shadow-accent)",
           }}
         >
           <Plus size={14} />
@@ -115,24 +169,33 @@ export function ProductTable() {
         display: "flex",
         flexDirection: "column",
         flex: 1,
-        minHeight: 0
+        minHeight: 0,
       }}
     >
       {/* Search & Filter Toolbar */}
-      <div 
-        style={{ 
-          padding: "1rem 1.5rem", 
-          borderBottom: "1px solid var(--border)", 
-          display: "flex", 
+      <div
+        style={{
+          padding: "1rem 1.5rem",
+          borderBottom: "1px solid var(--border)",
+          display: "flex",
           gap: "1rem",
           alignItems: "center",
-          flexWrap: "wrap"
+          flexWrap: "wrap",
         }}
       >
-        <div style={{ position: "relative", flex: 1, minWidth: "200px", maxWidth: "320px" }}>
-          <input 
-            type="text" 
-            placeholder="Search products by name or SKU..." 
+        <div
+          style={{
+            position: "relative",
+            flex: 1,
+            minWidth: "200px",
+            maxWidth: "320px",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search products by name or SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: "100%",
               padding: "0.5rem 1rem 0.5rem 2.25rem",
@@ -142,14 +205,25 @@ export function ProductTable() {
               borderRadius: "var(--radius-md)",
               color: "var(--fg-primary)",
               outline: "none",
-              transition: "border-color 0.2s"
+              transition: "border-color 0.2s",
             }}
-            onFocus={(e) => e.target.style.borderColor = "var(--accent)"}
-            onBlur={(e) => e.target.style.borderColor = "var(--border)"}
+            onFocus={(e) => (e.target.style.borderColor = "var(--accent)")}
+            onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
           />
-          <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--fg-muted)" }} />
+          <Search
+            size={14}
+            style={{
+              position: "absolute",
+              left: "0.75rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "var(--fg-muted)",
+            }}
+          />
         </div>
-        <select 
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
           style={{
             padding: "0.5rem 2rem 0.5rem 1rem",
             fontSize: "0.85rem",
@@ -160,10 +234,11 @@ export function ProductTable() {
             outline: "none",
             cursor: "pointer",
             appearance: "none",
-            backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+            backgroundImage:
+              'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")',
             backgroundRepeat: "no-repeat",
             backgroundPosition: "right 0.7rem top 50%",
-            backgroundSize: "0.65rem auto"
+            backgroundSize: "0.65rem auto",
           }}
         >
           <option value="all">All Categories</option>
@@ -172,7 +247,9 @@ export function ProductTable() {
           <option value="dining">Dining Room</option>
           <option value="office">Office</option>
         </select>
-        <select 
+        <select
+          value={stockFilter}
+          onChange={(e) => setStockFilter(e.target.value)}
           style={{
             padding: "0.5rem 2rem 0.5rem 1rem",
             fontSize: "0.85rem",
@@ -183,10 +260,11 @@ export function ProductTable() {
             outline: "none",
             cursor: "pointer",
             appearance: "none",
-            backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+            backgroundImage:
+              'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")',
             backgroundRepeat: "no-repeat",
             backgroundPosition: "right 0.7rem top 50%",
-            backgroundSize: "0.65rem auto"
+            backgroundSize: "0.65rem auto",
           }}
         >
           <option value="all">Stock Status</option>
@@ -198,9 +276,24 @@ export function ProductTable() {
 
       <div style={{ overflow: "auto", flex: 1 }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+          <thead
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 10,
+              background: "var(--bg-elevated)",
+              boxShadow: "0 1px 0 var(--border)",
+            }}
+          >
             <tr>
-              {["Preview", "Design Name", "Room Category", "Retail Price", "Inventory", "Actions"].map((h) => (
+              {[
+                "Preview",
+                "Design Name",
+                "Room Category",
+                "Retail Price",
+                "Inventory",
+                "Actions",
+              ].map((h) => (
                 <th
                   key={h}
                   style={{
@@ -220,15 +313,25 @@ export function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: Product, idx: number) => {
+            {filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", padding: "3rem", color: "var(--fg-muted)" }}>
+                  No products found matching your filters.
+                </td>
+              </tr>
+            ) : (
+              filteredProducts.map((product: Product, idx: number) => {
               const isHighStock = product.stock > 5;
               const isLowStock = product.stock > 0 && product.stock <= 5;
-              
+
               return (
                 <tr
                   key={product.productId}
                   style={{
-                    borderBottom: idx < products.length - 1 ? "1px solid var(--border)" : "none",
+                    borderBottom:
+                      idx < filteredProducts.length - 1
+                        ? "1px solid var(--border)"
+                        : "none",
                     transition: "background 0.2s ease",
                   }}
                   onMouseEnter={(e) =>
@@ -236,7 +339,8 @@ export function ProductTable() {
                       "rgba(250,249,247,0.4)")
                   }
                   onMouseLeave={(e) =>
-                    ((e.currentTarget as HTMLElement).style.background = "transparent")
+                    ((e.currentTarget as HTMLElement).style.background =
+                      "transparent")
                   }
                 >
                   {/* Image Preview */}
@@ -254,7 +358,7 @@ export function ProductTable() {
                         justifyContent: "center",
                         fontSize: "1.25rem",
                         position: "relative",
-                        boxShadow: "var(--shadow-sm)"
+                        boxShadow: "var(--shadow-sm)",
                       }}
                     >
                       {product.images?.[0] ? (
@@ -266,7 +370,11 @@ export function ProductTable() {
                           style={{ objectFit: "cover" }}
                         />
                       ) : (
-                        <Package size={24} strokeWidth={1.2} style={{ color: "var(--fg-muted)" }} />
+                        <Package
+                          size={24}
+                          strokeWidth={1.2}
+                          style={{ color: "var(--fg-muted)" }}
+                        />
                       )}
                     </div>
                   </td>
@@ -284,7 +392,13 @@ export function ProductTable() {
                       {product.name}
                     </div>
                     {product.material && (
-                      <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", fontWeight: 500 }}>
+                      <div
+                        style={{
+                          fontSize: "0.75rem",
+                          color: "var(--fg-muted)",
+                          fontWeight: 500,
+                        }}
+                      >
                         {product.material}
                       </div>
                     )}
@@ -333,23 +447,33 @@ export function ProductTable() {
                         background: isHighStock
                           ? "rgba(74,166,120,0.12)"
                           : isLowStock
-                          ? "rgba(220,160,80,0.12)"
-                          : "rgba(220,80,80,0.08)",
+                            ? "rgba(220,160,80,0.12)"
+                            : "rgba(220,80,80,0.08)",
                         color: isHighStock
                           ? "#276e47"
                           : isLowStock
-                          ? "#a85f10"
-                          : "#c0392b",
-                        border: `1px solid ${isHighStock ? "rgba(74,166,120,0.2)" : isLowStock ? "rgba(220,160,80,0.2)" : "rgba(220,80,80,0.15)"}`
+                            ? "#a85f10"
+                            : "#c0392b",
+                        border: `1px solid ${isHighStock ? "rgba(74,166,120,0.2)" : isLowStock ? "rgba(220,160,80,0.2)" : "rgba(220,80,80,0.15)"}`,
                       }}
                     >
-                      {product.stock === 0 ? "Out of Stock" : isLowStock ? `${product.stock} Left (Low)` : `${product.stock} In Stock`}
+                      {product.stock === 0
+                        ? "Out of Stock"
+                        : isLowStock
+                          ? `${product.stock} Left (Low)`
+                          : `${product.stock} In Stock`}
                     </span>
                   </td>
 
                   {/* Action triggers */}
                   <td style={{ padding: "1.125rem 1.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
                       <Link
                         href={`/admin/products/${product.productId}/edit`}
                         style={{
@@ -383,7 +507,11 @@ export function ProductTable() {
                       </Link>
                       <button
                         onClick={() => {
-                          if (confirm("Delete this product? This cannot be undone.")) {
+                          if (
+                            confirm(
+                              "Delete this product? This cannot be undone.",
+                            )
+                          ) {
                             deleteProduct.mutate(product.productId);
                           }
                         }}
@@ -422,7 +550,7 @@ export function ProductTable() {
                   </td>
                 </tr>
               );
-            })}
+            }))}
           </tbody>
         </table>
       </div>

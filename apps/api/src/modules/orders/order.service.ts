@@ -57,7 +57,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
   }
 
   // 2. Validate stock availability and calculate backend pricing
-  let totalAmount = 0;
+  let subtotal = 0;
   for (const item of cart.items) {
     if (!item.product) {
       throw new ApiError(404, `Product for item ${item.productId} not found`);
@@ -65,11 +65,24 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     if (item.product.stock < item.quantity) {
       throw new ApiError(
         400,
-        `Insufficient stock for product "${item.product.name}"`
+        `Insufficient stock for product "${item.product.name}"`,
       );
     }
-    totalAmount += item.product.price * item.quantity;
+    subtotal += item.product.price * item.quantity;
   }
+
+  let standardCharge = 0;
+  if (subtotal < 5000) standardCharge = 1000;
+  else if (subtotal <= 15000) standardCharge = 3000;
+  else standardCharge = 5000;
+
+  let expressCharge = 0;
+  if (subtotal < 5000) expressCharge = 3000;
+  else if (subtotal <= 15000) expressCharge = 5000;
+  else expressCharge = 10000;
+
+  const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
+  const totalAmount = subtotal + shippingCharge;
 
   // 3. Execute database transaction
   const order = await prisma.$transaction(async (tx) => {
@@ -130,31 +143,31 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your COD order #${order.orderId} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your COD order #${order.orderId} has been placed. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifySellers(
       "New Order",
-      `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifySellers(
       "Order Requires Processing",
-      `COD order #${order.orderId} is pending processing.`
+      `COD order #${order.orderId} is pending processing.`,
     );
   } else {
     // PayHere
     await notifyCustomer(
       userId,
       "Order Placed",
-      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`
+      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
     );
     await notifyCustomer(
       userId,
       "Payment Initiated",
-      `Payment checkout page loaded for order #${order.orderId}.`
+      `Payment checkout page loaded for order #${order.orderId}.`,
     );
     await notifySellers(
       "New Order",
-      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`
+      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
   }
 
@@ -169,6 +182,12 @@ export async function getUserOrders(userId: string) {
 
   if (user?.role === "ADMIN") {
     return prisma.order.findMany({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
       include: {
         items: {
           include: {
@@ -239,7 +258,7 @@ export async function cancelOrder(orderId: string, userId: string) {
   if (!validStatusForCancellation.includes(order.orderStatus)) {
     throw new ApiError(
       400,
-      `Cannot cancel order in its current status: ${order.orderStatus}`
+      `Cannot cancel order in its current status: ${order.orderStatus}`,
     );
   }
 
@@ -269,11 +288,11 @@ export async function cancelOrder(orderId: string, userId: string) {
     await notifyCustomer(
       order.userId,
       "Order Cancelled",
-      `Your COD order #${order.orderId} has been cancelled.`
+      `Your COD order #${order.orderId} has been cancelled.`,
     );
     await notifySellers(
       "Order Cancelled",
-      `COD order #${order.orderId} has been cancelled by the user.`
+      `COD order #${order.orderId} has been cancelled by the user.`,
     );
   } else {
     // PayHere -> CANCELLATION_REQUESTED
@@ -284,11 +303,11 @@ export async function cancelOrder(orderId: string, userId: string) {
     await notifyCustomer(
       order.userId,
       "Cancellation Requested",
-      `Cancellation request received for PayHere order #${order.orderId}.`
+      `Cancellation request received for PayHere order #${order.orderId}.`,
     );
     await notifySellers(
       "Cancellation Requested",
-      `Customer requested cancellation for PayHere order #${order.orderId}.`
+      `Customer requested cancellation for PayHere order #${order.orderId}.`,
     );
   }
 
@@ -298,7 +317,7 @@ export async function cancelOrder(orderId: string, userId: string) {
 export async function updateOrderStatusByAdmin(
   orderId: string,
   newStatus: OrderStatus,
-  adminUserId: string
+  adminUserId: string,
 ) {
   // Confirm user is Admin
   const admin = await prisma.user.findUnique({
@@ -329,8 +348,136 @@ export async function updateOrderStatusByAdmin(
   await notifyCustomer(
     order.userId,
     statusLabel,
-    `Your order #${order.orderId} status is now ${newStatus}.`
+    `Your order #${order.orderId} status is now ${newStatus}.`,
   );
 
   return updatedOrder;
 }
+
+export async function deleteDraftOrder(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Authorization check
+  if (order.userId !== userId) {
+    const user = await prisma.user.findUnique({
+      where: { userId },
+      select: { role: true },
+    });
+    if (user?.role !== "ADMIN") {
+      throw new ApiError(403, "Forbidden");
+    }
+  }
+
+  // Only allow deleting PENDING PayHere orders
+  if (order.paymentMethod !== "PAYHERE" || order.orderStatus !== "PENDING") {
+    throw new ApiError(400, "Only pending PayHere orders can be deleted");
+  }
+
+  // Hard delete the order items and order
+  await prisma.$transaction(async (tx) => {
+    await tx.orderItem.deleteMany({
+      where: { orderId },
+    });
+    await tx.order.delete({
+      where: { orderId },
+    });
+  });
+
+  return { success: true };
+}
+
+export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Ensure user owns the order
+  if (order.userId !== userId) {
+    throw new ApiError(403, "Forbidden");
+  }
+
+  // Ensure it's PayHere and pending
+  if (order.paymentMethod !== "PAYHERE") {
+    throw new ApiError(400, "Order is not a PayHere order");
+  }
+
+  if (order.paymentStatus === "PAID") {
+    return order; // Already paid
+  }
+
+  // Perform the same transaction as the webhook
+  await prisma.$transaction(async (tx) => {
+    // 1. Double check stock for final checkout
+    for (const item of order.items) {
+      const product = await tx.product.findUnique({
+        where: { productId: item.productId },
+        select: { stock: true, name: true },
+      });
+      if (!product || product.stock < item.quantity) {
+        throw new ApiError(
+          400,
+          `Stock check failed for "${product?.name || item.productId}" during payment settlement.`,
+        );
+      }
+    }
+
+    // 2. Update order statuses
+    await tx.order.update({
+      where: { orderId: order.orderId },
+      data: {
+        paymentStatus: "PAID",
+        orderStatus: "CONFIRMED",
+      },
+    });
+
+    // 3. Decrement product stocks
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { productId: item.productId },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
+    }
+
+    // 4. Clear User Cart
+    const cart = await tx.cart.findUnique({
+      where: { userId: order.userId },
+      select: { cartId: true },
+    });
+    if (cart) {
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.cartId },
+      });
+    }
+  });
+
+  // Send notifications
+  await notifyCustomer(
+    order.userId,
+    "Payment Successful",
+    `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
+  );
+  await notifyCustomer(
+    order.userId,
+    "Order Confirmed",
+    `Your order #${order.orderId} has been confirmed.`,
+  );
+  await notifySellers(
+    "Payment Received",
+    `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
+  );
+  await notifySellers(
+    "Order Requires Processing",
+    `Order #${order.orderId} is confirmed and requires processing.`,
+  );
+
+  return findOrder(orderId);
+}
+

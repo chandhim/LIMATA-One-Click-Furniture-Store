@@ -10,26 +10,50 @@ interface OrderProductReviewProps {
   orderStatus: string;
 }
 
-export function OrderProductReview({ productId, orderStatus }: OrderProductReviewProps) {
+export function OrderProductReview({
+  productId,
+  orderStatus,
+}: OrderProductReviewProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   // Only check eligibility if order is delivered
-  const { data: eligibility, isLoading, isError } = useReviewEligibility(
-    productId,
-    orderStatus === "DELIVERED"
-  );
+  const {
+    data: eligibility,
+    isLoading,
+    isError,
+  } = useReviewEligibility(productId, orderStatus === "DELIVERED");
 
   if (orderStatus !== "DELIVERED") {
     return null; // Don't show review option if not delivered
   }
 
   if (isLoading) {
-    return <div style={{ fontSize: "0.8rem", color: "var(--fg-muted)", marginTop: "0.5rem" }}>Checking...</div>;
+    return (
+      <div
+        style={{
+          fontSize: "0.8rem",
+          color: "var(--fg-muted)",
+          marginTop: "0.5rem",
+        }}
+      >
+        Checking...
+      </div>
+    );
   }
 
   if (eligibility?.reason === "ALREADY_REVIEWED") {
     return (
-      <div style={{ marginTop: "0.5rem", display: "flex", alignItems: "center", gap: "0.25rem", color: "#16a34a", fontSize: "0.85rem", fontWeight: 500 }}>
+      <div
+        style={{
+          marginTop: "0.5rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.25rem",
+          color: "#16a34a",
+          fontSize: "0.85rem",
+          fontWeight: 500,
+        }}
+      >
         <Star size={14} fill="#16a34a" />
         You reviewed this item
       </div>
@@ -37,11 +61,25 @@ export function OrderProductReview({ productId, orderStatus }: OrderProductRevie
   }
 
   if (isError) {
-    return <div style={{ fontSize: "0.8rem", color: "red", marginTop: "0.5rem" }}>Error checking eligibility. Please refresh.</div>;
+    return (
+      <div style={{ fontSize: "0.8rem", color: "red", marginTop: "0.5rem" }}>
+        Error checking eligibility. Please refresh.
+      </div>
+    );
   }
 
   if (eligibility && !eligibility.isEligible) {
-    return <div style={{ fontSize: "0.8rem", color: "var(--fg-muted)", marginTop: "0.5rem" }}>Cannot review: {eligibility.reason}</div>;
+    return (
+      <div
+        style={{
+          fontSize: "0.8rem",
+          color: "var(--fg-muted)",
+          marginTop: "0.5rem",
+        }}
+      >
+        Cannot review: {eligibility.reason}
+      </div>
+    );
   }
 
   if (!eligibility) {

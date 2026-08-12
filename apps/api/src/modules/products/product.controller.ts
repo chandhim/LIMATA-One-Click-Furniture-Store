@@ -1,7 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "@/shared/errors/api-error";
-import { listQuerySchema, idParamSchema, productCreateSchema, productUpdateSchema } from "./product.validation";
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./product.service";
+import {
+  listQuerySchema,
+  idParamSchema,
+  productCreateSchema,
+  productUpdateSchema,
+} from "./product.validation";
+import {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "./product.service";
 import { uploadToR2, makeKey } from "@/lib/storage";
 import { optimizeGlb } from "./glb-optimizer.service";
 
@@ -130,10 +141,9 @@ export async function uploadModelController(
       throw new ApiError(400, "No file uploaded");
     }
 
-    const validMimes = ["model/gltf-binary", "application/octet-stream"];
     const isValidExt = req.file.originalname.toLowerCase().endsWith(".glb");
 
-    if (!isValidExt || !validMimes.includes(req.file.mimetype)) {
+    if (!isValidExt) {
       throw new ApiError(400, "Only .glb files are allowed");
     }
 
@@ -167,4 +177,3 @@ export async function uploadModelController(
     return next(error);
   }
 }
-

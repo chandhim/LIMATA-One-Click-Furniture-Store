@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ShoppingCart, Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { useClearCart } from "@/features/cart/hooks/use-clear-cart";
 import { CartItemCard } from "@/features/cart/components/cart-item";
@@ -59,34 +60,69 @@ export default function CartPage() {
         style={{
           maxWidth: "1280px",
           margin: "0 auto",
-          padding: "2rem 1.5rem 6rem",
+          padding: "3rem 1.5rem 6rem",
         }}
       >
         {/* Page Header */}
-        <div style={{ marginBottom: "2.5rem" }}>
-          <div className="section-label" style={{ marginBottom: "0.625rem" }}>
-            Shopping
-          </div>
+        <div style={{ marginBottom: "3rem" }}>
+          <Link
+            href="/products"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              color: "var(--fg-secondary)",
+              textDecoration: "none",
+              fontSize: "0.875rem",
+              marginBottom: "1.5rem",
+              transition: "color 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--fg-primary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--fg-secondary)";
+            }}
+          >
+            <ArrowLeft size={16} /> Continue Shopping
+          </Link>
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              alignItems: "flex-end",
               justifyContent: "space-between",
               flexWrap: "wrap",
               gap: "1rem",
+              borderBottom: "1px solid var(--border)",
+              paddingBottom: "1rem",
             }}
           >
-            <h1
-              className="font-display"
-              style={{
-                fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
-                fontWeight: 700,
-                color: "var(--fg-primary)",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Your Cart
-            </h1>
+            <div>
+              <h1
+                className="font-display"
+                style={{
+                  fontSize: "clamp(2rem, 4vw, 2.75rem)",
+                  fontWeight: 700,
+                  color: "var(--fg-primary)",
+                  letterSpacing: "-0.02em",
+                  marginBottom: "0.25rem",
+                }}
+              >
+                <ShoppingCart size={40} />
+                Your Cart
+              </h1>
+              {hasItems && (
+                <p
+                  style={{
+                    fontSize: "0.9375rem",
+                    color: "var(--fg-secondary)",
+                  }}
+                >
+                  {cart!.items.length}{" "}
+                  {cart!.items.length === 1 ? "item" : "items"}
+                </p>
+              )}
+            </div>
 
             {hasItems && (
               <button
@@ -96,45 +132,29 @@ export default function CartPage() {
                   display: "flex",
                   alignItems: "center",
                   gap: "0.375rem",
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.8125rem",
+                  padding: "0.625rem 1rem",
+                  fontSize: "0.875rem",
                   fontWeight: 500,
-                  color: "#dc2626",
-                  background: "rgba(220,38,38,0.05)",
-                  border: "1px solid rgba(220,38,38,0.18)",
-                  borderRadius: "var(--radius-full)",
+                  color: "#52525b",
+                  background: "transparent",
+                  border: "none",
                   cursor: clearCart.isPending ? "not-allowed" : "pointer",
                   opacity: clearCart.isPending ? 0.6 : 1,
                   transition: "all 0.2s ease",
                   outline: "none",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(220,38,38,0.1)";
+                  (e.currentTarget as HTMLElement).style.color = "#dc2626";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(220,38,38,0.05)";
+                  (e.currentTarget as HTMLElement).style.color = "#52525b";
                 }}
               >
-                <Trash2 size={13} />
+                <Trash2 size={15} />
                 {clearCart.isPending ? "Clearing…" : "Clear Cart"}
               </button>
             )}
           </div>
-
-          {hasItems && (
-            <p
-              style={{
-                marginTop: "0.5rem",
-                fontSize: "0.875rem",
-                color: "var(--fg-secondary)",
-              }}
-            >
-              {cart!.items.length}{" "}
-              {cart!.items.length === 1 ? "item" : "items"} in your cart
-            </p>
-          )}
         </div>
 
         {/* Content */}
@@ -147,7 +167,7 @@ export default function CartPage() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: "1rem",
+                gap: "1.5rem",
               }}
             >
               {cart!.items.map((item) => (
@@ -164,13 +184,14 @@ export default function CartPage() {
       <style>{`
         .cart-grid {
           display: grid;
-          grid-template-columns: 1fr 360px;
-          gap: 2rem;
+          grid-template-columns: 1fr 380px;
+          gap: 3rem;
           align-items: start;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 960px) {
           .cart-grid {
             grid-template-columns: 1fr;
+            gap: 2.5rem;
           }
         }
       `}</style>

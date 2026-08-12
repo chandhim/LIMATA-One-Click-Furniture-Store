@@ -7,11 +7,13 @@ interface ApiResponse<T> {
   data: T;
 }
 
-export async function fetchProducts(params?: { search?: string; category?: string }) {
-  const res = await api.get<ApiResponse<ProductSummary[]>>(
-    "/products",
-    { params },
-  );
+export async function fetchProducts(params?: {
+  search?: string;
+  category?: string;
+}) {
+  const res = await api.get<ApiResponse<ProductSummary[]>>("/products", {
+    params,
+  });
 
   return res.data.data;
 }

@@ -11,6 +11,9 @@ export interface Product extends ProductSummary {
   description: string;
   material?: string;
   model3dUrl?: string;
+  width?: number;
+  depth?: number;
+  height?: number;
   createdAt?: string;
   updatedAt?: string;
 }

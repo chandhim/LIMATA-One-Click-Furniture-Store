@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Stage, PresentationControls, useGLTF, Html } from "@react-three/drei";
+import { Environment, PresentationControls, useGLTF, Html, Bounds } from "@react-three/drei";
 import { Loader2 } from "lucide-react";
 
 interface ModelProps {
@@ -19,8 +19,11 @@ interface Product3DViewerProps {
 }
 
 export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
-  const fetchUrl = modelUrl 
-    ? modelUrl.replace("https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models", "/r2-models")
+  const fetchUrl = modelUrl
+    ? modelUrl.replace(
+        "https://pub-cc6bc0ad895f4273912e59614e1effe0.r2.dev/models",
+        "/r2-models",
+      )
     : null;
 
   useEffect(() => {
@@ -64,14 +67,25 @@ export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
         background: "linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)",
         border: "1px solid rgba(255,255,255,0.4)",
         boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+        touchAction: "none"
       }}
     >
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 4], fov: 50 }}>
+      <Canvas shadows={false} dpr={[1, 1.5]} camera={{ position: [0, 0, 4], fov: 50 }}>
         <Suspense
           fallback={
             <Html center>
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", color: "var(--fg-primary)" }}>
-                <Loader2 size={24} style={{ animation: "spin 1s linear infinite" }} />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                  color: "var(--fg-primary)",
+                }}
+              >
+                <Loader2
+                  size={24}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
                 <span style={{ whiteSpace: "nowrap" }}>Loading 3D...</span>
               </div>
             </Html>
@@ -83,9 +97,12 @@ export function Product3DViewer({ modelUrl }: Product3DViewerProps) {
             polar={[-Math.PI / 3, Math.PI / 3]}
             azimuth={[-Math.PI / 1.4, Math.PI / 2]}
           >
-            <Stage environment="city" intensity={0.6}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 10]} intensity={1} />
+            <Environment preset="city" />
+            <Bounds fit clip observe margin={1.2}>
               <Model url={fetchUrl!} />
-            </Stage>
+            </Bounds>
           </PresentationControls>
         </Suspense>
       </Canvas>

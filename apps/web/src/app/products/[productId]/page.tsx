@@ -28,16 +28,48 @@ export default function ProductDetailsPage({
   if (isError || !product) {
     return (
       <MainLayout>
-        <div style={{ background: "var(--bg-base)", minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "4rem 2rem" }}>
+        <div
+          style={{
+            background: "var(--bg-base)",
+            minHeight: "60vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "4rem 2rem",
+          }}
+        >
           <div style={{ textAlign: "center", maxWidth: "400px" }}>
-            <div style={{ display: "flex", justifyContent: "center", color: "var(--fg-muted)", marginBottom: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                color: "var(--fg-muted)",
+                marginBottom: "1.5rem",
+              }}
+            >
               <Armchair size={64} strokeWidth={1.2} />
             </div>
-            <h1 className="font-display" style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.75rem" }}>
+            <h1
+              className="font-display"
+              style={{
+                fontSize: "1.75rem",
+                fontWeight: 700,
+                color: "var(--fg-primary)",
+                marginBottom: "0.75rem",
+              }}
+            >
               Product Not Found
             </h1>
-            <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "2rem", lineHeight: 1.6 }}>
-              The furniture piece you are looking for might have been moved, sold out, or is temporarily unavailable.
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--fg-secondary)",
+                marginBottom: "2rem",
+                lineHeight: 1.6,
+              }}
+            >
+              The furniture piece you are looking for might have been moved,
+              sold out, or is temporarily unavailable.
             </p>
             <button
               onClick={() => router.push("/products")}

@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useAdminOrders, useUpdateOrderStatus } from "@/features/admin/hooks/use-admin";
+import {
+  useAdminOrders,
+  useUpdateOrderStatus,
+} from "@/features/admin/hooks/use-admin";
 import { Search, CreditCard } from "lucide-react";
 
 type OrderStatus =
@@ -13,14 +16,45 @@ type OrderStatus =
   | "CANCELLED"
   | "CANCELLATION_REQUESTED";
 
-const statusColors: Record<OrderStatus, { bg: string; color: string; border: string }> = {
-  PENDING: { bg: "rgba(220,160,80,0.08)", color: "#a85f10", border: "rgba(220,160,80,0.18)" },
-  CONFIRMED: { bg: "rgba(100,130,220,0.08)", color: "#2a4a9a", border: "rgba(100,130,220,0.18)" },
-  PROCESSING: { bg: "rgba(100,130,220,0.15)", color: "#1a3a7a", border: "rgba(100,130,220,0.25)" },
-  SHIPPED: { bg: "rgba(160,100,220,0.08)", color: "#6a2a9a", border: "rgba(160,100,220,0.18)" },
-  DELIVERED: { bg: "rgba(74,166,120,0.08)", color: "#276e47", border: "rgba(74,166,120,0.18)" },
-  CANCELLED: { bg: "rgba(220,80,80,0.06)", color: "#c0392b", border: "rgba(220,80,80,0.15)" },
-  CANCELLATION_REQUESTED: { bg: "rgba(220,80,80,0.12)", color: "#902015", border: "rgba(220,80,80,0.25)" },
+const statusColors: Record<
+  OrderStatus,
+  { bg: string; color: string; border: string }
+> = {
+  PENDING: {
+    bg: "rgba(220,160,80,0.08)",
+    color: "#a85f10",
+    border: "rgba(220,160,80,0.18)",
+  },
+  CONFIRMED: {
+    bg: "rgba(100,130,220,0.08)",
+    color: "#2a4a9a",
+    border: "rgba(100,130,220,0.18)",
+  },
+  PROCESSING: {
+    bg: "rgba(100,130,220,0.15)",
+    color: "#1a3a7a",
+    border: "rgba(100,130,220,0.25)",
+  },
+  SHIPPED: {
+    bg: "rgba(160,100,220,0.08)",
+    color: "#6a2a9a",
+    border: "rgba(160,100,220,0.18)",
+  },
+  DELIVERED: {
+    bg: "rgba(74,166,120,0.08)",
+    color: "#276e47",
+    border: "rgba(74,166,120,0.18)",
+  },
+  CANCELLED: {
+    bg: "rgba(220,80,80,0.06)",
+    color: "#c0392b",
+    border: "rgba(220,80,80,0.15)",
+  },
+  CANCELLATION_REQUESTED: {
+    bg: "rgba(220,80,80,0.12)",
+    color: "#902015",
+    border: "rgba(220,80,80,0.25)",
+  },
 };
 
 interface AdminOrderItem {
@@ -65,7 +99,8 @@ export default function AdminOrdersPage() {
       o.shippingName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       o.shippingEmail.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === "ALL" || o.orderStatus === statusFilter;
+    const matchesStatus =
+      statusFilter === "ALL" || o.orderStatus === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -82,19 +117,28 @@ export default function AdminOrdersPage() {
 
   if (isLoading) {
     return (
-      <div 
-        style={{ 
-          padding: "4rem", 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center", 
-          minHeight: "80vh", 
-          color: "var(--fg-muted)", 
+      <div
+        style={{
+          padding: "4rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "80vh",
+          color: "var(--fg-muted)",
           gap: "0.75rem",
-          background: "var(--bg-base)"
+          background: "var(--bg-base)",
         }}
       >
-        <div style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--accent)", borderTopColor: "transparent", animation: "spin 0.7s linear infinite" }} />
+        <div
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: "50%",
+            border: "2px solid var(--accent)",
+            borderTopColor: "transparent",
+            animation: "spin 0.7s linear infinite",
+          }}
+        />
         <span>Loading orders...</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -102,24 +146,38 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 64px)", padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto", background: "var(--bg-base)", overflow: "hidden" }}>
-      
-
-
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "calc(100vh - 64px)",
+        padding: "1.5rem 2rem",
+        maxWidth: 1400,
+        margin: "0 auto",
+        background: "var(--bg-base)",
+        overflow: "hidden",
+      }}
+    >
       {/* Filters row */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
-        
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+          marginBottom: "1rem",
+        }}
+      >
         {/* Search bar */}
         <div style={{ position: "relative", maxWidth: 500, width: "100%" }}>
-          <Search 
-            size={16} 
-            style={{ 
-              position: "absolute", 
-              left: "1rem", 
-              top: "50%", 
-              transform: "translateY(-50%)", 
-              color: "var(--fg-muted)" 
-            }} 
+          <Search
+            size={16}
+            style={{
+              position: "absolute",
+              left: "1rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: "var(--fg-muted)",
+            }}
           />
           <input
             type="text"
@@ -127,20 +185,28 @@ export default function AdminOrdersPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input-base"
-            style={{ 
-              paddingLeft: "2.75rem", 
-              fontSize: "0.875rem" 
+            style={{
+              paddingLeft: "2.75rem",
+              fontSize: "0.875rem",
             }}
           />
         </div>
 
         {/* Status Tab Pills */}
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
           <button
             onClick={() => setStatusFilter("ALL")}
             style={{
               padding: "0.5rem 1.125rem",
-              background: statusFilter === "ALL" ? "var(--bg-dark)" : "var(--bg-surface)",
+              background:
+                statusFilter === "ALL" ? "var(--bg-dark)" : "var(--bg-surface)",
               border: "1px solid var(--border)",
               borderRadius: "var(--radius-full)",
               fontSize: "0.75rem",
@@ -165,9 +231,11 @@ export default function AdminOrdersPage() {
           >
             All ({orders.length})
           </button>
-          
+
           {orderStatusesList.map((status) => {
-            const count = orders.filter((o: AdminOrder) => o.orderStatus === status).length;
+            const count = orders.filter(
+              (o: AdminOrder) => o.orderStatus === status,
+            ).length;
             const active = statusFilter === status;
             const colors = statusColors[status];
             return (
@@ -201,7 +269,9 @@ export default function AdminOrdersPage() {
                   }
                 }}
               >
-                {status.charAt(0) + status.slice(1).toLowerCase().replace("_", " ")} ({count})
+                {status.charAt(0) +
+                  status.slice(1).toLowerCase().replace("_", " ")}{" "}
+                ({count})
               </button>
             );
           })}
@@ -209,25 +279,54 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Orders Table Container */}
-      <div 
-        style={{ 
-          background: "var(--bg-surface)", 
-          border: "1px solid var(--border)", 
-          borderRadius: "var(--radius-lg)", 
+      <div
+        style={{
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border)",
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
           boxShadow: "var(--shadow-sm)",
           display: "flex",
           flexDirection: "column",
           flex: 1,
-          minHeight: 0
+          minHeight: 0,
         }}
       >
         <div style={{ overflow: "auto", flex: 1 }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--bg-elevated)", boxShadow: "0 1px 0 var(--border)" }}>
+            <thead
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
+                background: "var(--bg-elevated)",
+                boxShadow: "0 1px 0 var(--border)",
+              }}
+            >
               <tr>
-                {["Order ID", "Customer Details", "Date Purchased", "Items Detail", "Payment Mode", "Grand Total", "Status Badge", "Actions Status"].map((h) => (
-                  <th key={h} style={{ padding: "1rem 1.5rem", textAlign: "left", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--fg-secondary)", whiteSpace: "nowrap" }}>
+                {[
+                  "Order ID",
+                  "Customer Details",
+                  "Date Purchased",
+                  "Items Detail",
+                  "Payment Mode",
+                  "Grand Total",
+                  "Status Badge",
+                  "Actions Status",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "1rem 1.5rem",
+                      textAlign: "left",
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-secondary)",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {h}
                   </th>
                 ))}
@@ -236,30 +335,69 @@ export default function AdminOrdersPage() {
             <tbody>
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ padding: "5rem", textAlign: "center", color: "var(--fg-muted)", fontSize: "0.875rem" }}>
+                  <td
+                    colSpan={8}
+                    style={{
+                      padding: "5rem",
+                      textAlign: "center",
+                      color: "var(--fg-muted)",
+                      fontSize: "0.875rem",
+                    }}
+                  >
                     No matching orders found.
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map((order: AdminOrder, idx: number) => {
-                  const colors = statusColors[order.orderStatus] || { bg: "rgba(0,0,0,0.05)", color: "var(--fg-muted)", border: "transparent" };
-                  const nameInitials = order.shippingName?.[0]?.toUpperCase() ?? "C";
-                  
+                  const colors = statusColors[order.orderStatus] || {
+                    bg: "rgba(0,0,0,0.05)",
+                    color: "var(--fg-muted)",
+                    border: "transparent",
+                  };
+                  const nameInitials =
+                    order.shippingName?.[0]?.toUpperCase() ?? "C";
+
                   return (
                     <tr
                       key={order.orderId}
-                      style={{ borderBottom: idx < filteredOrders.length - 1 ? "1px solid var(--border)" : "none", transition: "background 0.2s ease" }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "rgba(250,249,247,0.4)")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "transparent")}
+                      style={{
+                        borderBottom:
+                          idx < filteredOrders.length - 1
+                            ? "1px solid var(--border)"
+                            : "none",
+                        transition: "background 0.2s ease",
+                      }}
+                      onMouseEnter={(e) =>
+                        ((e.currentTarget as HTMLElement).style.background =
+                          "rgba(250,249,247,0.4)")
+                      }
+                      onMouseLeave={(e) =>
+                        ((e.currentTarget as HTMLElement).style.background =
+                          "transparent")
+                      }
                     >
                       {/* ID */}
-                      <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.825rem", fontWeight: 700, color: "var(--fg-primary)", fontFamily: "monospace" }}>
-                        {order.orderId}
+                      <td
+                        style={{
+                          padding: "1.25rem 1.5rem",
+                          fontSize: "0.825rem",
+                          fontWeight: 700,
+                          color: "var(--fg-primary)",
+                          fontFamily: "monospace",
+                        }}
+                      >
+                        #{order.orderId.slice(-5).toUpperCase()}
                       </td>
 
                       {/* Customer Details */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.75rem",
+                          }}
+                        >
                           <div
                             style={{
                               width: 32,
@@ -273,33 +411,104 @@ export default function AdminOrdersPage() {
                               fontSize: "0.8rem",
                               fontWeight: 700,
                               color: "var(--accent-dark)",
-                              flexShrink: 0
+                              flexShrink: 0,
                             }}
                           >
                             {nameInitials}
                           </div>
                           <div>
-                            <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>{order.shippingName}</div>
-                            <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", marginTop: "0.125rem" }}>{order.shippingEmail}</div>
+                            <div
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 600,
+                                color: "var(--fg-primary)",
+                              }}
+                            >
+                              {order.shippingName}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.75rem",
+                                color: "var(--fg-muted)",
+                                marginTop: "0.125rem",
+                              }}
+                            >
+                              {order.shippingEmail}
+                            </div>
                             {order.shippingPhone && (
-                              <div style={{ fontSize: "0.7rem", color: "var(--fg-muted)", fontStyle: "italic", marginTop: "0.05rem" }}>{order.shippingPhone}</div>
+                              <div
+                                style={{
+                                  fontSize: "0.7rem",
+                                  color: "var(--fg-muted)",
+                                  fontStyle: "italic",
+                                  marginTop: "0.05rem",
+                                }}
+                              >
+                                {order.shippingPhone}
+                              </div>
                             )}
                           </div>
                         </div>
                       </td>
 
                       {/* Date */}
-                      <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.825rem", color: "var(--fg-secondary)", whiteSpace: "nowrap" }}>
-                        {new Date(order.createdAt).toLocaleDateString([], { year: "numeric", month: "short", day: "numeric" })}
+                      <td
+                        style={{
+                          padding: "1.25rem 1.5rem",
+                          fontSize: "0.825rem",
+                          color: "var(--fg-secondary)",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {new Date(order.createdAt).toLocaleDateString([], {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </td>
 
                       {/* Items Details */}
-                      <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.825rem", color: "var(--fg-secondary)", minWidth: 200 }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
+                      <td
+                        style={{
+                          padding: "1.25rem 1.5rem",
+                          fontSize: "0.825rem",
+                          color: "var(--fg-secondary)",
+                          minWidth: 200,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.375rem",
+                          }}
+                        >
                           {order.items?.map((item: AdminOrderItem) => (
-                            <div key={item.orderItemId} style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem" }}>
-                              <span style={{ color: "var(--fg-primary)", fontWeight: 500 }}>{item.product?.name}</span>
-                              <span style={{ color: "var(--fg-muted)", fontSize: "0.75rem" }}>x{item.quantity}</span>
+                            <div
+                              key={item.orderItemId}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.25rem",
+                                fontSize: "0.8rem",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  color: "var(--fg-primary)",
+                                  fontWeight: 500,
+                                }}
+                              >
+                                {item.product?.name}
+                              </span>
+                              <span
+                                style={{
+                                  color: "var(--fg-muted)",
+                                  fontSize: "0.75rem",
+                                }}
+                              >
+                                x{item.quantity}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -307,9 +516,27 @@ export default function AdminOrdersPage() {
 
                       {/* Payment Mode */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.8rem", fontWeight: 600, color: "var(--fg-primary)" }}>
-                            <CreditCard size={13} style={{ color: "var(--fg-muted)" }} />
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.25rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.35rem",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              color: "var(--fg-primary)",
+                            }}
+                          >
+                            <CreditCard
+                              size={13}
+                              style={{ color: "var(--fg-muted)" }}
+                            />
                             <span>{order.paymentMethod}</span>
                           </div>
                           <div>
@@ -319,8 +546,14 @@ export default function AdminOrdersPage() {
                                 fontWeight: 700,
                                 padding: "0.15rem 0.45rem",
                                 borderRadius: "4px",
-                                background: order.paymentStatus === "PAID" ? "rgba(74,166,120,0.12)" : "rgba(220,80,80,0.08)",
-                                color: order.paymentStatus === "PAID" ? "#276e47" : "#c0392b",
+                                background:
+                                  order.paymentStatus === "PAID"
+                                    ? "rgba(74,166,120,0.12)"
+                                    : "rgba(220,80,80,0.08)",
+                                color:
+                                  order.paymentStatus === "PAID"
+                                    ? "#276e47"
+                                    : "#c0392b",
                               }}
                             >
                               {order.paymentStatus}
@@ -330,7 +563,14 @@ export default function AdminOrdersPage() {
                       </td>
 
                       {/* Total */}
-                      <td style={{ padding: "1.25rem 1.5rem", fontSize: "0.9375rem", fontWeight: 700, color: "var(--fg-primary)" }}>
+                      <td
+                        style={{
+                          padding: "1.25rem 1.5rem",
+                          fontSize: "0.9375rem",
+                          fontWeight: 700,
+                          color: "var(--fg-primary)",
+                        }}
+                      >
                         Rs. {order.totalAmount?.toLocaleString()}
                       </td>
 
@@ -349,20 +589,31 @@ export default function AdminOrdersPage() {
                             border: `1px solid ${colors.border}`,
                           }}
                         >
-                          {order.orderStatus.charAt(0) + order.orderStatus.slice(1).toLowerCase().replace("_", " ")}
+                          {order.orderStatus.charAt(0) +
+                            order.orderStatus
+                              .slice(1)
+                              .toLowerCase()
+                              .replace("_", " ")}
                         </span>
                       </td>
 
                       {/* Select Action Dropdown */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
-                        <div style={{ position: "relative", display: "inline-block" }}>
+                        <div
+                          style={{
+                            position: "relative",
+                            display: "inline-block",
+                          }}
+                        >
                           <select
                             value={order.orderStatus}
-                            onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
+                            onChange={(e) =>
+                              handleStatusChange(order.orderId, e.target.value)
+                            }
                             className="input-base"
-                            style={{ 
-                              padding: "0.4rem 1.75rem 0.4rem 0.75rem", 
-                              fontSize: "0.75rem", 
+                            style={{
+                              padding: "0.4rem 1.75rem 0.4rem 0.75rem",
+                              fontSize: "0.75rem",
                               fontWeight: 600,
                               minWidth: 140,
                               borderRadius: "var(--radius-md)",
@@ -377,7 +628,9 @@ export default function AdminOrdersPage() {
                             <option value="SHIPPED">Shipped</option>
                             <option value="DELIVERED">Delivered</option>
                             <option value="CANCELLED">Cancelled</option>
-                            <option value="CANCELLATION_REQUESTED">Cancel Requested</option>
+                            <option value="CANCELLATION_REQUESTED">
+                              Cancel Requested
+                            </option>
                           </select>
                         </div>
                       </td>

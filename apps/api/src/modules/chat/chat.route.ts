@@ -14,4 +14,7 @@ chatRouter.use(authenticate);
 chatRouter.get("/conversations", getConversationsController);
 chatRouter.post("/conversations/start", startConversationController);
 chatRouter.get("/conversations/:conversationId", getConversationController);
-chatRouter.get("/conversations/:conversationId/messages", getMessagesController);
+chatRouter.get(
+  "/conversations/:conversationId/messages",
+  getMessagesController,
+);

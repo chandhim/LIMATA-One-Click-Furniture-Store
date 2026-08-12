@@ -20,6 +20,9 @@ const productSchema = z.object({
   stock: z.number().int().min(0, "Stock must be non-negative"),
   category: z.string().min(1, "Category is required"),
   material: z.string().optional(),
+  width: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
+  depth: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
+  height: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -92,9 +95,20 @@ const PRESET_MATERIALS = [
 
 export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const router = useRouter();
-  const { data: product, isLoading: isLoadingProduct } = useAdminProduct(productId || "");
+  const { data: product, isLoading: isLoadingProduct } = useAdminProduct(
+    productId || "",
+  );
   const { data: dbCategories } = useAdminCategories();
-  const CATEGORIES = useMemo(() => Array.from(new Set([...PRESET_CATEGORIES, ...(dbCategories?.map((c: { name: string }) => c.name) || [])])), [dbCategories]);
+  const CATEGORIES = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          ...PRESET_CATEGORIES,
+          ...(dbCategories?.map((c: { name: string }) => c.name) || []),
+        ]),
+      ),
+    [dbCategories],
+  );
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct(productId || "");
 
@@ -104,6 +118,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   const [uploadingFiles, setUploadingFiles] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStage, setUploadStage] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [optimizationStats, setOptimizationStats] = useState<any>(null);
 
   const [selectedCategoryOption, setSelectedCategoryOption] = useState("");
@@ -137,6 +152,9 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         stock: product.stock,
         category: product.category,
         material: product.material,
+        width: product.width,
+        depth: product.depth,
+        height: product.height,
       });
 
       if (CATEGORIES.includes(product.category)) {
@@ -165,7 +183,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   }, [product, reset, CATEGORIES]);
 
   useEffect(() => {
-    const finalCategory = selectedCategoryOption === "custom" ? customCategory : selectedCategoryOption;
+    const finalCategory =
+      selectedCategoryOption === "custom"
+        ? customCategory
+        : selectedCategoryOption;
     setValue("category", finalCategory);
     if (finalCategory) {
       void trigger("category");
@@ -173,7 +194,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
   }, [selectedCategoryOption, customCategory, setValue, trigger]);
 
   useEffect(() => {
-    const finalMaterial = selectedMaterialOption === "custom" ? customMaterial : selectedMaterialOption;
+    const finalMaterial =
+      selectedMaterialOption === "custom"
+        ? customMaterial
+        : selectedMaterialOption;
     setValue("material", finalMaterial || undefined);
   }, [selectedMaterialOption, customMaterial, setValue]);
 
@@ -199,6 +223,7 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         
         let fakeProgressInterval: NodeJS.Timeout | null = null;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const uploadRes = await uploadModel(model, (progressEvent: any) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -331,7 +356,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
               Basic Information
             </h3>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.125rem",
+              }}
+            >
               <FormField label="Product Name" error={errors.name?.message}>
                 <input
                   {...register("name")}
@@ -341,7 +372,10 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 />
               </FormField>
 
-              <FormField label="Description" error={errors.description?.message}>
+              <FormField
+                label="Description"
+                error={errors.description?.message}
+              >
                 <textarea
                   {...register("description")}
                   className="input-base"
@@ -351,17 +385,29 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 />
               </FormField>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "1rem",
+                }}
+              >
                 <FormField label="Category" error={errors.category?.message}>
                   <select
                     value={selectedCategoryOption}
                     onChange={(e) => setSelectedCategoryOption(e.target.value)}
                     className="input-base"
-                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                    style={{
+                      background: "transparent",
+                      color: "var(--fg-primary)",
+                      width: "100%",
+                    }}
                   >
                     <option value="">Select Category</option>
                     {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                     <option value="custom">Other (Specify...)</option>
                   </select>
@@ -381,11 +427,17 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                     value={selectedMaterialOption}
                     onChange={(e) => setSelectedMaterialOption(e.target.value)}
                     className="input-base"
-                    style={{ background: "transparent", color: "var(--fg-primary)", width: "100%" }}
+                    style={{
+                      background: "transparent",
+                      color: "var(--fg-primary)",
+                      width: "100%",
+                    }}
                   >
                     <option value="">Select Material</option>
                     {PRESET_MATERIALS.map((mat) => (
-                      <option key={mat} value={mat}>{mat}</option>
+                      <option key={mat} value={mat}>
+                        {mat}
+                      </option>
                     ))}
                     <option value="custom">Other (Specify...)</option>
                   </select>
@@ -425,7 +477,13 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
             >
               Pricing & Inventory
             </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+              }}
+            >
               <FormField label="Price (Rs.)" error={errors.price?.message}>
                 <input
                   {...register("price", { valueAsNumber: true })}
@@ -448,11 +506,68 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                 />
               </FormField>
             </div>
+            
+            <h3
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: "var(--fg-primary)",
+                marginBottom: "1.25rem",
+                marginTop: "1.75rem",
+                paddingBottom: "0.875rem",
+                borderBottom: "1px solid var(--border)",
+              }}
+            >
+              Physical Dimensions (cm)
+            </h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: "1rem",
+              }}
+            >
+              <FormField label="Width" error={errors.width?.message}>
+                <input
+                  {...register("width", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 150"
+                />
+              </FormField>
+              <FormField label="Depth" error={errors.depth?.message}>
+                <input
+                  {...register("depth", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 60"
+                />
+              </FormField>
+              <FormField label="Height" error={errors.height?.message}>
+                <input
+                  {...register("height", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 80"
+                />
+              </FormField>
+            </div>
           </div>
         </div>
 
         {/* Right column — media */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
+        >
           <div
             style={{
               background: "var(--bg-surface)",
@@ -551,7 +666,11 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
               }}
             />
           )}
-          {isLoading ? "Saving..." : productId ? "Update Product" : "Create Product"}
+          {isLoading
+            ? "Saving..."
+            : productId
+              ? "Update Product"
+              : "Create Product"}
         </button>
         <button
           type="button"

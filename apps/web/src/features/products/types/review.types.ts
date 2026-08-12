@@ -10,7 +10,6 @@ export interface Review {
   rating: number;
   title: string;
   comment: string;
-  isApproved: boolean;
   createdAt: string;
   updatedAt: string;
   user: ReviewUser;

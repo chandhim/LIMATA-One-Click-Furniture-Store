@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthBootstrap, useAuthGuard } from "@/features/auth/hooks/use-auth-session";
+import {
+  useAuthBootstrap,
+  useAuthGuard,
+} from "@/features/auth/hooks/use-auth-session";
 import { MainLayout } from "@/components/layout/main-layout";
 
 export default function ProfileSetupPage() {
@@ -15,7 +18,16 @@ export default function ProfileSetupPage() {
 
   return (
     <MainLayout>
-      <div style={{ background: "var(--bg-base)", minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+      <div
+        style={{
+          background: "var(--bg-base)",
+          minHeight: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem",
+        }}
+      >
         <div
           style={{
             maxWidth: "500px",
@@ -27,7 +39,7 @@ export default function ProfileSetupPage() {
             textAlign: "center",
             boxShadow: "var(--shadow-lg)",
             position: "relative",
-            overflow: "hidden"
+            overflow: "hidden",
           }}
         >
           {/* Decorative background */}
@@ -39,8 +51,9 @@ export default function ProfileSetupPage() {
               width: "12rem",
               height: "12rem",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
-              pointerEvents: "none"
+              background:
+                "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
+              pointerEvents: "none",
             }}
           />
 
@@ -55,7 +68,7 @@ export default function ProfileSetupPage() {
               justifyContent: "center",
               margin: "0 auto 1.5rem",
               fontSize: "1.75rem",
-              color: "var(--accent-dark)"
+              color: "var(--accent-dark)",
             }}
           >
             👤
@@ -67,7 +80,7 @@ export default function ProfileSetupPage() {
               fontSize: "2rem",
               fontWeight: 700,
               color: "var(--fg-primary)",
-              marginBottom: "1rem"
+              marginBottom: "1rem",
             }}
           >
             Complete Profile
@@ -78,13 +91,16 @@ export default function ProfileSetupPage() {
               color: "var(--fg-secondary)",
               fontSize: "0.95rem",
               lineHeight: 1.6,
-              marginBottom: "2.5rem"
+              marginBottom: "2.5rem",
             }}
           >
-            Set up your delivery address and phone details now to speed up future checkout and enjoy a seamless ordering experience.
+            Set up your delivery address and phone details now to speed up
+            future checkout and enjoy a seamless ordering experience.
           </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
             <Link
               href="/profile?edit=true"
               style={{
@@ -95,7 +111,7 @@ export default function ProfileSetupPage() {
                 textDecoration: "none",
                 fontWeight: 600,
                 fontSize: "0.95rem",
-                transition: "opacity 0.2s ease"
+                transition: "opacity 0.2s ease",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
@@ -104,7 +120,7 @@ export default function ProfileSetupPage() {
             </Link>
 
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/")}
               style={{
                 background: "transparent",
                 border: "1.5px solid var(--border)",
@@ -114,7 +130,7 @@ export default function ProfileSetupPage() {
                 fontWeight: 600,
                 fontSize: "0.95rem",
                 cursor: "pointer",
-                transition: "all 0.2s ease"
+                transition: "all 0.2s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = "var(--fg-secondary)";

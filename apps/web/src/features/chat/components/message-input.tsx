@@ -28,10 +28,10 @@ export function MessageInput({
   return (
     <form
       onSubmit={handleSubmit}
-      style={{ 
-        borderTop: "1px solid var(--border)", 
-        padding: "1.25rem 1.5rem", 
-        background: "var(--bg-surface)" 
+      style={{
+        borderTop: "1px solid var(--border)",
+        padding: "1.25rem 1.5rem",
+        background: "var(--bg-surface)",
       }}
     >
       <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
@@ -42,10 +42,10 @@ export function MessageInput({
           placeholder="Type your reply to the customer..."
           disabled={isSending || disabled}
           className="input-base"
-          style={{ 
-            flex: 1, 
+          style={{
+            flex: 1,
             fontSize: "0.875rem",
-            padding: "0.625rem 1rem"
+            padding: "0.625rem 1rem",
           }}
         />
         <button
@@ -57,14 +57,20 @@ export function MessageInput({
             color: "var(--fg-primary)",
             border: "none",
             borderRadius: "var(--radius-full)",
-            cursor: (isSending || disabled || !content.trim()) ? "not-allowed" : "pointer",
+            cursor:
+              isSending || disabled || !content.trim()
+                ? "not-allowed"
+                : "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: "0.375rem",
             transition: "all 0.2s ease",
-            opacity: (isSending || disabled || !content.trim()) ? 0.5 : 1,
-            boxShadow: (isSending || disabled || !content.trim()) ? "none" : "var(--shadow-accent)",
+            opacity: isSending || disabled || !content.trim() ? 0.5 : 1,
+            boxShadow:
+              isSending || disabled || !content.trim()
+                ? "none"
+                : "var(--shadow-accent)",
           }}
         >
           <Send size={14} />

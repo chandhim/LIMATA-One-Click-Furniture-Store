@@ -2,10 +2,42 @@
 
 import Link from "next/link";
 import type { ProductSummary } from "../types/product.types";
-import { Armchair } from "lucide-react";
+import { Armchair, Heart } from "lucide-react";
+import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
+import { useAddToWishlist } from "@/features/wishlist/hooks/use-add-to-wishlist";
+import { useRemoveWishlistItem } from "@/features/wishlist/hooks/use-remove-wishlist-item";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import { toast } from "sonner";
 
-export function ProductCard({ product }: { product: ProductSummary }) {
+export function ProductCard({ 
+  product,
+  badge
+}: { 
+  product: ProductSummary;
+  badge?: React.ReactNode;
+}) {
   const inStock = product.stock > 0;
+  const { data: wishlist } = useWishlist();
+  const { mutate: addToWishlist, isPending: isAdding } = useAddToWishlist();
+  const { mutate: removeFromWishlist, isPending: isRemoving } =
+    useRemoveWishlistItem();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isWishlisted = wishlist?.items?.some(
+    (i) => i.productId === product.productId,
+  );
+
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error("Please login to add to wishlist");
+      return;
+    }
+    if (isWishlisted) {
+      removeFromWishlist(product.productId);
+    } else {
+      addToWishlist(product.productId);
+    }
+  };
 
   return (
     <Link
@@ -105,7 +137,8 @@ export function ProductCard({ product }: { product: ProductSummary }) {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to top, rgba(28,26,23,0.14) 0%, transparent 50%)",
+            background:
+              "linear-gradient(to top, rgba(28,26,23,0.14) 0%, transparent 50%)",
             pointerEvents: "none",
           }}
         />
@@ -140,8 +173,18 @@ export function ProductCard({ product }: { product: ProductSummary }) {
               boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
             }}
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
             View Details
           </span>
@@ -178,6 +221,50 @@ export function ProductCard({ product }: { product: ProductSummary }) {
             {inStock ? "In Stock" : "Out of Stock"}
           </span>
         </div>
+
+        {badge && (
+          <div style={{ position: "absolute", bottom: "0.75rem", left: "0.75rem", right: "0.75rem", zIndex: 10 }}>
+            {badge}
+          </div>
+        )}
+
+        {/* Wishlist Button */}
+        <button
+          onClick={handleWishlist}
+          disabled={isAdding || isRemoving}
+          style={{
+            position: "absolute",
+            top: "0.75rem",
+            right: "0.75rem",
+            width: 32,
+            height: 32,
+            borderRadius: "50%",
+            background: "rgba(255,255,255,0.94)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "none",
+            cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            transition: "all 0.2s ease",
+            zIndex: 10,
+            opacity: isAdding || isRemoving ? 0.6 : 1,
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.transform = "scale(1)";
+          }}
+        >
+          <Heart
+            size={16}
+            color={isWishlisted ? "#ef4444" : "var(--fg-secondary)"}
+            fill={isWishlisted ? "#ef4444" : "transparent"}
+            style={{ transition: "all 0.2s ease" }}
+          />
+        </button>
       </div>
 
       {/* Info */}

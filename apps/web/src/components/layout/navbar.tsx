@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { NotificationCenter } from "@/features/notifications/components/notification-center";
-import { MessageSquare, ShoppingCart } from "lucide-react";
+import { MessageSquare, ShoppingCart, Heart } from "lucide-react";
 import { useCartStore } from "@/store/use-cart-store";
 import { useCart } from "@/features/cart/hooks/use-cart";
+import { useWishlistStore } from "@/store/use-wishlist-store";
+import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
 
 export function Navbar() {
   const router = useRouter();
@@ -19,7 +21,9 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const cartCount = useCartStore((s) => s.count);
   useCart(); // keeps the Zustand cart count in sync
-  
+  const wishlistCount = useWishlistStore((s) => s.count);
+  useWishlist(); // keeps the Zustand wishlist count in sync
+
   const isAdmin = user?.role === "ADMIN";
 
   useEffect(() => {
@@ -39,7 +43,6 @@ export function Navbar() {
     clearSession();
     router.push("/login");
   };
-
 
   return (
     <>
@@ -110,7 +113,9 @@ export function Navbar() {
                 { label: "Products", href: "/products" },
                 { label: "Categories", href: "/#categories" },
                 { label: "About", href: "/#about" },
-                ...(isAuthenticated && !isAdmin ? [{ label: "My Orders", href: "/account/orders" }] : []),
+                ...(isAuthenticated && !isAdmin
+                  ? [{ label: "My Orders", href: "/account/orders" }]
+                  : []),
               ].map((item) => (
                 <Link
                   key={item.label}
@@ -194,6 +199,71 @@ export function Navbar() {
                     <MessageSquare size={18} />
                   </Link>
                 )}
+
+                {/* Wishlist quick-link */}
+                <Link
+                  href="/wishlist"
+                  id="navbar-wishlist-link"
+                  title="Wishlist"
+                  style={{
+                    position: "relative",
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "transparent",
+                    border: "1.5px solid transparent",
+                    cursor: "pointer",
+                    color: "var(--fg-secondary)",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "var(--bg-elevated)";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "var(--border)";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-primary)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.borderColor =
+                      "transparent";
+                    (e.currentTarget as HTMLElement).style.color =
+                      "var(--fg-secondary)";
+                  }}
+                >
+                  <Heart size={18} />
+                  {wishlistCount > 0 && (
+                    <span
+                      className="font-numeric"
+                      style={{
+                        position: "absolute",
+                        top: "-4px",
+                        right: "-6px",
+                        minWidth: "16px",
+                        height: "16px",
+                        background: "var(--accent)",
+                        color: "var(--fg-primary)",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.6rem",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0 4px",
+                        border: "2px solid var(--bg-base)",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {wishlistCount > 99 ? "99+" : wishlistCount}
+                    </span>
+                  )}
+                </Link>
 
                 {/* Cart quick-link */}
                 <Link
@@ -338,7 +408,9 @@ export function Navbar() {
                     >
                       {user?.name}
                     </span>
-                    <span style={{ fontSize: "0.6rem", color: "var(--fg-muted)" }}>
+                    <span
+                      style={{ fontSize: "0.6rem", color: "var(--fg-muted)" }}
+                    >
                       {isAdmin ? "▼" : "›"}
                     </span>
                   </button>
@@ -375,7 +447,7 @@ export function Navbar() {
                           }}
                           className="dropdown-item"
                         >
-                          🛡️ Admin Dashboard
+                          Admin Dashboard
                         </Link>
                       )}
                       <Link
@@ -423,7 +495,13 @@ export function Navbar() {
                       >
                         Notifications
                       </Link>
-                      <hr style={{ border: 0, borderTop: "1px solid var(--border)", margin: "0.375rem 0" }} />
+                      <hr
+                        style={{
+                          border: 0,
+                          borderTop: "1px solid var(--border)",
+                          margin: "0.375rem 0",
+                        }}
+                      />
                       <button
                         onClick={() => {
                           setDropdownOpen(false);
@@ -622,7 +700,7 @@ export function Navbar() {
                         borderColor: "var(--accent)",
                       }}
                     >
-                      🛡️ Admin Dashboard
+                      Admin Dashboard
                     </Link>
                   ) : (
                     <Link
@@ -666,6 +744,49 @@ export function Navbar() {
                   )}
 
                   <Link
+                    href="/wishlist"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "0.75rem 1rem",
+                      borderRadius: "var(--radius-md)",
+                      border: "1.5px solid var(--border)",
+                      fontSize: "0.9rem",
+                      fontWeight: 500,
+                      color: "var(--fg-primary)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                      }}
+                    >
+                      <Heart size={16} /> Wishlist
+                    </span>
+                    {wishlistCount > 0 && (
+                      <span
+                        className="font-numeric"
+                        style={{
+                          background: "var(--accent)",
+                          color: "var(--fg-primary)",
+                          borderRadius: "var(--radius-full)",
+                          fontSize: "0.7rem",
+                          fontWeight: 700,
+                          padding: "0.1rem 0.45rem",
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
                     href="/cart"
                     onClick={() => setOpen(false)}
                     style={{
@@ -681,7 +802,13 @@ export function Navbar() {
                       textDecoration: "none",
                     }}
                   >
-                    <span style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.625rem",
+                      }}
+                    >
                       <ShoppingCart size={16} /> Cart
                     </span>
                     {cartCount > 0 && (
@@ -702,7 +829,10 @@ export function Navbar() {
                     )}
                   </Link>
                   <button
-                    onClick={() => { setOpen(false); handleLogout(); }}
+                    onClick={() => {
+                      setOpen(false);
+                      handleLogout();
+                    }}
                     style={{
                       padding: "0.75rem",
                       borderRadius: "var(--radius-md)",

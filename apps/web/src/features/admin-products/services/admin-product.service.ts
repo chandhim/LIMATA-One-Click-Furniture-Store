@@ -30,7 +30,10 @@ export async function createProductService(data: AdminProductCreate) {
   return res.data.data as Product;
 }
 
-export async function updateProductService(productId: string, data: AdminProductUpdate) {
+export async function updateProductService(
+  productId: string,
+  data: AdminProductUpdate,
+) {
   const res = await api.put(`/products/${productId}`, data);
   return res.data.data as Product;
 }
@@ -51,6 +54,7 @@ export async function uploadImages(files: File[]) {
 
 export async function uploadModel(
   file: File,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUploadProgress?: (progressEvent: any) => void
 ) {
   const formData = new FormData();

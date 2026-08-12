@@ -9,8 +9,9 @@ import type { ProductCreate, ProductUpdate } from "./product.validation";
 export async function findProducts(opts: {
   search?: string;
   category?: string;
+  includeDetails?: boolean;
 }) {
-  const { search, category } = opts;
+  const { search, category, includeDetails } = opts;
 
   const where: Record<string, unknown> = {};
 
@@ -22,22 +23,27 @@ export async function findProducts(opts: {
     where.category = category;
   }
 
+  const select: Record<string, boolean> = {
+    productId: true,
+    name: true,
+    price: true,
+    category: true,
+    images: true,
+    stock: true,
+  };
+
+  if (includeDetails) {
+    select.description = true;
+    select.material = true;
+  }
+
   const products = await prisma.product.findMany({
     where,
-    select: {
-      productId: true,
-      name: true,
-      price: true,
-      category: true,
-      images: true,
-      stock: true,
-    },
+    select,
     orderBy: { createdAt: "desc" },
   });
 
-  return products as Array<
-    Pick<Product, "productId" | "name" | "price" | "category" | "images" | "stock">
-  >;
+  return products as any[];
 }
 
 /**
@@ -70,7 +76,10 @@ export async function insertProduct(data: ProductCreate) {
 /**
  * Update an existing product by id.
  */
-export async function updateProductById(productId: string, data: ProductUpdate) {
+export async function updateProductById(
+  productId: string,
+  data: ProductUpdate,
+) {
   return prisma.product.update({ where: { productId }, data });
 }
 

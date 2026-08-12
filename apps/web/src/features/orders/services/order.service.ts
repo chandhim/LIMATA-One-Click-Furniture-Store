@@ -91,7 +91,27 @@ export async function cancelOrder(orderId: string): Promise<Order> {
   return res.data.data;
 }
 
-export async function getPaymentParams(orderId: string): Promise<PayHereCheckoutParams> {
-  const res = await api.post<ApiResponse<PayHereCheckoutParams>>("/payment/create", { orderId });
+export async function getPaymentParams(
+  orderId: string,
+): Promise<PayHereCheckoutParams> {
+  const res = await api.post<ApiResponse<PayHereCheckoutParams>>(
+    "/payment/create",
+    { orderId },
+  );
   return res.data.data;
 }
+
+export async function deleteDraftOrder(orderId: string): Promise<boolean> {
+  const res = await api.delete<ApiResponse<{ deleted: boolean }>>(
+    `/orders/${orderId}/draft`,
+  );
+  return res.data.success;
+}
+
+export async function confirmPaymentClientSide(orderId: string): Promise<Order> {
+  const res = await api.patch<ApiResponse<Order>>(
+    `/orders/${orderId}/confirm-payment`,
+  );
+  return res.data.data;
+}
+

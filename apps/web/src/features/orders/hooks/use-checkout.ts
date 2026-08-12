@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useCreateOrder, ORDERS_QUERY_KEY } from "./use-orders";
-import { getPaymentParams } from "../services/order.service";
+import { getPaymentParams, deleteDraftOrder, confirmPaymentClientSide } from "../services/order.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartStore } from "@/store/use-cart-store";
 import { updateProfile } from "@/features/auth/api/auth";
@@ -139,28 +139,42 @@ export function useCheckout() {
         ).payhere;
 
         if (typeof window !== "undefined" && payhere) {
-          payhere.onCompleted = function (orderId: string) {
+          payhere.onCompleted = async function (orderId: string) {
             console.log("Payment completed. OrderID:", orderId);
+            
+            try {
+              // Ensure order is marked as PAID immediately for local testing or when webhook is delayed
+              await confirmPaymentClientSide(orderId);
+            } catch (err) {
+              console.error("Failed to confirm payment on client side:", err);
+            }
+
             resetCartCount();
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
             router.push(`/orders/success?orderId=${orderId}`);
           };
 
-          payhere.onDismissed = function () {
+          payhere.onDismissed = async function () {
             console.log("Payment dismissed");
             setIsProcessing(false);
-            alert(
-              "Payment dismissed. You can pay later from your order details page.",
-            );
-            router.push(`/account/orders/${order.orderId}`);
+            try {
+              await deleteDraftOrder(order.orderId);
+            } catch (e) {
+              console.error("Failed to delete draft order:", e);
+            }
+            alert("Payment dismissed. The order has not been placed.");
           };
 
-          payhere.onError = function (error: string) {
+          payhere.onError = async function (error: string) {
             console.error("PayHere Error:", error);
             setIsProcessing(false);
+            try {
+              await deleteDraftOrder(order.orderId);
+            } catch (e) {
+              console.error("Failed to delete draft order:", e);
+            }
             alert(`Payment error: ${error}`);
-            router.push(`/account/orders/${order.orderId}`);
           };
 
           const payment = {
@@ -179,8 +193,14 @@ export function useCheckout() {
             city: params.city,
             country: params.country,
             notify_url: `${getApiBaseUrl()}/api/payment/notify`,
-            return_url: typeof window !== "undefined" ? `${window.location.origin}/orders/success?orderId=${params.orderId}` : "",
-            cancel_url: typeof window !== "undefined" ? `${window.location.origin}/account/orders/${params.orderId}` : "",
+            return_url:
+              typeof window !== "undefined"
+                ? `${window.location.origin}/orders/success?orderId=${params.orderId}`
+                : "",
+            cancel_url:
+              typeof window !== "undefined"
+                ? `${window.location.origin}/account/orders/${params.orderId}`
+                : "",
           };
 
           // Trigger PayHere checkout lightbox modal

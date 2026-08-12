@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { CartItem } from "../types/cart.types";
 
 interface CartSummaryProps {
@@ -19,64 +19,43 @@ export function CartSummary({ items }: CartSummaryProps) {
     <div
       style={{
         background: "var(--bg-surface)",
-        border: "1px solid var(--border)",
-        borderRadius: "var(--radius-lg)",
-        padding: "1.75rem",
-        boxShadow: "var(--shadow-sm)",
+        padding: "2rem",
         position: "sticky",
         top: "6rem",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Header */}
-      <div
+      <h2
+        className="font-display"
         style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0.625rem",
+          fontSize: "1.25rem",
+          fontWeight: 700,
+          color: "var(--fg-primary)",
           marginBottom: "1.5rem",
-          paddingBottom: "1.25rem",
-          borderBottom: "1px solid var(--border)",
+          letterSpacing: "-0.01em",
         }}
       >
-        <div
-          style={{
-            background: "rgba(201,169,110,0.1)",
-            borderRadius: "var(--radius-sm)",
-            padding: "0.4rem",
-            color: "var(--accent-dark)",
-          }}
-        >
-          <ShoppingBag size={16} />
-        </div>
-        <h2
-          className="font-display"
-          style={{
-            fontSize: "1.0625rem",
-            fontWeight: 700,
-            color: "var(--fg-primary)",
-          }}
-        >
-          Order Summary
-        </h2>
-      </div>
+        Order Summary
+      </h2>
 
       {/* Line items */}
       <div
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "0.875rem",
+          gap: "1rem",
           marginBottom: "1.5rem",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-            Items ({totalItems})
+          <span style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)" }}>
+            Subtotal ({totalItems} items)
           </span>
           <span
             className="font-numeric"
             style={{
-              fontSize: "0.875rem",
+              fontSize: "0.9375rem",
               fontWeight: 500,
               color: "var(--fg-primary)",
             }}
@@ -86,14 +65,29 @@ export function CartSummary({ items }: CartSummaryProps) {
         </div>
 
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
+          <span style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)" }}>
             Shipping
           </span>
           <span
             style={{
-              fontSize: "0.875rem",
+              fontSize: "0.9375rem",
               fontWeight: 500,
-              color: "var(--accent-dark)",
+              color: "var(--fg-primary)",
+            }}
+          >
+            Calculated at checkout
+          </span>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span style={{ fontSize: "0.9375rem", color: "var(--fg-secondary)" }}>
+            Tax
+          </span>
+          <span
+            style={{
+              fontSize: "0.9375rem",
+              fontWeight: 500,
+              color: "var(--fg-primary)",
             }}
           >
             Calculated at checkout
@@ -106,7 +100,7 @@ export function CartSummary({ items }: CartSummaryProps) {
         style={{
           height: 1,
           background: "var(--border)",
-          marginBottom: "1.25rem",
+          marginBottom: "1.5rem",
         }}
       />
 
@@ -115,13 +109,13 @@ export function CartSummary({ items }: CartSummaryProps) {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1.75rem",
+          alignItems: "flex-end",
+          marginBottom: "2rem",
         }}
       >
         <span
           style={{
-            fontSize: "0.9375rem",
+            fontSize: "1.0625rem",
             fontWeight: 600,
             color: "var(--fg-primary)",
           }}
@@ -131,10 +125,11 @@ export function CartSummary({ items }: CartSummaryProps) {
         <span
           className="font-serif font-numeric"
           style={{
-            fontSize: "1.375rem",
+            fontSize: "1.75rem",
             fontWeight: 700,
             color: "var(--fg-primary)",
             letterSpacing: "-0.02em",
+            lineHeight: 1,
           }}
         >
           Rs.&nbsp;{subtotal.toLocaleString()}
@@ -144,24 +139,30 @@ export function CartSummary({ items }: CartSummaryProps) {
       {/* Checkout Button */}
       <Link
         href="/checkout"
-        className="btn-shimmer"
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           gap: "0.5rem",
           width: "100%",
-          padding: "0.875rem 1.5rem",
+          padding: "1rem 1.5rem",
           fontSize: "0.9375rem",
           fontWeight: 600,
-          color: "var(--fg-primary)",
+          background: "var(--bg-dark)",
+          color: "var(--accent-light)",
           textDecoration: "none",
-          borderRadius: "var(--radius-full)",
-          boxShadow: "var(--shadow-accent)",
+          transition: "background 0.2s ease",
+          marginBottom: "2rem",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "#000";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "var(--bg-dark)";
         }}
       >
         Proceed to Checkout
-        <ChevronRight size={16} />
+        <ChevronRight size={18} />
       </Link>
 
       {/* Trust note */}

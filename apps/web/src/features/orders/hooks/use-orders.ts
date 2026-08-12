@@ -47,7 +47,9 @@ export function useCancelOrder() {
     mutationFn: cancelOrder,
     onSuccess: (updatedOrder) => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
-      queryClient.invalidateQueries({ queryKey: ["order", updatedOrder.orderId] });
+      queryClient.invalidateQueries({
+        queryKey: ["order", updatedOrder.orderId],
+      });
     },
   });
 }

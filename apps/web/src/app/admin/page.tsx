@@ -1,25 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useAdminStats } from "@/features/admin/hooks/use-admin";
 import type { Product } from "@/features/products/types/product.types";
 import {
-  PlusCircle,
-  FolderTree,
-  Home,
-  Layers,
-  FileText,
   ShoppingCart,
   MessageSquare,
   AlertTriangle,
   Bell,
   ArrowUpRight,
-  TrendingUp,
-  DollarSign,
-  Package,
   Clock,
   Users,
+  DollarSign,
+  Package,
 } from "lucide-react";
 
 interface DashboardRecentOrder {
@@ -39,6 +32,7 @@ interface DashboardRecentMessage {
   createdAt: string;
   conversation?: {
     customerId: string;
+    customerName?: string;
   };
 }
 
@@ -49,65 +43,7 @@ interface DashboardRecentActivity {
   createdAt: string;
 }
 
-const quickActions = [
-  {
-    icon: PlusCircle,
-    title: "Add Product",
-    desc: "Create a new product listing",
-    href: "/admin/products/new",
-    accent: "rgba(201,169,110,0.08)",
-    accentBorder: "rgba(201,169,110,0.2)",
-    color: "var(--accent-dark)",
-  },
-  {
-    icon: FolderTree,
-    title: "Manage Products",
-    desc: "Edit or delete catalog items",
-    href: "/admin/products",
-    accent: "rgba(100,180,140,0.08)",
-    accentBorder: "rgba(100,180,140,0.2)",
-    color: "#2a7a50",
-  },
-  {
-    icon: Home,
-    title: "Edit Homepage",
-    desc: "Update hero & features",
-    href: "/admin/homepage",
-    accent: "rgba(100,130,220,0.08)",
-    accentBorder: "rgba(100,130,220,0.2)",
-    color: "#2a4a9a",
-  },
-  {
-    icon: Layers,
-    title: "Categories",
-    desc: "Manage room collections",
-    href: "/admin/categories",
-    accent: "rgba(220,140,80,0.08)",
-    accentBorder: "rgba(220,140,80,0.2)",
-    color: "#a85f10",
-  },
-  {
-    icon: FileText,
-    title: "Manage Footer",
-    desc: "Links & company socials",
-    href: "/admin/footer",
-    accent: "rgba(160,100,220,0.08)",
-    accentBorder: "rgba(160,100,220,0.2)",
-    color: "#6a2a9a",
-  },
-  {
-    icon: ShoppingCart,
-    title: "View Orders",
-    desc: "Process sales & shipments",
-    href: "/admin/orders",
-    accent: "rgba(220,80,80,0.08)",
-    accentBorder: "rgba(220,80,80,0.18)",
-    color: "#c0392b",
-  },
-];
-
 export default function AdminOverviewPage() {
-  const user = useAuthStore((s) => s.user);
   const { data: stats, isLoading } = useAdminStats();
 
   if (isLoading) {
@@ -141,12 +77,6 @@ export default function AdminOverviewPage() {
   }
 
   const statCards = [
-    {
-      label: "Revenue",
-      value: `Rs. ${(stats?.totalRevenue ?? 0).toLocaleString()}`,
-      icon: <DollarSign size={16} />,
-      color: "var(--accent)",
-    },
     {
       label: "Products",
       value: stats?.totalProducts ?? 0,
@@ -182,10 +112,8 @@ export default function AdminOverviewPage() {
         background: "var(--bg-base)",
       }}
     >
-
-
       {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         {statCards.map((stat, idx) => (
           <div
             key={stat.label}
@@ -266,7 +194,6 @@ export default function AdminOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Hand Column (Charts & Orders) */}
         <div className="lg:col-span-8 flex flex-col gap-8">
-
           {/* Recent Orders List */}
           <div
             style={{
@@ -392,7 +319,7 @@ export default function AdminOverviewPage() {
                                 fontFamily: "monospace",
                               }}
                             >
-                              {order.orderId}
+                              #{order.orderId.slice(-5).toUpperCase()}
                             </td>
                             <td style={{ padding: "1.125rem 1.75rem" }}>
                               <div
@@ -472,8 +399,6 @@ export default function AdminOverviewPage() {
 
         {/* Right Hand Column (Feeds & Alerts) */}
         <div className="lg:col-span-4 flex flex-col gap-8">
-
-
           {/* Support Customer Messages */}
           <div
             style={{
@@ -571,10 +496,10 @@ export default function AdminOverviewPage() {
                               color: "var(--fg-primary)",
                             }}
                           >
-                            Customer #
-                            {msg.conversation?.customerId
-                              .slice(-6)
-                              .toUpperCase()}
+                            {msg.conversation?.customerName ||
+                              `Customer #${msg.conversation?.customerId
+                                ?.slice(-5)
+                                .toUpperCase()}`}
                           </span>
                           <span style={{ color: "var(--fg-muted)" }}>
                             {new Date(msg.createdAt).toLocaleTimeString([], {

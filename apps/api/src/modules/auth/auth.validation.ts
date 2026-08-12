@@ -3,7 +3,10 @@ import { z } from "zod";
 export const registerSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().trim().email("Enter a valid email address").toLowerCase(),
-  password: z.string().min(8, "Password must be at least 8 characters").max(100),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(100),
 });
 
 export const loginSchema = z.object({
@@ -17,7 +20,7 @@ export type LoginSchema = z.infer<typeof loginSchema>;
 export const updateProfileSchema = z.object({
   firstName: z.string().trim().max(100).nullable().optional(),
   lastName: z.string().trim().max(100).nullable().optional(),
-  phoneNumber: z.string().trim().max(50).nullable().optional(),
+  phoneNumber: z.number().max(10).nullable().optional(),
   avatarUrl: z.string().trim().nullable().optional(),
   addressLine1: z.string().trim().max(200).nullable().optional(),
   addressLine2: z.string().trim().max(200).nullable().optional(),
@@ -28,4 +31,4 @@ export const updateProfileSchema = z.object({
   dateOfBirth: z.string().trim().nullable().optional(),
 });
 
-export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;
+export type UpdateProfileSchema = z.infer<typeof updateProfileSchema>;

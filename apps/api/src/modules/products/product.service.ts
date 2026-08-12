@@ -12,6 +12,7 @@ import { deleteFromR2 } from "@/lib/storage";
 export async function getProducts(opts: {
   search?: string;
   category?: string;
+  includeDetails?: boolean;
 }) {
   return findProducts(opts);
 }
@@ -27,13 +28,18 @@ export async function createProduct(data: ProductCreate) {
 export async function updateProduct(productId: string, data: ProductUpdate) {
   const oldProduct = await findProductById(productId);
   if (oldProduct) {
-    if (data.model3dUrl !== undefined && data.model3dUrl !== oldProduct.model3dUrl) {
+    if (
+      data.model3dUrl !== undefined &&
+      data.model3dUrl !== oldProduct.model3dUrl
+    ) {
       if (oldProduct.model3dUrl) {
         await deleteFromR2(oldProduct.model3dUrl);
       }
     }
     if (data.images !== undefined) {
-      const deletedImages = oldProduct.images.filter((img: string) => !data.images?.includes(img));
+      const deletedImages = oldProduct.images.filter(
+        (img: string) => !data.images?.includes(img),
+      );
       for (const img of deletedImages) {
         await deleteFromR2(img);
       }

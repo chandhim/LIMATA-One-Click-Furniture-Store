@@ -41,25 +41,27 @@ export function generatePaymentHash(
   amount: number,
   currency: string,
 ) {
+  // Generate the MD5 hash required by PayHere to securely initiate a payment session from the client
+  // The hash prevents tampering with the order amount and ID during the checkout redirect
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
     "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
- 
+
   const formattedAmount = amount.toFixed(2);
   const secretMd5 = crypto
     .createHash("md5")
     .update(merchantSecret)
     .digest("hex")
     .toUpperCase();
- 
+
   const payload = merchantId + orderId + formattedAmount + currency + secretMd5;
   const hash = crypto
     .createHash("md5")
     .update(payload)
     .digest("hex")
     .toUpperCase();
- 
+
   return {
     merchantId,
     hash,
@@ -67,7 +69,7 @@ export function generatePaymentHash(
     currency,
   };
 }
- 
+
 interface PayHereNotification {
   merchant_id?: string;
   order_id?: string;
@@ -78,12 +80,14 @@ interface PayHereNotification {
   [key: string]: unknown;
 }
 
+// Verifies the authenticity of server-to-server notifications sent by PayHere (webhook payload)
+// It recalculates the MD5 signature using the secret and compares it to the provided md5sig
 export function verifyPayHereSignature(body: PayHereNotification): boolean {
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
     "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
- 
+
   const {
     merchant_id,
     order_id,
@@ -92,14 +96,14 @@ export function verifyPayHereSignature(body: PayHereNotification): boolean {
     status_code,
     md5sig,
   } = body;
- 
+
   if (merchant_id !== merchantId) {
     console.warn(
       "PayHere notification verification failed: merchant_id mismatch.",
     );
     return false;
   }
- 
+
   const secretMd5 = crypto
     .createHash("md5")
     .update(merchantSecret)
@@ -117,7 +121,7 @@ export function verifyPayHereSignature(body: PayHereNotification): boolean {
     .update(payload)
     .digest("hex")
     .toUpperCase();
- 
+
   return calculatedSig === md5sig?.toUpperCase();
 }
 
@@ -129,13 +133,18 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
   const { order_id, status_code, payhere_amount: _payhere_amount } = body;
 
+  if (!order_id || !status_code) {
+    throw new ApiError(400, "Missing required fields in payment notification");
+  }
+
   // Retrieve the order details
   const order = await findOrder(order_id);
   if (!order) {
     throw new ApiError(404, `Order ${order_id} not found`);
   }
 
-  // Idempotency: if already paid, skip reprocessing
+  // Idempotency check: If the PayHere webhook sends duplicate notifications for the same payment,
+  // we skip reprocessing to avoid double-deducting stock or sending duplicate emails.
   if (order.paymentStatus === "PAID") {
     return { status: "ignored", reason: "order already paid" };
   }
@@ -144,6 +153,8 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
   if (statusCodeNum === 2) {
     // Payment Success
+    // Execute a database transaction to ensure Atomicity.
+    // If any step (stock check, order update, stock decrement) fails, all changes are rolled back automatically.
     await prisma.$transaction(async (tx) => {
       // 1. Double check stock for final checkout
       for (const item of order.items) {

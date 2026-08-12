@@ -11,11 +11,16 @@ import { ProductReviews } from "./product-reviews";
 import dynamic from "next/dynamic";
 const Product3DViewer = dynamic(
   () => import("./product-3d-viewer").then((mod) => mod.Product3DViewer),
-  { ssr: false }
+  { ssr: false },
 );
 import { ARLauncherView } from "./ar-launcher-view";
+import { AiPlacementPanel } from "@/features/ai/components/ai-placement-panel";
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
+import { useAddToWishlist } from "@/features/wishlist/hooks/use-add-to-wishlist";
+import { useRemoveWishlistItem } from "@/features/wishlist/hooks/use-remove-wishlist-item";
+import { toast } from "sonner";
 import {
   Heart,
   ShoppingCart,
@@ -44,7 +49,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   >("description");
 
   // View Mode
-  const [viewMode, setViewMode] = useState<"photos" | "3d">("photos");
+  const [viewMode, setViewMode] = useState<"photos" | "3d" | "placement">("photos");
 
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
@@ -53,8 +58,28 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   // Lightbox State
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
-  // Wishlist local state
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  // Wishlist Hooks
+  const { data: wishlist } = useWishlist();
+  const { mutate: addToWishlist, isPending: isAddingToWishlist } =
+    useAddToWishlist();
+  const { mutate: removeFromWishlist, isPending: isRemovingFromWishlist } =
+    useRemoveWishlistItem();
+  const isWishlisted = wishlist?.items?.some(
+    (i) => i.productId === product.productId,
+  );
+
+  const handleWishlist = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add to wishlist");
+      router.push("/login");
+      return;
+    }
+    if (isWishlisted) {
+      removeFromWishlist(product.productId);
+    } else {
+      addToWishlist(product.productId);
+    }
+  };
 
   // Cart
   const router = useRouter();
@@ -236,19 +261,33 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
             style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}
           >
             {/* View Mode Toggle */}
-            <div style={{ display: "flex", background: "var(--bg-surface)", padding: "0.35rem", borderRadius: "var(--radius-full)", width: "fit-content", gap: "0.25rem", border: "1px solid var(--border)" }}>
+            <div
+              style={{
+                display: "flex",
+                background: "var(--bg-surface)",
+                padding: "0.35rem",
+                borderRadius: "var(--radius-full)",
+                width: "fit-content",
+                gap: "0.25rem",
+                border: "1px solid var(--border)",
+              }}
+            >
               <button
                 onClick={() => setViewMode("photos")}
                 style={{
                   padding: "0.5rem 1.25rem",
                   borderRadius: "var(--radius-full)",
-                  background: viewMode === "photos" ? "var(--bg-dark)" : "transparent",
-                  color: viewMode === "photos" ? "var(--fg-inverse)" : "var(--fg-secondary)",
+                  background:
+                    viewMode === "photos" ? "var(--bg-dark)" : "transparent",
+                  color:
+                    viewMode === "photos"
+                      ? "var(--fg-inverse)"
+                      : "var(--fg-secondary)",
                   border: "none",
                   fontWeight: 600,
                   fontSize: "0.875rem",
                   cursor: "pointer",
-                  transition: "all 0.2s"
+                  transition: "all 0.2s",
                 }}
               >
                 Photos
@@ -258,131 +297,175 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 style={{
                   padding: "0.5rem 1.25rem",
                   borderRadius: "var(--radius-full)",
-                  background: viewMode === "3d" ? "var(--bg-dark)" : "transparent",
-                  color: viewMode === "3d" ? "var(--fg-inverse)" : "var(--fg-secondary)",
+                  background:
+                    viewMode === "3d" ? "var(--bg-dark)" : "transparent",
+                  color:
+                    viewMode === "3d"
+                      ? "var(--fg-inverse)"
+                      : "var(--fg-secondary)",
                   border: "none",
                   fontWeight: 600,
                   fontSize: "0.875rem",
                   cursor: "pointer",
-                  transition: "all 0.2s"
+                  transition: "all 0.2s",
                 }}
               >
                 3D & AR
+              </button>
+              <button
+                onClick={() => setViewMode("placement")}
+                style={{
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "var(--radius-full)",
+                  background:
+                    viewMode === "placement" ? "var(--bg-dark)" : "transparent",
+                  color:
+                    viewMode === "placement"
+                      ? "var(--fg-inverse)"
+                      : "var(--fg-secondary)",
+                  border: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                Will it fit? (AI)
               </button>
             </div>
 
             {viewMode === "photos" ? (
               <div
-                style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-              >
-              {/* Main Image Viewport with Hover Zoom */}
-              <div
-                onMouseEnter={() => setIsZoomed(true)}
-                onMouseLeave={() => setIsZoomed(false)}
-                onMouseMove={handleMouseMove}
-                onClick={() => setIsLightboxOpen(true)}
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  aspectRatio: "4/3",
-                  background:
-                    "linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)",
-                  borderRadius: "var(--radius-xl)",
-                  overflow: "hidden",
-                  cursor: "zoom-in",
-                  border: "1px solid rgba(255,255,255,0.4)",
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
                 }}
               >
+                {/* Main Image Viewport with Hover Zoom */}
                 <div
+                  onMouseEnter={() => setIsZoomed(true)}
+                  onMouseLeave={() => setIsZoomed(false)}
+                  onMouseMove={handleMouseMove}
+                  onClick={() => setIsLightboxOpen(true)}
                   style={{
                     position: "relative",
                     width: "100%",
-                    height: "100%",
-                    transform: isZoomed ? "scale(1.8)" : "scale(1)",
-                    transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
-                    transition: isZoomed
-                      ? "none"
-                      : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+                    aspectRatio: "4/3",
+                    background:
+                      "linear-gradient(135deg, #FDFCFB 0%, #E2D1C3 100%)",
+                    borderRadius: "var(--radius-xl)",
+                    overflow: "hidden",
+                    cursor: "zoom-in",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.04)",
                   }}
                 >
-                  <Image
-                    src={currentImage}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                    className="object-cover"
-                  />
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      transform: isZoomed ? "scale(1.8)" : "scale(1)",
+                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      transition: isZoomed
+                        ? "none"
+                        : "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
+                    }}
+                  >
+                    <Image
+                      src={currentImage}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      priority
+                      className="object-cover"
+                    />
+                  </div>
+
+                  {/* Maximize Icon Overlay */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "1rem",
+                      right: "1rem",
+                      background: "rgba(255, 255, 255, 0.85)",
+                      backdropFilter: "blur(6px)",
+                      borderRadius: "50%",
+                      padding: "0.5rem",
+                      color: "var(--fg-primary)",
+                      pointerEvents: "none",
+                      boxShadow: "var(--shadow-sm)",
+                    }}
+                  >
+                    <Maximize2 size={16} />
+                  </div>
                 </div>
 
-                {/* Maximize Icon Overlay */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "1rem",
-                    right: "1rem",
-                    background: "rgba(255, 255, 255, 0.85)",
-                    backdropFilter: "blur(6px)",
-                    borderRadius: "50%",
-                    padding: "0.5rem",
-                    color: "var(--fg-primary)",
-                    pointerEvents: "none",
-                    boxShadow: "var(--shadow-sm)",
-                  }}
-                >
-                  <Maximize2 size={16} />
-                </div>
+                {/* Thumbnail Row */}
+                {images.length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "0.75rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {images.map((img, idx) => (
+                      <button
+                        key={`${img}-${idx}`}
+                        onClick={() => setActiveImageIndex(idx)}
+                        style={{
+                          position: "relative",
+                          width: "80px",
+                          height: "80px",
+                          borderRadius: "var(--radius-md)",
+                          overflow: "hidden",
+                          border:
+                            activeImageIndex === idx
+                              ? "2.5px solid var(--accent)"
+                              : "1px solid var(--border)",
+                          background:
+                            "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
+                          cursor: "pointer",
+                          padding: 0,
+                          outline: "none",
+                          transition: "all 0.2s ease",
+                          transform:
+                            activeImageIndex === idx
+                              ? "scale(1.03)"
+                              : "scale(1)",
+                        }}
+                      >
+                        <Image
+                          src={img}
+                          alt={`Thumbnail ${idx + 1}`}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-
-              {/* Thumbnail Row */}
-              {images.length > 0 && (
-                <div
-                  style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}
-                >
-                  {images.map((img, idx) => (
-                    <button
-                      key={`${img}-${idx}`}
-                      onClick={() => setActiveImageIndex(idx)}
-                      style={{
-                        position: "relative",
-                        width: "80px",
-                        height: "80px",
-                        borderRadius: "var(--radius-md)",
-                        overflow: "hidden",
-                        border:
-                          activeImageIndex === idx
-                            ? "2.5px solid var(--accent)"
-                            : "1px solid var(--border)",
-                        background:
-                          "linear-gradient(135deg, #F5EFE6 0%, #EDE0CC 100%)",
-                        cursor: "pointer",
-                        padding: 0,
-                        outline: "none",
-                        transition: "all 0.2s ease",
-                        transform:
-                          activeImageIndex === idx ? "scale(1.03)" : "scale(1)",
-                      }}
-                    >
-                      <Image
-                        src={img}
-                        alt={`Thumbnail ${idx + 1}`}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            ) : viewMode === "3d" ? (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                }}
+              >
                 <div style={{ aspectRatio: "4/3", width: "100%" }}>
                   <Product3DViewer modelUrl={product.model3dUrl} />
                 </div>
-                {product.model3dUrl && <ARLauncherView modelUrl={product.model3dUrl} />}
+                {product.model3dUrl && (
+                  <ARLauncherView modelUrl={product.model3dUrl} />
+                )}
               </div>
+            ) : (
+              <AiPlacementPanel productId={product.productId} />
             )}
           </div>
 
@@ -702,7 +785,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
                     {/* Wishlist button */}
                     <button
-                      onClick={() => setIsWishlisted(!isWishlisted)}
+                      onClick={handleWishlist}
+                      disabled={isAddingToWishlist || isRemovingFromWishlist}
                       style={{
                         width: "44px",
                         height: "44px",
@@ -719,6 +803,10 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         outline: "none",
                         transition: "all 0.2s ease",
                         flexShrink: 0,
+                        opacity:
+                          isAddingToWishlist || isRemovingFromWishlist
+                            ? 0.6
+                            : 1,
                       }}
                       onMouseEnter={(e) => {
                         if (!isWishlisted) {
@@ -754,7 +842,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                         productName: product.name,
                         origin: window.location.origin,
                       },
-                    })
+                    }),
                   );
                 }}
                 style={{
@@ -1055,7 +1143,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 }}
               >
                 Your order is processed securely. Includes transparent delivery
-                updates and support for returns within 30 days.
+                updates.
               </p>
             </div>
           </div>
@@ -1173,7 +1261,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                           fontFamily: "monospace",
                         }}
                       >
-                        {product.productId}
+                        {product.productId.slice(-5).toUpperCase()}
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
@@ -1286,27 +1374,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   </h4>
                   <p>
                     Standard processing takes 2-3 business days. Delivery dates
-                    range from 5 to 10 business days depending on location. You
+                    range from 15 to 25 business days depending on location. You
                     will receive a tracking link and a coordinator call to book
                     a delivery timeframe.
-                  </p>
-                </div>
-                <div>
-                  <h4
-                    style={{
-                      fontWeight: 600,
-                      color: "var(--fg-primary)",
-                      fontSize: "0.9375rem",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
-                    Return Policy
-                  </h4>
-                  <p>
-                    We offer a 30-day return policy. If you aren&apos;t
-                    completely happy with your purchase, you can return it
-                    within 30 days of receipt. Items must be in new condition.
-                    Returns will incur delivery charges.
                   </p>
                 </div>
               </div>

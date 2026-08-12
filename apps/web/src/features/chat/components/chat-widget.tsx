@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MessageSquare, X, ChevronLeft, Loader2, Send, MessageCircle } from "lucide-react";
+import {
+  MessageSquare,
+  X,
+  ChevronLeft,
+  Loader2,
+  Send,
+  MessageCircle,
+} from "lucide-react";
 import {
   useConversations,
   useConversationMessages,
@@ -24,7 +31,9 @@ function MessageBubble({
   createdAt: Date;
   isMine: boolean;
 }) {
-  const productMatch = content.match(/I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i);
+  const productMatch = content.match(
+    /I am interested in this product:?\s*([\s\S]*?)\s*\((.*?\/products\/([^)\s]+))\)/i,
+  );
 
   return (
     <div
@@ -49,13 +58,21 @@ function MessageBubble({
       >
         {productMatch ? (
           <>
-            <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: "0 0 0.5rem 0" }}>
+            <p
+              style={{
+                fontSize: "0.875rem",
+                lineHeight: 1.5,
+                margin: "0 0 0.5rem 0",
+              }}
+            >
               I am interested in this product:
             </p>
             <ProductPreviewCard productId={productMatch[3]} isMine={isMine} />
           </>
         ) : (
-          <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>{content}</p>
+          <p style={{ fontSize: "0.875rem", lineHeight: 1.5, margin: 0 }}>
+            {content}
+          </p>
         )}
         <span
           style={{
@@ -153,7 +170,8 @@ function ChatThread({
             width: 32,
             height: 32,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+            background:
+              "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -176,7 +194,9 @@ function ChatThread({
           >
             {title}
           </p>
-          <p style={{ margin: 0, fontSize: "0.7rem", color: "var(--fg-muted)" }}>
+          <p
+            style={{ margin: 0, fontSize: "0.7rem", color: "var(--fg-muted)" }}
+          >
             Online
           </p>
         </div>
@@ -207,7 +227,9 @@ function ChatThread({
             }}
           >
             <MessageCircle size={36} style={{ opacity: 0.3 }} />
-            <p style={{ margin: 0, fontSize: "0.875rem" }}>No messages yet. Say hello!</p>
+            <p style={{ margin: 0, fontSize: "0.875rem" }}>
+              No messages yet. Say hello!
+            </p>
           </div>
         ) : (
           messages.map((msg) => (
@@ -270,7 +292,8 @@ function ChatThread({
             width: 38,
             height: 38,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+            background:
+              "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
             border: "none",
             cursor: content.trim() ? "pointer" : "not-allowed",
             display: "flex",
@@ -284,7 +307,11 @@ function ChatThread({
           }}
           aria-label="Send message"
         >
-          {isSending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+          {isSending ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Send size={16} />
+          )}
         </button>
       </form>
     </div>
@@ -347,7 +374,8 @@ function ConversationListView({
               transition: "background 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "var(--bg-elevated)";
+              (e.currentTarget as HTMLElement).style.background =
+                "var(--bg-elevated)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.background = "transparent";
@@ -358,7 +386,8 @@ function ConversationListView({
                 width: 40,
                 height: 40,
                 borderRadius: "50%",
-                background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                background:
+                  "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -368,9 +397,7 @@ function ConversationListView({
                 flexShrink: 0,
               }}
             >
-              {isAdmin
-                ? (conv.customerId?.[0]?.toUpperCase() ?? "C")
-                : "S"}
+              {isAdmin ? (conv.customerId?.[0]?.toUpperCase() ?? "C") : "S"}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p
@@ -381,7 +408,9 @@ function ConversationListView({
                   color: "var(--fg-primary)",
                 }}
               >
-                {isAdmin ? `Customer #${conv.customerId.slice(-4)}` : "LIMATA Support"}
+                {isAdmin
+                  ? `Customer #${conv.customerId.slice(-5)}`
+                  : "LIMATA Support"}
               </p>
               {lastMsg && (
                 <p
@@ -399,7 +428,13 @@ function ConversationListView({
                 </p>
               )}
             </div>
-            <span style={{ fontSize: "0.7rem", color: "var(--fg-muted)", flexShrink: 0 }}>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                color: "var(--fg-muted)",
+                flexShrink: 0,
+              }}
+            >
               {new Date(conv.updatedAt).toLocaleDateString([], {
                 month: "short",
                 day: "numeric",
@@ -416,14 +451,21 @@ function ConversationListView({
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const { data: conversations = [], isLoading } = useConversations();
-  const { start, isLoading: isStarting, error: startError } = useStartConversation();
+  const {
+    start,
+    isLoading: isStarting,
+    error: startError,
+  } = useStartConversation();
   const { sendMessage } = useSendMessage();
-  const [pendingProductMsg, setPendingProductMsg] = useState<string | null>(null);
+  const [pendingProductMsg, setPendingProductMsg] = useState<string | null>(
+    null,
+  );
 
   const isAdmin = user?.role === "ADMIN";
 
@@ -441,7 +483,12 @@ export function ChatWidget() {
     }
   };
   useEffect(() => {
-    if (!isAdmin && conversations.length === 1 && !selectedConversation && isOpen) {
+    if (
+      !isAdmin &&
+      conversations.length === 1 &&
+      !selectedConversation &&
+      isOpen
+    ) {
       setSelectedConversation(conversations[0]);
     }
   }, [conversations, isAdmin, selectedConversation, isOpen]);
@@ -450,13 +497,13 @@ export function ChatWidget() {
     const handleOpenChat = (e: Event) => {
       const customEvent = e as CustomEvent;
       setIsOpen(true);
-      
+
       const { productId, productName, origin } = customEvent.detail || {};
-      
+
       if (productId) {
         const msg = `I am interested in this product: ${productName} (${origin}/products/${productId})`;
         setPendingProductMsg(msg);
-        
+
         // If customer has no conversation, start one
         if (!isAdmin && conversations.length === 0 && !isLoading) {
           handleStartChat();
@@ -465,9 +512,10 @@ export function ChatWidget() {
         }
       }
     };
-    
+
     window.addEventListener("open-chat", handleOpenChat);
     return () => window.removeEventListener("open-chat", handleOpenChat);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversations, isAdmin, isLoading]);
 
   // Process pending message when a conversation is selected
@@ -496,7 +544,8 @@ export function ChatWidget() {
           width: 54,
           height: 54,
           borderRadius: "50%",
-          background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+          background:
+            "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
           border: "none",
           cursor: "pointer",
           display: "flex",
@@ -505,7 +554,8 @@ export function ChatWidget() {
           color: "#fff",
           boxShadow: "var(--shadow-accent), var(--shadow-lg)",
           zIndex: 1000,
-          transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease",
+          transition:
+            "transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease",
         }}
         onMouseEnter={(e) => {
           (e.currentTarget as HTMLElement).style.transform = "scale(1.08)";
@@ -542,20 +592,24 @@ export function ChatWidget() {
           <div
             style={{
               padding: "1rem 1.125rem",
-              background: "linear-gradient(135deg, var(--fg-primary) 0%, var(--bg-dark-2) 100%)",
+              background:
+                "linear-gradient(135deg, var(--fg-primary) 0%, var(--bg-dark-2) 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               flexShrink: 0,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}
+            >
               <div
                 style={{
                   width: 34,
                   height: 34,
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
+                  background:
+                    "linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -578,7 +632,13 @@ export function ChatWidget() {
                 >
                   LIMATA Chat
                 </p>
-                <p style={{ margin: 0, fontSize: "0.7rem", color: "var(--accent-light)" }}>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "0.7rem",
+                    color: "var(--accent-light)",
+                  }}
+                >
                   {isAdmin ? "Admin view" : "We reply within minutes"}
                 </p>
               </div>
@@ -604,7 +664,14 @@ export function ChatWidget() {
           </div>
 
           {/* Body */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+            }}
+          >
             {isLoading ? (
               <div
                 style={{
@@ -617,8 +684,13 @@ export function ChatWidget() {
                   gap: "0.75rem",
                 }}
               >
-                <Loader2 size={28} style={{ animation: "spin 1s linear infinite" }} />
-                <p style={{ margin: 0, fontSize: "0.875rem" }}>Loading conversations…</p>
+                <Loader2
+                  size={28}
+                  style={{ animation: "spin 1s linear infinite" }}
+                />
+                <p style={{ margin: 0, fontSize: "0.875rem" }}>
+                  Loading conversations…
+                </p>
               </div>
             ) : selectedConversation ? (
               // Show the conversation thread
@@ -627,14 +699,22 @@ export function ChatWidget() {
                 currentUserId={user.userId}
                 title={
                   isAdmin
-                    ? `Customer #${selectedConversation.customerId.slice(-4)}`
+                    ? `Customer #${selectedConversation.customerId.slice(-5)}`
                     : "LIMATA Support"
                 }
-                onBack={showList ? () => setSelectedConversation(null) : undefined}
+                onBack={
+                  showList ? () => setSelectedConversation(null) : undefined
+                }
               />
             ) : showList ? (
               // Admin: show conversation list
-              <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%",
+                }}
+              >
                 <div
                   style={{
                     padding: "0.75rem 1rem",
@@ -653,7 +733,8 @@ export function ChatWidget() {
                       letterSpacing: "0.05em",
                     }}
                   >
-                    {conversations.length} conversation{conversations.length !== 1 ? "s" : ""}
+                    {conversations.length} conversation
+                    {conversations.length !== 1 ? "s" : ""}
                   </p>
                 </div>
                 <ConversationListView
@@ -701,12 +782,23 @@ export function ChatWidget() {
                   >
                     How can we help?
                   </p>
-                  <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--fg-muted)" }}>
-                    Chat with our support team about your orders, products, or anything else.
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "0.8rem",
+                      color: "var(--fg-muted)",
+                    }}
+                  >
+                    Chat with our support team about your orders, products, or
+                    anything else.
                   </p>
                 </div>
                 {startError && (
-                  <p style={{ margin: 0, fontSize: "0.8rem", color: "#e74c3c" }}>{startError}</p>
+                  <p
+                    style={{ margin: 0, fontSize: "0.8rem", color: "#e74c3c" }}
+                  >
+                    {startError}
+                  </p>
                 )}
                 <button
                   onClick={handleStartChat}
@@ -727,9 +819,17 @@ export function ChatWidget() {
                   }}
                 >
                   {isStarting ? (
-                    <><Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} /> Starting…</>
+                    <>
+                      <Loader2
+                        size={16}
+                        style={{ animation: "spin 1s linear infinite" }}
+                      />{" "}
+                      Starting…
+                    </>
                   ) : (
-                    <><MessageSquare size={16} /> Start a conversation</>
+                    <>
+                      <MessageSquare size={16} /> Start a conversation
+                    </>
                   )}
                 </button>
               </div>

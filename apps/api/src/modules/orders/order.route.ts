@@ -6,6 +6,8 @@ import {
   getOrderController,
   cancelOrderController,
   updateOrderStatusController,
+  deleteDraftOrderController,
+  confirmPayherePaymentClientSideController,
 } from "./order.controller";
 
 export const ordersRouter = Router();
@@ -18,3 +20,5 @@ ordersRouter.get("/", listOrdersController);
 ordersRouter.get("/:orderId", getOrderController);
 ordersRouter.patch("/:orderId/cancel", cancelOrderController);
 ordersRouter.patch("/:orderId/status", updateOrderStatusController);
+ordersRouter.delete("/:orderId/draft", deleteDraftOrderController);
+ordersRouter.patch("/:orderId/confirm-payment", confirmPayherePaymentClientSideController);

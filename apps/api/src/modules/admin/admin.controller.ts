@@ -15,9 +15,22 @@ export async function getAdminStatsController(
 ) {
   try {
     const totalProducts = await prisma.product.count();
-    const totalOrders = await prisma.order.count();
+    const totalOrders = await prisma.order.count({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      }
+    });
     const pendingOrders = await prisma.order.count({
-      where: { orderStatus: "PENDING" },
+      where: { 
+        orderStatus: "PENDING",
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
     });
     const totalCustomers = await prisma.user.count({
       where: { role: Role.CUSTOMER },
@@ -38,6 +51,12 @@ export async function getAdminStatsController(
 
     // Recent 5 orders
     const recentOrders = await prisma.order.findMany({
+      where: {
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
+      },
       orderBy: { createdAt: "desc" },
       take: 5,
       include: {
@@ -61,7 +80,7 @@ export async function getAdminStatsController(
     });
 
     // Recent customer messages
-    const recentMessages = await prisma.message.findMany({
+    const recentMessagesRaw = await prisma.message.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
       include: {
@@ -69,6 +88,32 @@ export async function getAdminStatsController(
           select: { customerId: true },
         },
       },
+    });
+
+    const customerIds = recentMessagesRaw
+      .map((m) => m.conversation?.customerId)
+      .filter(Boolean) as string[];
+
+    const customers = await prisma.user.findMany({
+      where: { userId: { in: customerIds } },
+      select: { userId: true, name: true },
+    });
+
+    const customerMap = new Map(customers.map((c) => [c.userId, c.name]));
+
+    const recentMessages = recentMessagesRaw.map((m) => {
+      const customerName = m.conversation?.customerId
+        ? customerMap.get(m.conversation.customerId)
+        : undefined;
+      return {
+        ...m,
+        conversation: m.conversation
+          ? {
+              ...m.conversation,
+              customerName: customerName || null,
+            }
+          : null,
+      };
     });
 
     // Calculate revenue for the last 7 days
@@ -79,6 +124,10 @@ export async function getAdminStatsController(
         createdAt: { gte: sevenDaysAgo },
         paymentStatus: "PAID",
         orderStatus: { in: ["DELIVERED"] },
+        NOT: {
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+        }
       },
       select: { createdAt: true, totalAmount: true },
     });
@@ -207,68 +256,6 @@ export async function toggleAdminUserStatusController(
   }
 }
 
-// 3. Review Management
-export async function listAdminReviewsController(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const reviews = await prisma.review.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        product: { select: { productId: true, name: true, images: true } },
-        user: { select: { userId: true, name: true, email: true } },
-      },
-    });
-
-    return sendResponse(res, 200, reviews);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function toggleReviewApprovalController(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const { reviewId } = req.params;
-    const { isApproved } = req.body;
-
-    if (typeof isApproved !== "boolean") {
-      throw new ApiError(400, "isApproved must be a boolean");
-    }
-
-    const updatedReview = await prisma.review.update({
-      where: { reviewId },
-      data: { isApproved },
-    });
-
-    return sendResponse(res, 200, updatedReview);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function deleteAdminReviewController(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const { reviewId } = req.params;
-
-    await prisma.review.delete({
-      where: { reviewId },
-    });
-
-    return sendResponse(res, 200, { reviewId });
-  } catch (error) {
-    return next(error);
-  }
-}
 
 // 4. Categories Management
 export async function listAdminCategoriesController(
