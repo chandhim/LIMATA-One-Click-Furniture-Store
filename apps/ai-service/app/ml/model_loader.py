@@ -145,8 +145,8 @@ class ModelLoader:
                     import torch
                     # Download/Load MiDaS and its transforms
                     torch.hub.set_dir('models/midas')
-                    model = torch.hub.load("intel-isl/MiDaS", "MiDaS_small", trust_repo=True)
-                    midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms", trust_repo=True)
+                    model = torch.hub.load("intel-isl/MiDaS:master", "MiDaS_small", trust_repo=True)
+                    midas_transforms = torch.hub.load("intel-isl/MiDaS:master", "transforms", trust_repo=True)
                     # Attach the transform to the model for convenience in the orchestrator
                     model.transform = midas_transforms.small_transform
                     # Evaluate mode
