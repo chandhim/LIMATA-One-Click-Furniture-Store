@@ -231,34 +231,45 @@ export function AiPlacementPanel({ productId }: AiPlacementPanelProps) {
             <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
               {/* Primary Result Banner */}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
-                  padding: "1.5rem",
-                  borderRadius: "var(--radius-lg)",
-                  background: "var(--bg-base)",
-                  border: "1px solid var(--border)",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
-                  {result.suitable ? (
-                    <CheckCircle2 size={24} color="#16a34a" />
-                  ) : (
-                    <XCircle size={24} color="#dc2626" />
+              <div style={{ padding: "1.5rem", borderRadius: "var(--radius-lg)", background: "var(--bg-base)", border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {result.estimated_clearance && (
+                    <div style={{ paddingBottom: "1.25rem", borderBottom: "1px solid var(--border)" }}>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Space & Depth Analysis</div>
+                      <div style={{ fontSize: "0.875rem", fontFamily: "monospace", color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>
+                        Estimated clearance score — {
+                          Object.entries(result.estimated_clearance).map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`).join(" | ")
+                        }
+                      </div>
+                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                        These values are derived from visual depth estimation and are used to evaluate spatial clearance.
+                      </div>
+                    </div>
                   )}
-                  <div style={{ fontWeight: 700, color: result.suitable ? "#16a34a" : "#dc2626", fontSize: "1.125rem" }}>
-                    {result.suitable ? "Suitable for your room" : "May be too large for this space"}
+                  
+                  <div>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Placement Evaluation</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                      {result.suitable ? <CheckCircle2 size={18} color="#16a34a" /> : <XCircle size={18} color="#dc2626" />}
+                      <div style={{ fontWeight: 600, color: result.suitable ? "#16a34a" : "#dc2626", fontSize: "1rem" }}>
+                        {result.suitable ? "Suitable for this space" : "Space may be limited"}
+                      </div>
+                    </div>
+                    
+                    {result.evaluation_confidence && (
+                      <div style={{ fontSize: "0.875rem", fontFamily: "monospace", color: "var(--fg-secondary)", marginBottom: "0.75rem" }}>
+                        Evaluation confidence: {Math.round(result.evaluation_confidence * 100)}%
+                      </div>
+                    )}
+                    
+                    <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                      {result.suitable 
+                        ? "LIMATA estimates that this product can fit within the available space."
+                        : result.limiting_factor 
+                          ? `The available ${result.limiting_factor.toLowerCase()} appears to be the main constraint for this placement.`
+                          : "LIMATA estimates that this placement may be tight."}
+                    </div>
                   </div>
-                </div>
-                
-                <div style={{ fontSize: "1rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
-                  {result.suitable 
-                    ? "LIMATA estimates enough space for this placement."
-                    : result.limiting_factor 
-                      ? `The available ${result.limiting_factor.toLowerCase()} appears to be the main limitation.`
-                      : "LIMATA estimates that this placement may be tight."}
                 </div>
               </div>
 

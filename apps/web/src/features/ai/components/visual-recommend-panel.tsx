@@ -2,11 +2,12 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, Home, ChevronDown, ChevronUp, MessageSquare, Loader2 } from "lucide-react";
+import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, MessageSquare, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { useVisualRecommend } from "../hooks/use-visual-recommend";
 import { ProductCard } from "@/features/products/components/product-card";
 import type { ProductSummary } from "@/features/products/types/product.types";
+import { CameraCapture } from "./camera-capture";
 
 export function VisualRecommendPanel({
   allProducts,
@@ -17,7 +18,7 @@ export function VisualRecommendPanel({
 }) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDemoModeOpen, setIsDemoModeOpen] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: analyzeRoom, isPending, data, isError, reset } = useVisualRecommend();
@@ -33,6 +34,13 @@ export function VisualRecommendPanel({
       setPreviewUrl(URL.createObjectURL(file));
       reset();
     }
+  };
+
+  const handleCameraCapture = (file: File) => {
+    setSelectedImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setIsCameraActive(false);
+    reset();
   };
 
   const handleAnalyze = () => {
@@ -118,35 +126,66 @@ export function VisualRecommendPanel({
       {!data && !isError && (
         <div style={{ display: "grid", gridTemplateColumns: selectedImage ? "1fr 1fr" : "1fr", gap: "2rem", alignItems: "start" }}>
           
-          {/* Upload Area */}
+          {/* Upload / Camera Area */}
           {!selectedImage ? (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "1rem",
-                border: "2px dashed var(--border-strong)",
-                borderRadius: "var(--radius-lg)",
-                padding: "4rem 2rem",
-                cursor: "pointer",
-                transition: "background 0.2s",
-                background: "rgba(0,0,0,0.02)",
-                minHeight: "300px",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-base)")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.02)")}
-            >
-              <div style={{ background: "var(--bg-base)", padding: "1rem", borderRadius: "50%", color: "var(--accent-dark)", boxShadow: "var(--shadow-sm)" }}>
-                <UploadCloud size={32} />
+            isCameraActive ? (
+              <CameraCapture onCapture={handleCameraCapture} onCancel={() => setIsCameraActive(false)} />
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "var(--fg-primary)", textAlign: "center" }}>How would you like to add your room?</h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem" }}>
+                  <div
+                    onClick={() => setIsCameraActive(true)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "1rem",
+                      border: "1px solid var(--border)",
+                      borderRadius: "var(--radius-lg)",
+                      padding: "3rem 1.5rem",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: "var(--bg-base)",
+                      boxShadow: "var(--shadow-sm)",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div style={{ background: "var(--bg-surface)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", boxShadow: "var(--shadow-sm)" }}>
+                      <Camera size={32} />
+                    </div>
+                    <div style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "1.1rem" }}>Take a photo</div>
+                  </div>
+
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "1rem",
+                      border: "1px solid var(--border)",
+                      borderRadius: "var(--radius-lg)",
+                      padding: "3rem 1.5rem",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: "var(--bg-base)",
+                      boxShadow: "var(--shadow-sm)",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div style={{ background: "var(--bg-surface)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", boxShadow: "var(--shadow-sm)" }}>
+                      <UploadCloud size={32} />
+                    </div>
+                    <div style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "1.1rem" }}>Upload a photo</div>
+                  </div>
+                </div>
               </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.25rem", fontSize: "1.1rem" }}>Click to upload a room photo</div>
-                <div style={{ fontSize: "0.875rem", color: "var(--fg-muted)" }}>Supports JPG, PNG, WEBP</div>
-              </div>
-            </div>
+            )
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div
@@ -332,9 +371,18 @@ export function VisualRecommendPanel({
                     {data.visual_context.detected_class ? (
                       <>
                         <div>
-                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", marginBottom: "0.25rem" }}>👁️ What we saw</div>
+                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Visual Detection</div>
+                          <div style={{ fontSize: "1rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.25rem", textTransform: "capitalize" }}>
+                            {data.visual_context.detected_class} Identified
+                          </div>
+                          {data.visual_context.confidence && (
+                            <div style={{ fontSize: "0.875rem", fontFamily: "monospace", color: "var(--fg-secondary)", marginBottom: "0.75rem" }}>
+                              Detection confidence: {Math.round(data.visual_context.confidence * 100)}%
+                            </div>
+                          )}
                           <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
-                            We identified a <span style={{ fontWeight: 600, color: "var(--fg-primary)", textTransform: "capitalize" }}>{data.visual_context.detected_class}</span> {data.visual_context.confidence && data.visual_context.confidence > 0.6 && <span style={{ fontSize: "0.8rem", background: "var(--bg-elevated)", padding: "0.1rem 0.4rem", borderRadius: "var(--radius-sm)" }}>High confidence</span>} in what appears to be a <span style={{ fontWeight: 600, color: "var(--fg-primary)", textTransform: "lowercase" }}>{
+                            LIMATA identified a {data.visual_context.detected_class} in your room{data.visual_context.confidence && data.visual_context.confidence > 0.7 ? " with high confidence" : ""}. 
+                            Based on the furniture identified, this appears to be a <span style={{ fontWeight: 600, color: "var(--fg-primary)", textTransform: "lowercase" }}>{
                               data.visual_context.detected_class.includes("bed") ? "bedroom" : 
                               data.visual_context.detected_class.includes("table") ? "dining area" : 
                               "living room"
@@ -343,7 +391,7 @@ export function VisualRecommendPanel({
                         </div>
 
                         <div>
-                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", marginBottom: "0.25rem" }}>📐 Space & Depth</div>
+                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Space & Depth Analysis</div>
                           <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
                             By analyzing the visual depth of your photo, LIMATA mapped the available floor space to understand where additional furniture might fit.
                           </div>
@@ -405,16 +453,18 @@ export function VisualRecommendPanel({
                   }
 
                   const badge = info ? (
-                     <div style={{ background: "rgba(28,26,23,0.85)", backdropFilter: "blur(6px)", padding: "0.75rem", borderRadius: "var(--radius-md)", fontSize: "0.75rem", color: "#fff", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
+                     <div style={{ background: "rgba(28,26,23,0.9)", backdropFilter: "blur(6px)", padding: "0.75rem", borderRadius: "var(--radius-md)", fontSize: "0.75rem", color: "#fff", display: "flex", flexDirection: "column", gap: "0.5rem", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
                        <div style={{ fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                          <Sparkles size={12} /> {matchLabel}
                        </div>
+                       <div style={{ fontSize: "0.8rem", fontFamily: "monospace", color: "rgba(255,255,255,0.8)" }}>
+                         Match score: {info.score.toFixed(2)}
+                       </div>
                        {info.reasons.length > 0 && (
-                         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                           <div style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.6)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Why we recommend this:</div>
-                           <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "rgba(255,255,255,0.9)", lineHeight: 1.4 }}>
-                             {info.reasons.map((r: string, i: number) => <li key={i} style={{ marginBottom: "0.1rem" }}>{r}</li>)}
-                           </ul>
+                         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginTop: "0.25rem" }}>
+                           <div style={{ color: "rgba(255,255,255,0.9)", lineHeight: 1.4 }}>
+                             {info.reasons[0]}
+                           </div>
                          </div>
                        )}
                      </div>
@@ -453,57 +503,7 @@ export function VisualRecommendPanel({
               </div>
             )}
 
-            {/* Supervisor Demonstration Accordion */}
-            <div style={{ marginTop: "3rem", borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
-              <button
-                onClick={() => setIsDemoModeOpen(!isDemoModeOpen)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "0.5rem 0",
-                  color: "var(--fg-secondary)",
-                  fontSize: "0.875rem",
-                  fontWeight: 600
-                }}
-              >
-                <span>How LIMATA analyzed your room (Supervisor Demo Mode)</span>
-                {isDemoModeOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-              </button>
-              
-                {isDemoModeOpen && (
-                  <div className="animate-fade-in" style={{ marginTop: "1rem", padding: "1.5rem", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--accent-dark)", marginBottom: "0.25rem" }}>🧠 1. Environmental Understanding</div>
-                      <div style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-                        YOLOv8 vision model detected a <strong style={{ color: "var(--fg-primary)" }}>{data.visual_context.detected_class || "null"}</strong> with <strong style={{ color: "var(--fg-primary)" }}>{data.visual_context.confidence ? Math.round(data.visual_context.confidence * 100) : "N/A"}%</strong> confidence.
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--accent-dark)", marginBottom: "0.25rem" }}>📐 2. Depth Estimation</div>
-                      <div style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-                        MiDaS monocular depth estimation analyzed relative scene depth.
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--accent-dark)", marginBottom: "0.25rem" }}>🎯 3. Placement Evaluation</div>
-                      <div style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-                        The heuristic engine evaluated orientation and space based on the detected layout.
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "var(--accent-dark)", marginBottom: "0.25rem" }}>🛍 4. Recommendation Pipeline</div>
-                      <div style={{ fontSize: "0.875rem", color: "var(--fg-secondary)" }}>
-                        Products matched using hybrid semantic similarity based on the catalog mapping: <strong style={{ color: "var(--fg-primary)" }}>{data.visual_context.mapped_category || "null"}</strong>.
-                      </div>
-                    </div>
-                  </div>
-                )}
-            </div>
+
           </div>
         </div>
       )}
