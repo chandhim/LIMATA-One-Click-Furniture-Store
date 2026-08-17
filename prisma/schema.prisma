@@ -9,28 +9,29 @@ datasource db {
 }
 
 model User {
-  userId       String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  password     String
-  role         Role     @default(CUSTOMER)
-  isActive     Boolean  @default(true)
-  firstName    String?
-  lastName     String?
-  phoneNumber  String?
-  avatarUrl    String?
-  addressLine1 String?
-  addressLine2 String?
-  city         String?
-  district     String?
-  province     String?
-  postalCode   String?
-  dateOfBirth  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  orders       Order[]
-  reviews      Review[]
-  wishlist     Wishlist?
+  userId          String           @id @default(cuid())
+  name            String
+  email           String           @unique
+  password        String
+  role            Role             @default(CUSTOMER)
+  isActive        Boolean          @default(true)
+  firstName       String?
+  lastName        String?
+  phoneNumber     String?
+  avatarUrl       String?
+  addressLine1    String?
+  addressLine2    String?
+  city            String?
+  district        String?
+  province        String?
+  postalCode      String?
+  dateOfBirth     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  orders          Order[]
+  reviews         Review[]
+  wishlist        Wishlist?
+  aiConversations AiConversation[]
 }
 
 enum Role {
@@ -39,43 +40,43 @@ enum Role {
 }
 
 model Product {
-  productId   String   @id @default(cuid())
+  productId String @id @default(cuid())
 
   name        String
   description String
 
-  price       Float
+  price Float
 
-  stock       Int
+  stock Int
 
-  category    String
+  category String
 
-  material    String?
+  material String?
 
-  images      String[]
+  images String[]
 
-  model3dUrl  String?
+  model3dUrl String?
 
-  width       Float?
-  depth       Float?
-  height      Float?
+  width  Float?
+  depth  Float?
+  height Float?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  reviews     Review[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  reviews       Review[]
   wishlistItems WishlistItem[]
 }
 
 model Conversation {
   conversationId String   @id @default(cuid())
-  customerId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  customerId     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  messages  Message[]
+  messages Message[]
 }
 
 model Message {
@@ -85,10 +86,41 @@ model Message {
   content        String
   createdAt      DateTime @default(now())
 
-  conversation   Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([senderId])
+}
+
+model AiConversation {
+  aiConversationId String   @id @default(cuid())
+  userId           String
+  title            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  messages AiMessage[]
+
+  @@index([userId])
+}
+
+model AiMessage {
+  aiMessageId         String   @id @default(cuid())
+  aiConversationId    String
+  role                AiRole
+  content             String
+  recommendedProducts Json?
+  createdAt           DateTime @default(now())
+
+  aiConversation AiConversation @relation(fields: [aiConversationId], references: [aiConversationId], onDelete: Cascade)
+
+  @@index([aiConversationId])
+}
+
+enum AiRole {
+  USER
+  ASSISTANT
 }
 
 model Notification {
@@ -120,8 +152,8 @@ model CartItem {
   quantity   Int
   createdAt  DateTime @default(now())
 
-  cart      Cart     @relation(fields: [cartId], references: [cartId], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  cart    Cart    @relation(fields: [cartId], references: [cartId], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@index([cartId])
   @@index([productId])
@@ -134,7 +166,7 @@ model Wishlist {
   createdAt  DateTime       @default(now())
   updatedAt  DateTime       @updatedAt
 
-  user       User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 model WishlistItem {
@@ -150,7 +182,6 @@ model WishlistItem {
   @@index([wishlistId])
   @@index([productId])
 }
-
 
 enum PaymentMethod {
   PAYHERE
@@ -191,8 +222,8 @@ model Order {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  user            User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  items           OrderItem[]
+  user  User        @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  items OrderItem[]
 
   @@index([userId])
 }
@@ -205,25 +236,25 @@ model OrderItem {
   price       Float
   createdAt   DateTime @default(now())
 
-  order     Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@index([orderId])
   @@index([productId])
 }
 
 model Review {
-  reviewId    String   @id @default(cuid())
-  productId   String
-  userId      String
-  rating      Int
-  title       String
-  comment     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  reviewId  String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int
+  title     String
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  product     Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@index([productId])
   @@index([userId])

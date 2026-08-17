@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import { authenticate } from "@/middleware/authenticate";
+import { optionalAuthenticate } from "@/middleware/optional-authenticate";
 import {
   healthController,
   detectController,
@@ -8,6 +9,8 @@ import {
   analyzeController,
   recommendController,
   chatController,
+  getConversationsController,
+  getConversationByIdController,
   placementController,
   visualRecommendationController,
 } from "./ai.controller";
@@ -27,5 +30,7 @@ aiRouter.post("/depth", authenticate, upload.single("image"), depthController);
 aiRouter.post("/analyze", authenticate, upload.single("image"), analyzeController);
 aiRouter.post("/recommend", authenticate, recommendController);
 aiRouter.post("/placement", authenticate, upload.single("image"), placementController);
-aiRouter.post("/chat", authenticate, chatController);
+aiRouter.post("/chat", optionalAuthenticate, chatController);
+aiRouter.get("/chat/conversations", authenticate, getConversationsController);
+aiRouter.get("/chat/conversations/:conversationId", authenticate, getConversationByIdController);
 aiRouter.post("/visual-recommend", authenticate, upload.single("image"), visualRecommendationController);

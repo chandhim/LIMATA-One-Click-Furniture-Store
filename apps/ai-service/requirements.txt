@@ -10,3 +10,4 @@ torchvision
 ultralytics
 opencv-python-headless
 timm==1.0.28
+google-genai==1.0.0

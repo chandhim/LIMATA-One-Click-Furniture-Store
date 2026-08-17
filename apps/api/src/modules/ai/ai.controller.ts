@@ -6,6 +6,8 @@ import {
   proxyAnalyze,
   proxyRecommend,
   proxyChat,
+  getUserConversations,
+  getConversation,
   proxyPlacement,
   proxyVisualRecommendation,
 } from "./ai.service";
@@ -75,9 +77,29 @@ export async function recommendController(req: Request, res: Response, next: Nex
   }
 }
 
+export async function getConversationsController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user!.id;
+    const conversations = await getUserConversations(userId);
+    return sendAiResponse(res, 200, "Conversations retrieved", { conversations });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getConversationByIdController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = req.user!.id;
+    const conversation = await getConversation(req.params.conversationId, userId);
+    return sendAiResponse(res, 200, "Conversation retrieved", { conversation });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export async function chatController(req: Request, res: Response, next: NextFunction) {
   try {
-    const result = await proxyChat(req.body);
+    const result = await proxyChat(req.body, req.user);
     return sendAiResponse(res, 200, "Chat response generated", result);
   } catch (error) {
     return next(error);
