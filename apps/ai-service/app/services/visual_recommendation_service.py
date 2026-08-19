@@ -8,6 +8,7 @@ from app.ml.registry import registry
 from app.ml.model_loader import ModelLoader
 from app.ml.ai_orchestrator import AIOrchestrator
 from app.services.recommendation_service import RecommendationService
+from app.ml.placement.constraints import calculate_congestion_index, evaluate_placement_region
 from app.models.requests import ProductMetadata, RecommendationRequest, RecommendationPreferences
 from app.models.responses import VisualRecommendationResponse, VisualContext
 from app.core.exceptions import AIServiceException
@@ -42,10 +43,22 @@ class VisualRecommendationService:
             if image_cv2 is None:
                 raise ValueError("Failed to decode image. Invalid image format.")
 
-            detection_result = self.orchestrator.analyze_image(image_cv2)
+            image_height, image_width = image_cv2.shape[:2]
+            spatial_result = self.orchestrator.analyze_spatial_layout(image_cv2)
             
+            # Extract qualitative space availability
+            congestion_index = calculate_congestion_index(spatial_result, image_width, image_height)
+            is_region_clear, nearest_depth = evaluate_placement_region(spatial_result)
+            
+            space_availability = "Moderate"
+            if congestion_index > 0.7 or not is_region_clear:
+                space_availability = "Limited"
+            elif congestion_index < 0.4 and is_region_clear:
+                space_availability = "Generous"
+
             best_obj = None
-            for obj in detection_result.objects:
+            for obj_dist in spatial_result.object_distances:
+                obj = obj_dist.detected_object
                 if obj.class_name in MAPPINGS:
                     if best_obj is None or obj.confidence > best_obj.confidence:
                         best_obj = obj
@@ -56,7 +69,8 @@ class VisualRecommendationService:
                     detected_class=best_obj.class_name,
                     confidence=best_obj.confidence,
                     mapped_category=mapping["category"],
-                    search_query=mapping["query"]
+                    search_query=mapping["query"],
+                    space_availability=space_availability
                 )
                 prefs = RecommendationPreferences(category=mapping["category"], query=mapping["query"])
             else:
@@ -64,7 +78,8 @@ class VisualRecommendationService:
                     detected_class=None,
                     confidence=None,
                     mapped_category=None,
-                    search_query=None
+                    search_query=None,
+                    space_availability=space_availability
                 )
                 prefs = RecommendationPreferences()
                 

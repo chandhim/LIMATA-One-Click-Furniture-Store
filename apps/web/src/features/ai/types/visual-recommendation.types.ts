@@ -2,7 +2,8 @@ export interface VisualContext {
   detected_class: string | null;
   confidence: number | null;
   mapped_category: string | null;
-  search_query: string;
+  search_query: string | null;
+  space_availability: "Limited" | "Moderate" | "Generous" | null;
 }
 
 export interface VisualRecommendationResponse {
