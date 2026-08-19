@@ -91,7 +91,13 @@ export async function proxyRecommend(payload: Record<string, unknown>) {
 }
 
 export async function getUserConversations(userId: string) {
-  return await getUserAiConversations(userId);
+  const conversations = await getUserAiConversations(userId);
+  return conversations.map(c => ({
+    id: c.aiConversationId,
+    title: c.title,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt
+  }));
 }
 
 export async function getConversation(conversationId: string, userId: string) {
@@ -99,12 +105,38 @@ export async function getConversation(conversationId: string, userId: string) {
   if (!conversation) {
     throw new ApiError(404, "Conversation not found or access denied.");
   }
-  return conversation;
+
+  const products = await getProducts({ includeDetails: true });
+  
+  const formattedMessages = conversation.messages.map(m => {
+    let recommendedProducts = undefined;
+    if (m.recommendedProducts && Array.isArray(m.recommendedProducts)) {
+      recommendedProducts = (m.recommendedProducts as string[])
+        .map((id: string) => products.find((p: any) => p.productId === id))
+        .filter(Boolean);
+    }
+    
+    return {
+      id: m.aiMessageId,
+      role: m.role.toLowerCase(),
+      content: m.content,
+      recommendedProducts,
+      createdAt: m.createdAt
+    };
+  });
+
+  return {
+    id: conversation.aiConversationId,
+    title: conversation.title,
+    createdAt: conversation.createdAt,
+    updatedAt: conversation.updatedAt,
+    messages: formattedMessages
+  };
 }
 
 export async function proxyChat(payload: Record<string, any>, user?: any) {
   try {
-    let aiConversationId = payload.conversationId;
+    let aiConversationId = payload.conversationId || payload.context?.conversationId;
     let history = payload.history || [];
     const message = payload.message || "";
     

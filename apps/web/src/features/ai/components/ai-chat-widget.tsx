@@ -277,7 +277,7 @@ export function AiChatWidget() {
                     
                     if (hasProducts) {
                       displayContent = displayContent
-                        .replace(/^\s*(?:\d+\.|\-|\*)\s+.*?(?:\$|Rs\.|₹|INR)\s*[\d,]+.*$/gim, "")
+                        .replace(/^\s*(?:\d+\.|\-|\*)\s+.*?(?:\$|Rs\.|₹|INR|for)\s*[\d,]+.*$/gim, "")
                         .replace(/^\s*\d+\.\s+.*$/gm, "")
                         .replace(/\n{3,}/g, "\n\n")
                         .trim();

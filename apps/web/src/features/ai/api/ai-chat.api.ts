@@ -30,13 +30,13 @@ export interface AiConversationDetail extends AiConversation {
 }
 
 export async function getConversations(): Promise<AiConversation[]> {
-  const response = await api.get<{ success: boolean; data: AiConversation[] }>("/ai/chat/conversations");
-  return response.data.data;
+  const response = await api.get<{ success: boolean; data: { conversations: AiConversation[] } }>("/ai/chat/conversations");
+  return response.data.data.conversations;
 }
 
 export async function getConversationById(id: string): Promise<AiConversationDetail> {
-  const response = await api.get<{ success: boolean; data: AiConversationDetail }>(`/ai/chat/conversations/${id}`);
-  return response.data.data;
+  const response = await api.get<{ success: boolean; data: { conversation: AiConversationDetail } }>(`/ai/chat/conversations/${id}`);
+  return response.data.data.conversation;
 }
 
 export async function sendAiChatMessage(

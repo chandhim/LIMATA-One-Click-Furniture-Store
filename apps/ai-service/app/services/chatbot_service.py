@@ -30,7 +30,7 @@ class ChatbotService:
             "5. Give concise, helpful furniture-focused answers.\n"
             "6. Ask a clarification question when required information is missing.\n"
             "7. Maintain conversation context when responding to follow-up questions.\n"
-            "8. When recommending a product, mention its Name and Price.\n\n"
+            "8. Do NOT list product names or prices in the 'reply' text. Provide the products only in the 'recommended_product_ids' array, and the UI will automatically render them as a grid.\n\n"
             "IMPORTANT: You MUST return your response as a valid JSON object matching the following schema:\n"
             "{\n"
             '  "reply": "Your conversational response text here",\n'
