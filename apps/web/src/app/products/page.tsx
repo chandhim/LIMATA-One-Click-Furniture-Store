@@ -9,6 +9,10 @@ import { ProductSearch } from "@/features/products/components/product-search";
 import { ProductEmpty } from "@/features/products/components/product-empty";
 import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import { CategorySection } from "@/features/products/components/category-section";
+import { AiRecommendationPanel } from "@/features/ai/components/ai-recommendation-panel";
+import { AiRecommendationView } from "@/features/ai/components/ai-recommendation-view";
+import { VisualRecommendPanel } from "@/features/ai/components/visual-recommend-panel";
+import { useRecommendations } from "@/features/ai/hooks/use-recommendations";
 import { MainLayout } from "@/components/layout/main-layout";
 import type { ProductSummary } from "@/features/products/types/product.types";
 import {
@@ -19,6 +23,7 @@ import {
   TreePine,
   ChefHat,
   Armchair,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,7 +62,11 @@ function ProductsPageContent() {
   const categoryParam = searchParams.get("category") || undefined;
 
   const [search, setSearch] = useState<string>("");
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const [showVisualRecPanel, setShowVisualRecPanel] = useState(false);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  const { mutate: fetchAiRecs, data: aiData, isPending: aiIsPending, isError: aiIsError, reset: resetAiRecs } = useRecommendations();
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
   const { data, isLoading, isError } = useProducts(
@@ -274,6 +283,67 @@ function ProductsPageContent() {
                 </button>
               );
             })}
+
+            <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+              {/* AI Recommendations Toggle */}
+              <button
+                onClick={() => {
+                  setShowAiPanel(!showAiPanel);
+                  if (!showAiPanel) setShowVisualRecPanel(false);
+                  if (showAiPanel) {
+                    resetAiRecs();
+                  }
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.4rem 0.875rem",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  border: "1.5px solid rgba(201,169,110,0.55)",
+                  background: showAiPanel ? "var(--accent)" : "rgba(201,169,110,0.15)",
+                  color: showAiPanel ? "#fff" : "var(--accent)",
+                  cursor: "pointer",
+                  transition: "all 0.18s ease",
+                  fontFamily: "var(--font-sans)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: showAiPanel ? "0 4px 14px rgba(201,169,110,0.4)" : "none",
+                }}
+              >
+                <Sparkles size={14} strokeWidth={2} />
+                {showAiPanel ? "Close AI Matches" : "AI Recommendations"}
+              </button>
+
+              {/* Shop This Room Toggle */}
+              <button
+                onClick={() => {
+                  setShowVisualRecPanel(!showVisualRecPanel);
+                  if (!showVisualRecPanel) setShowAiPanel(false);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.4rem 0.875rem",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  border: "1.5px solid rgba(139,92,246,0.55)", // distinct color for Visual Recs
+                  background: showVisualRecPanel ? "rgba(139,92,246,1)" : "rgba(139,92,246,0.15)",
+                  color: showVisualRecPanel ? "#fff" : "rgba(139,92,246,1)",
+                  cursor: "pointer",
+                  transition: "all 0.18s ease",
+                  fontFamily: "var(--font-sans)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: showVisualRecPanel ? "0 4px 14px rgba(139,92,246,0.4)" : "none",
+                }}
+              >
+                <Sparkles size={14} strokeWidth={2} />
+                {showVisualRecPanel ? "Close Shop Room" : "✨ Shop This Room"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -292,6 +362,38 @@ function ProductsPageContent() {
             margin: "0 auto",
           }}
         >
+          {/* ── AI Recommendations Panel ── */}
+          {showAiPanel && (
+            <div style={{ marginBottom: "2rem" }}>
+              <AiRecommendationPanel
+                onSubmit={(prefs) => fetchAiRecs(prefs)}
+                onClose={() => {
+                  setShowAiPanel(false);
+                  resetAiRecs();
+                }}
+              />
+              {(aiIsPending || aiIsError || aiData) && (
+                <AiRecommendationView
+                  isPending={aiIsPending}
+                  isError={aiIsError}
+                  data={aiData}
+                  allProducts={data || []}
+                  onClear={() => resetAiRecs()}
+                />
+              )}
+            </div>
+          )}
+
+          {/* ── Shop This Room Panel ── */}
+          {showVisualRecPanel && (
+            <div style={{ marginBottom: "2rem" }}>
+              <VisualRecommendPanel
+                allProducts={data || []}
+                onClose={() => setShowVisualRecPanel(false)}
+              />
+            </div>
+          )}
+
           {/* ── Loading Skeleton ── */}
           {isLoading && (
             <div

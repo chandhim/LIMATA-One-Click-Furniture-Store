@@ -18,6 +18,9 @@ export const productCreateSchema = z.object({
   material: z.string().optional(),
   images: z.array(z.string()).optional(),
   model3dUrl: z.string().nullable().optional(),
+  width: z.number().positive("Width must be positive").optional(),
+  depth: z.number().positive("Depth must be positive").optional(),
+  height: z.number().positive("Height must be positive").optional(),
 });
 
 export const productUpdateSchema = productCreateSchema.partial();

@@ -14,6 +14,7 @@ const Product3DViewer = dynamic(
   { ssr: false },
 );
 import { ARLauncherView } from "./ar-launcher-view";
+import { AiPlacementPanel } from "@/features/ai/components/ai-placement-panel";
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
@@ -48,7 +49,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   >("description");
 
   // View Mode
-  const [viewMode, setViewMode] = useState<"photos" | "3d">("photos");
+  const [viewMode, setViewMode] = useState<"photos" | "3d" | "placement">("photos");
 
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
@@ -311,6 +312,26 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
               >
                 3D & AR
               </button>
+              <button
+                onClick={() => setViewMode("placement")}
+                style={{
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "var(--radius-full)",
+                  background:
+                    viewMode === "placement" ? "var(--bg-dark)" : "transparent",
+                  color:
+                    viewMode === "placement"
+                      ? "var(--fg-inverse)"
+                      : "var(--fg-secondary)",
+                  border: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                Will it fit? (AI)
+              </button>
             </div>
 
             {viewMode === "photos" ? (
@@ -428,7 +449,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : viewMode === "3d" ? (
               <div
                 style={{
                   display: "flex",
@@ -443,6 +464,8 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   <ARLauncherView modelUrl={product.model3dUrl} />
                 )}
               </div>
+            ) : (
+              <AiPlacementPanel productId={product.productId} />
             )}
           </div>
 

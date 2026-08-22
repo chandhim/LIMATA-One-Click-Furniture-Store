@@ -20,6 +20,9 @@ const productSchema = z.object({
   stock: z.number().int().min(0, "Stock must be non-negative"),
   category: z.string().min(1, "Category is required"),
   material: z.string().optional(),
+  width: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
+  depth: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
+  height: z.number().positive("Must be positive").optional().or(z.nan().transform(() => undefined)),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -149,6 +152,9 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
         stock: product.stock,
         category: product.category,
         material: product.material,
+        width: product.width,
+        depth: product.depth,
+        height: product.height,
       });
 
       if (CATEGORIES.includes(product.category)) {
@@ -497,6 +503,61 @@ export function ProductForm({ productId, onSuccess }: ProductFormProps) {
                   onKeyDown={preventNegative}
                   className="input-base"
                   placeholder="0"
+                />
+              </FormField>
+            </div>
+            
+            <h3
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: "var(--fg-primary)",
+                marginBottom: "1.25rem",
+                marginTop: "1.75rem",
+                paddingBottom: "0.875rem",
+                borderBottom: "1px solid var(--border)",
+              }}
+            >
+              Physical Dimensions (cm)
+            </h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: "1rem",
+              }}
+            >
+              <FormField label="Width" error={errors.width?.message}>
+                <input
+                  {...register("width", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 150"
+                />
+              </FormField>
+              <FormField label="Depth" error={errors.depth?.message}>
+                <input
+                  {...register("depth", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 60"
+                />
+              </FormField>
+              <FormField label="Height" error={errors.height?.message}>
+                <input
+                  {...register("height", { valueAsNumber: true })}
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  onKeyDown={preventNegative}
+                  className="input-base"
+                  placeholder="e.g. 80"
                 />
               </FormField>
             </div>
