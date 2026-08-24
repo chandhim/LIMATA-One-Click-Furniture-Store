@@ -461,11 +461,18 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   <Product3DViewer modelUrl={product.model3dUrl} />
                 </div>
                 {product.model3dUrl && (
-                  <ARLauncherView modelUrl={product.model3dUrl} />
+                  <ARLauncherView 
+                    modelUrl={product.model3dUrl} 
+                    productName={product.name}
+                    dimensions={product.width && product.depth && product.height ? { width: product.width, depth: product.depth, height: product.height } : undefined}
+                  />
                 )}
               </div>
             ) : (
-              <AiPlacementPanel productId={product.productId} />
+              <AiPlacementPanel 
+                productId={product.productId} 
+                onLaunchAr={product.model3dUrl ? () => setViewMode("3d") : undefined}
+              />
             )}
           </div>
 

@@ -371,18 +371,10 @@ export function VisualRecommendPanel({
                     {data.visual_context.detected_class ? (
                       <>
                         <div>
-                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Visual Detection</div>
-                          <div style={{ fontSize: "1rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.25rem", textTransform: "capitalize" }}>
-                            {data.visual_context.detected_class} Identified
-                          </div>
-                          {data.visual_context.confidence && (
-                            <div style={{ fontSize: "0.875rem", fontFamily: "monospace", color: "var(--fg-secondary)", marginBottom: "0.75rem" }}>
-                              Detection confidence: {Math.round(data.visual_context.confidence * 100)}%
-                            </div>
-                          )}
+                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Room Understanding</div>
                           <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
-                            LIMATA identified a {data.visual_context.detected_class} in your room{data.visual_context.confidence && data.visual_context.confidence > 0.7 ? " with high confidence" : ""}. 
-                            Based on the furniture identified, this appears to be a <span style={{ fontWeight: 600, color: "var(--fg-primary)", textTransform: "lowercase" }}>{
+                            LIMATA identified a <span style={{ textTransform: "lowercase", fontWeight: 500 }}>{data.visual_context.detected_class}</span> in your photo. 
+                            Based on the detected furniture, this appears to be a <span style={{ fontWeight: 600, color: "var(--fg-primary)", textTransform: "lowercase" }}>{
                               data.visual_context.detected_class.includes("bed") ? "bedroom" : 
                               data.visual_context.detected_class.includes("table") ? "dining area" : 
                               "living room"
@@ -390,12 +382,30 @@ export function VisualRecommendPanel({
                           </div>
                         </div>
 
-                        <div>
-                          <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Space & Depth Analysis</div>
-                          <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
-                            By analyzing the visual depth of your photo, LIMATA mapped the available floor space to understand where additional furniture might fit.
+                        {data.visual_context.space_availability && (
+                          <div>
+                            <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Space & Depth Analysis</div>
+                            <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5, marginBottom: "0.75rem" }}>
+                              LIMATA analyzed the spatial depth of your room and found {
+                                data.visual_context.space_availability === "Limited" ? "limited" :
+                                data.visual_context.space_availability === "Moderate" ? "a moderate amount of" :
+                                "substantial"
+                              } open space around the existing furniture.
+                            </div>
+                            
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.35rem 0.75rem", borderRadius: "var(--radius-md)", background: data.visual_context.space_availability === "Limited" ? "rgba(239, 68, 68, 0.1)" : data.visual_context.space_availability === "Moderate" ? "rgba(245, 158, 11, 0.1)" : "rgba(34, 197, 94, 0.1)", color: data.visual_context.space_availability === "Limited" ? "#dc2626" : data.visual_context.space_availability === "Moderate" ? "#d97706" : "#16a34a", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+                              Space availability: {data.visual_context.space_availability}
+                            </div>
+                            
+                            <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                              {data.visual_context.space_availability === "Limited" 
+                                ? "The current arrangement leaves relatively little usable space for additional large furniture. Compact or space-efficient pieces may work better in this room."
+                                : data.visual_context.space_availability === "Moderate"
+                                ? "There appears to be a reasonable amount of open space around the existing furniture. Carefully sized furniture should work well."
+                                : "LIMATA found substantial open space around the existing furniture, giving you more flexibility when adding furniture."}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </>
                   ) : (
                     <>
