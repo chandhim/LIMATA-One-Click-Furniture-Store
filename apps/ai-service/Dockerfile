@@ -19,7 +19,9 @@ RUN pip install --no-cache-dir torch torchvision --index-url https://download.py
 
 COPY . .
 
-RUN python download_midas.py
+RUN yes | python download_midas.py
+
+RUN python -c "import os; from ultralytics import YOLO; YOLO(os.path.abspath('models/yolo/yolov8n.pt'))"
 
 EXPOSE 8000
 

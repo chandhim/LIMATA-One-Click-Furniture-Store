@@ -175,6 +175,7 @@ npm-debug.log*
 # AI model weights
 *.pt
 *.pth
+*.tar
 weights/
 apps/ai-service/models/
 
