@@ -3,6 +3,7 @@
 import { useAuthGuard } from "@/features/auth/hooks/use-auth-session";
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { useCheckout } from "@/features/orders/hooks/use-checkout";
+import { useDeliveryRates } from "@/features/orders/hooks/use-delivery-rates";
 import { MainLayout } from "@/components/layout/main-layout";
 import Link from "next/link";
 import { Armchair, Banknote, CreditCard } from "lucide-react";
@@ -14,7 +15,10 @@ export default function CheckoutPage() {
   // 2. Fetch cart details
   const { data: cart, isLoading: isCartLoading } = useCart();
 
-  // 3. Instantiate checkout form handler
+  // 3. Fetch delivery rates
+  const { data: deliveryRates, isLoading: isRatesLoading } = useDeliveryRates();
+
+  // 4. Instantiate checkout form handler
   const {
     shippingName,
     setShippingName,
@@ -37,7 +41,7 @@ export default function CheckoutPage() {
     handlePlaceOrder,
   } = useCheckout();
 
-  if (!isHydrated || isCartLoading) {
+  if (!isHydrated || isCartLoading || isRatesLoading) {
     return (
       <MainLayout>
         <div
@@ -65,6 +69,13 @@ export default function CheckoutPage() {
     0,
   );
 
+  const selectedRate = deliveryRates?.find((r) => r.method === deliveryMethod);
+  const deliveryFee = selectedRate
+    ? cartSubtotal >= selectedRate.thresholdAmount
+      ? selectedRate.aboveThresholdCharge
+      : selectedRate.belowThresholdCharge
+    : 0;
+  const finalTotal = cartSubtotal + deliveryFee;
 
   if (items.length === 0) {
     return (
@@ -534,13 +545,13 @@ export default function CheckoutPage() {
                   >
                     {/* Standard */}
                     <div
-                      onClick={() => setDeliveryMethod("Standard")}
+                      onClick={() => setDeliveryMethod("STANDARD")}
                       style={{
                         padding: "1.25rem",
-                        border: `1.5px solid ${deliveryMethod === "Standard" ? "var(--accent)" : "var(--border)"}`,
+                        border: `1.5px solid ${deliveryMethod === "STANDARD" ? "var(--accent)" : "var(--border)"}`,
                         borderRadius: "var(--radius-lg)",
                         background:
-                          deliveryMethod === "Standard"
+                          deliveryMethod === "STANDARD"
                             ? "rgba(201,169,110,0.06)"
                             : "transparent",
                         cursor: "pointer",
@@ -566,7 +577,7 @@ export default function CheckoutPage() {
                         </span>
                         <input
                           type="radio"
-                          checked={deliveryMethod === "Standard"}
+                          checked={deliveryMethod === "STANDARD"}
                           readOnly
                         />
                       </div>
@@ -579,24 +590,17 @@ export default function CheckoutPage() {
                       >
                         Within 20 days.
                       </p>
-                      <div
-                        style={{
-                          marginTop: "0.75rem",
-                        }}
-                      >
-                        Fee calculated at payment
-                      </div>
                     </div>
 
                     {/* Express */}
                     <div
-                      onClick={() => setDeliveryMethod("Express")}
+                      onClick={() => setDeliveryMethod("FAST_COURIER")}
                       style={{
                         padding: "1.25rem",
-                        border: `1.5px solid ${deliveryMethod === "Express" ? "var(--accent)" : "var(--border)"}`,
+                        border: `1.5px solid ${deliveryMethod === "FAST_COURIER" ? "var(--accent)" : "var(--border)"}`,
                         borderRadius: "var(--radius-lg)",
                         background:
-                          deliveryMethod === "Express"
+                          deliveryMethod === "FAST_COURIER"
                             ? "rgba(201,169,110,0.06)"
                             : "transparent",
                         cursor: "pointer",
@@ -618,11 +622,11 @@ export default function CheckoutPage() {
                             fontSize: "0.95rem",
                           }}
                         >
-                          Express Courier
+                          Fast Courier
                         </span>
                         <input
                           type="radio"
-                          checked={deliveryMethod === "Express"}
+                          checked={deliveryMethod === "FAST_COURIER"}
                           readOnly
                         />
                       </div>
@@ -635,12 +639,6 @@ export default function CheckoutPage() {
                       >
                         Within 7 working days.
                       </p>
-                      <div
-                        style={{
-                        }}
-                      >
-                        Fee calculated at payment
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -957,11 +955,11 @@ export default function CheckoutPage() {
                         color: "var(--fg-secondary)",
                       }}
                     >
-                      <span>Shipping ({deliveryMethod})</span>
+                      <span>Shipping ({deliveryMethod === "STANDARD" ? "Standard" : "Fast Courier"})</span>
                       <span
                         style={{ color: "var(--fg-primary)", fontWeight: 500 }}
                       >
-                        Calculated at payment
+                        Rs. {deliveryFee.toLocaleString()}
                       </span>
                     </div>
                     <div
@@ -980,7 +978,7 @@ export default function CheckoutPage() {
                       <span
                         style={{ color: "var(--accent)" }}
                       >
-                        Rs. {cartSubtotal.toLocaleString()} + Shipping
+                        Rs. {finalTotal.toLocaleString()}
                       </span>
                     </div>
                   </div>

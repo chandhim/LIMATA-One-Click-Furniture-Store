@@ -251,6 +251,29 @@ async function main() {
       }
     }
   }
+  // --- 3. Create Default Delivery Configurations ---
+  const deliveryConfigs = [
+    {
+      method: "STANDARD",
+      thresholdAmount: 15000,
+      belowThresholdCharge: 1500,
+      aboveThresholdCharge: 3000,
+    },
+    {
+      method: "FAST_COURIER",
+      thresholdAmount: 15000,
+      belowThresholdCharge: 2500,
+      aboveThresholdCharge: 5000,
+    },
+  ];
+
+  for (const conf of deliveryConfigs) {
+    await prisma.deliveryConfiguration.upsert({
+      where: { method: conf.method as any },
+      update: conf,
+      create: conf,
+    });
+  }
 
   console.log("Seeding completed successfully.");
 }

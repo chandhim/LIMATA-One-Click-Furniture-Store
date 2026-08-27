@@ -35,7 +35,7 @@ export function useCheckout() {
   const [shippingPhone, setShippingPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingCity, setShippingCity] = useState("");
-  const [deliveryMethod, setDeliveryMethod] = useState("Standard");
+  const [deliveryMethod, setDeliveryMethod] = useState<"STANDARD" | "FAST_COURIER">("STANDARD");
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "PAYHERE">("COD");
   const [saveToProfile, setSaveToProfile] = useState(false);
 
