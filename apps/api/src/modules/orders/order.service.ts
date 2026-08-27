@@ -4,6 +4,7 @@ import { ApiError } from "@/shared/errors/api-error";
 import type { CreateOrderInput } from "./order.validation";
 import { findOrders, findOrder, updateOrder } from "./order.repository";
 import { createNotification } from "../notifications/notification.service";
+import { deliveryService } from "../delivery/delivery.service";
 
 // Notify all Admins (acting as sellers)
 async function notifySellers(title: string, message: string) {
@@ -71,18 +72,8 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     subtotal += item.product.price * item.quantity;
   }
 
-  let standardCharge = 0;
-  if (subtotal < 5000) standardCharge = 1000;
-  else if (subtotal <= 15000) standardCharge = 3000;
-  else standardCharge = 5000;
-
-  let expressCharge = 0;
-  if (subtotal < 5000) expressCharge = 3000;
-  else if (subtotal <= 15000) expressCharge = 5000;
-  else expressCharge = 10000;
-
-  const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
-  const totalAmount = subtotal + shippingCharge;
+  const deliveryCharge = await deliveryService.calculateCharge(input.deliveryMethod, subtotal);
+  const totalAmount = subtotal + deliveryCharge;
 
   // 3. Execute database transaction
   const order = await prisma.$transaction(async (tx) => {
@@ -100,6 +91,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         shippingAddress: input.shippingAddress,
         shippingCity: input.shippingCity,
         deliveryMethod: input.deliveryMethod,
+        deliveryCharge,
       },
     });
 

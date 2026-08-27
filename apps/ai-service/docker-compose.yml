@@ -7,7 +7,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
       - ./weights:/app/weights
       - /tmp/limata_ai_uploads:/tmp/limata_ai_uploads
     environment:
