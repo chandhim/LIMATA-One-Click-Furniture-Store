@@ -29,7 +29,7 @@ export default function AdminDeliveryPage() {
       setIsEditing(false);
       alert("Delivery configurations updated successfully!");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       alert("Failed to update configurations: " + (err.message || "Unknown error"));
     },
   });
@@ -128,7 +128,7 @@ export default function AdminDeliveryPage() {
                     }}
                   />
                   <p style={{ fontSize: "0.75rem", color: "var(--fg-muted)", marginTop: "0.25rem" }}>
-                    If order subtotal is below this amount, the "Below Threshold" fee applies. Otherwise, the "Above Threshold" fee applies.
+                    If order subtotal is below this amount, the &quot;Below Threshold&quot; fee applies. Otherwise, the &quot;Above Threshold&quot; fee applies.
                   </p>
                 </div>
                 

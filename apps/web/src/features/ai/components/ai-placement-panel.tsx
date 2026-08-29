@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult } from "../types/placement.types";
 
@@ -16,7 +16,6 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<PlacementEvaluationResult | null>(null);
-  const [isDemoModeOpen, setIsDemoModeOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: evaluatePlacement, isPending } = usePlacement();

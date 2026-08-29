@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { X, Loader2, Send, Sparkles, AlertCircle, Plus, ChevronLeft, MessageSquare, Clock } from "lucide-react";
 import { useAiChat } from "../hooks/use-ai-chat";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import type { Product } from "@/features/products/types/product.types";
 
 const SUGGESTED_PROMPTS = [
   "Find a modern sofa",
@@ -236,7 +237,7 @@ export function AiChatWidget() {
                         <Sparkles size={28} />
                       </div>
                       <h2 style={{ fontSize: "1.1rem", fontWeight: 700, margin: 0, color: "var(--fg-primary)" }}>
-                        Hi! I'm the LIMATA AI Assistant.
+                        Hi! I&apos;m the LIMATA AI Assistant.
                       </h2>
                       <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", margin: 0, maxWidth: "250px" }}>
                         I can help you find furniture, compare products, choose materials, and furnish your space.
@@ -319,7 +320,7 @@ export function AiChatWidget() {
                               gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", 
                               gap: "0.75rem" 
                             }}>
-                              {msg.recommendedProducts!.slice(0, 4).map((p: any) => (
+                              {msg.recommendedProducts!.slice(0, 4).map((p: Product) => (
                                 <a 
                                   key={p.productId} 
                                   href={`/products/${p.productId}`}
