@@ -41,7 +41,7 @@ describe("Express AI Placement Integration", () => {
     }) as any;
 
     // Mock the AI client to return a mock response
-    const mockPost = mock.method(aiClient, "post", async (url, formData, config) => {
+    const mockPost = mock.method(aiClient, "post", async (url: string, formData: unknown, config?: import("axios").AxiosRequestConfig) => {
       assert.strictEqual(url, "/placement");
       assert.strictEqual(config?.headers?.["Content-Type"], "multipart/form-data");
       

@@ -4,7 +4,7 @@ import assert from "node:assert";
 // 1. Mock Prisma by setting global.__prisma before importing
 const mockPrismaClient = {
   product: {
-    findMany: async () => [],
+    findMany: async (): Promise<import("@prisma/client").Product[]> => [],
   },
 };
 (global as any).__prisma = mockPrismaClient;
@@ -13,6 +13,19 @@ import { proxyRecommend } from "./ai.service";
 import { aiClient } from "@/lib/ai-client";
 import { ApiError } from "@/shared/errors/api-error";
 import { AxiosError } from "axios";
+
+interface RecommendationPayload {
+  preferences: Record<string, unknown>;
+  available_products: Array<{
+    productId: string;
+    name: string;
+    description: string;
+    category: string;
+    material: string;
+    price: number;
+    stock: number;
+  }>;
+}
 
 describe("Express AI Recommendation Integration", () => {
   it("should successfully retrieve products, map fields exactly, and proxy to FastAPI", async () => {
@@ -60,7 +73,7 @@ describe("Express AI Recommendation Integration", () => {
     const callArgs = postMock.mock.calls[0].arguments;
     assert.strictEqual(callArgs[0], "/recommend");
     
-    const sentPayload = callArgs[1];
+    const sentPayload = callArgs[1] as RecommendationPayload;
     assert.deepStrictEqual(sentPayload.preferences, payload.preferences);
     
     // Verify mapped available_products
@@ -103,7 +116,8 @@ describe("Express AI Recommendation Integration", () => {
     assert.deepStrictEqual(result, mockAiResponse.data);
     
     const callArgs = postMock.mock.calls[0].arguments;
-    assert.strictEqual(callArgs[1].available_products.length, 0);
+    const sentPayload = callArgs[1] as RecommendationPayload;
+    assert.strictEqual(sentPayload.available_products.length, 0);
 
     mock.restoreAll();
   });
