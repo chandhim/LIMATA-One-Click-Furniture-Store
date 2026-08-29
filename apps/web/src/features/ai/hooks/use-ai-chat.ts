@@ -81,7 +81,7 @@ export function useAiChat() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err) {
+    } catch {
       setError("Sorry, I couldn't reach the LIMATA AI Assistant right now. Please try again.");
     } finally {
       setIsLoading(false);

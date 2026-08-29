@@ -10,7 +10,7 @@ export interface ChatMessage {
 export interface AiChatRequest {
   message: string;
   history: ChatMessage[];
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface AiChatResponse {

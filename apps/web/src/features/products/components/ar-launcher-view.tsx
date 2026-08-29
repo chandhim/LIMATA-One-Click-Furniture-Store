@@ -27,9 +27,9 @@ export function ARLauncherView({ modelUrl, productName, dimensions }: ARLauncher
 
   useEffect(() => {
     const el = modelViewerRef.current;
-    const handleArStatus = (e: any) => {
-      const status = e.detail.status;
-      setArStatus(status);
+    const handleArStatus = (e: Event) => {
+      const status = (e as CustomEvent).detail?.status;
+      setArStatus(status || "not-presenting");
       if (status === "session-started" || status === "object-placed") {
         setHasPresented(true);
       }

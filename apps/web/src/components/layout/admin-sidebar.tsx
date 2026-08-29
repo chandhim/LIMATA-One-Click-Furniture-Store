@@ -12,7 +12,6 @@ import {
   ShoppingBag,
   ShoppingCart,
   Users,
-  Star,
   MessageSquare,
   Bell,
   ArrowUpRight,

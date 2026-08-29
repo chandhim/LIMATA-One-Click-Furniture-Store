@@ -4,7 +4,7 @@ import assert from "node:assert";
 // Mock Prisma by setting global.__prisma before importing
 const mockPrismaClient = {
   product: {
-    findMany: async () => [],
+    findMany: async (): Promise<import("@prisma/client").Product[]> => [],
   },
 };
 (global as any).__prisma = mockPrismaClient;
@@ -35,10 +35,10 @@ describe("Express AI Visual Recommendation Integration", () => {
         height: 100
       }
     ];
-    mockPrismaClient.product.findMany = async () => mockProducts;
+    mockPrismaClient.product.findMany = async () => mockProducts as import("@prisma/client").Product[];
 
     // Mock the AI client to return a mock response
-    const mockPost = mock.method(aiClient, "post", async (url: string, formData: any, config: any) => {
+    const mockPost = mock.method(aiClient, "post", async (url: string, formData: unknown, config?: import("axios").AxiosRequestConfig) => {
       assert.strictEqual(url, "/visual-recommend");
       assert.strictEqual(config?.headers?.["Content-Type"], "multipart/form-data");
       
@@ -72,7 +72,7 @@ describe("Express AI Visual Recommendation Integration", () => {
   it("should handle empty catalog safely", async () => {
     mockPrismaClient.product.findMany = async () => [];
 
-    const mockPost = mock.method(aiClient, "post", async (url: string, formData: any, config: any) => {
+    const mockPost = mock.method(aiClient, "post", async (url: string, formData: unknown, config?: import("axios").AxiosRequestConfig) => {
       return {
         data: {
           recommended_product_ids: [],
