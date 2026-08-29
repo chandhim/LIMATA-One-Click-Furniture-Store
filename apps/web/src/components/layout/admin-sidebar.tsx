@@ -17,6 +17,7 @@ import {
   Bell,
   ArrowUpRight,
   LogOut,
+  Truck,
 } from "lucide-react";
 
 type NavGroup = {
@@ -62,6 +63,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Homepage Content", href: "/admin/homepage", icon: Home },
       { label: "Footer Links", href: "/admin/footer", icon: FileText },
+      { label: "Delivery Rates", href: "/admin/delivery", icon: Truck },
       { label: "Store Settings", href: "/admin/settings", icon: Settings },
     ],
   },

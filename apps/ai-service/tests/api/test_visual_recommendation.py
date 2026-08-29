@@ -16,18 +16,26 @@ def _create_mock_image():
 
 from app.ml.bounding_box import BoundingBox
 
-def _mock_analyze_image(objects):
-    return DetectionResult(
-        objects=[DetectedObject(class_name=lbl, confidence=conf, bbox=BoundingBox(0,0,10,10)) for lbl, conf in objects],
-        image_width=10,
-        image_height=10,
-        model_name="yolo",
-        inference_time_ms=10.0
+from app.ml.spatial.result import SpatialAnalysisResult, ObjectDistance
+
+def _mock_analyze_spatial_layout(objects):
+    object_distances = []
+    for lbl, conf in objects:
+        bbox = BoundingBox(0, 0, 10, 10)
+        detected_obj = DetectedObject(class_name=lbl, confidence=conf, bbox=bbox)
+        object_distances.append(ObjectDistance(detected_object=detected_obj, estimated_depth=1.0, bbox_center=(5.0, 5.0)))
+    
+    return SpatialAnalysisResult(
+        object_distances=object_distances,
+        depth_order=object_distances,
+        nearest_object=object_distances[0] if object_distances else None,
+        furthest_object=object_distances[-1] if object_distances else None,
+        analysis_metadata={"mean_depth": 1.0}
     )
 
 def test_visual_recommendation_couch_mapping():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("couch", 0.9)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("couch", 0.9)])
         
         products = [
             {"productId": "1", "name": "TV Stand A", "description": "stand", "category": "Living Room", "price": 100, "stock": 5},
@@ -48,8 +56,8 @@ def test_visual_recommendation_couch_mapping():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_bed_mapping():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("bed", 0.8)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("bed", 0.8)])
         
         products = [
             {"productId": "1", "name": "Wardrobe A", "description": "large wardrobe", "category": "Bedroom", "price": 100, "stock": 5}
@@ -68,8 +76,8 @@ def test_visual_recommendation_bed_mapping():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_tv_mapping():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("tv", 0.95)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("tv", 0.95)])
         
         products = [
             {"productId": "1", "name": "Sofa A", "description": "sofa", "category": "Living Room", "price": 100, "stock": 5}
@@ -88,8 +96,8 @@ def test_visual_recommendation_tv_mapping():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_dining_table_mapping():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("dining table", 0.75)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("dining table", 0.75)])
         
         products = [
             {"productId": "1", "name": "Dining Chair", "description": "chair", "category": "Dining Room", "price": 100, "stock": 5}
@@ -108,8 +116,8 @@ def test_visual_recommendation_dining_table_mapping():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_ignored_classes():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("person", 0.99), ("dog", 0.9)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("person", 0.99), ("dog", 0.9)])
         
         products = [
             {"productId": "1", "name": "Any Product", "description": "desc", "category": "Dining Room", "price": 100, "stock": 5}
@@ -130,8 +138,8 @@ def test_visual_recommendation_ignored_classes():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_empty_detection():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([])
         
         products = [
             {"productId": "1", "name": "Any Product", "description": "desc", "category": "Dining Room", "price": 100, "stock": 5}
@@ -149,8 +157,8 @@ def test_visual_recommendation_empty_detection():
         assert "1" in data["recommended_product_ids"]
 
 def test_visual_recommendation_highest_confidence_wins():
-    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_image") as mock_analyze:
-        mock_analyze.return_value = _mock_analyze_image([("couch", 0.5), ("bed", 0.9)])
+    with patch("app.services.visual_recommendation_service.AIOrchestrator.analyze_spatial_layout") as mock_analyze:
+        mock_analyze.return_value = _mock_analyze_spatial_layout([("couch", 0.5), ("bed", 0.9)])
         
         products = []
         

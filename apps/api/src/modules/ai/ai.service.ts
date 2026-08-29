@@ -56,6 +56,12 @@ export async function proxyAnalyze(payload: Record<string, unknown>) {
 }
 
 import { getProducts, getProductById } from "../products/product.service";
+import {
+  createAiConversation,
+  getAiConversationById,
+  getUserAiConversations,
+  createAiMessage
+} from "./ai.repository";
 
 export async function proxyRecommend(payload: Record<string, unknown>) {
   try {
@@ -84,10 +90,123 @@ export async function proxyRecommend(payload: Record<string, unknown>) {
   }
 }
 
-export async function proxyChat(payload: Record<string, unknown>) {
+export async function getUserConversations(userId: string) {
+  const conversations = await getUserAiConversations(userId);
+  return conversations.map(c => ({
+    id: c.aiConversationId,
+    title: c.title,
+    createdAt: c.createdAt,
+    updatedAt: c.updatedAt
+  }));
+}
+
+export async function getConversation(conversationId: string, userId: string) {
+  const conversation = await getAiConversationById(conversationId, userId);
+  if (!conversation) {
+    throw new ApiError(404, "Conversation not found or access denied.");
+  }
+
+  const products = await getProducts({ includeDetails: true });
+  
+  const formattedMessages = conversation.messages.map(m => {
+    let recommendedProducts = undefined;
+    if (m.recommendedProducts && Array.isArray(m.recommendedProducts)) {
+      recommendedProducts = (m.recommendedProducts as string[])
+        .map((id: string) => products.find((p: any) => p.productId === id))
+        .filter(Boolean);
+    }
+    
+    return {
+      id: m.aiMessageId,
+      role: m.role.toLowerCase(),
+      content: m.content,
+      recommendedProducts,
+      createdAt: m.createdAt
+    };
+  });
+
+  return {
+    id: conversation.aiConversationId,
+    title: conversation.title,
+    createdAt: conversation.createdAt,
+    updatedAt: conversation.updatedAt,
+    messages: formattedMessages
+  };
+}
+
+export async function proxyChat(payload: Record<string, any>, user?: any) {
   try {
-    const response = await aiClient.post("/chat", payload);
-    return response.data;
+    let aiConversationId = payload.conversationId || payload.context?.conversationId;
+    let history = payload.history || [];
+    const message = payload.message || "";
+    
+    // For authenticated users, handle database persistence
+    if (user) {
+      if (aiConversationId) {
+        // Verify ownership and load history
+        const conv = await getAiConversationById(aiConversationId, user.id);
+        if (!conv) {
+          throw new ApiError(404, "Conversation not found or access denied.");
+        }
+        
+        // Rebuild history from database
+        history = conv.messages.map(m => ({
+          role: m.role === "USER" ? "user" : "assistant",
+          content: m.content
+        }));
+      } else {
+        // Create new conversation
+        const title = message.substring(0, 50) || "New Conversation";
+        const newConv = await createAiConversation(user.id, title);
+        aiConversationId = newConv.aiConversationId;
+      }
+      
+      // Store user message
+      await createAiMessage(aiConversationId, "USER", message);
+    }
+    
+    const products = await getProducts({ includeDetails: true });
+
+    const available_products = products.map((p: any) => ({
+      productId: p.productId,
+      name: p.name,
+      description: p.description,
+      category: p.category,
+      material: p.material,
+      price: p.price,
+      stock: p.stock
+    }));
+
+    const enrichedPayload = {
+      message: message,
+      history: history,
+      context: {
+        ...(payload.context as Record<string, unknown> || {}),
+        available_products
+      }
+    };
+
+    const response = await aiClient.post("/chat", enrichedPayload);
+    const data = response.data;
+    
+    // Persist assistant message if authenticated
+    if (user && aiConversationId) {
+      await createAiMessage(
+        aiConversationId, 
+        "ASSISTANT", 
+        data.reply || "", 
+        data.recommended_product_ids || null
+      );
+      data.conversationId = aiConversationId;
+    }
+    
+    if (data.recommended_product_ids && Array.isArray(data.recommended_product_ids)) {
+      data.recommendedProducts = data.recommended_product_ids
+        .map((id: string) => products.find((p: any) => p.productId === id))
+        .filter(Boolean);
+    }
+    
+    return data;
   } catch (error) {
     handleAxiosError(error);
   }

@@ -3,18 +3,20 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult } from "../types/placement.types";
 
 interface AiPlacementPanelProps {
   productId: string;
+  onLaunchAr?: () => void;
 }
 
-export function AiPlacementPanel({ productId }: AiPlacementPanelProps) {
+export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProps) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<PlacementEvaluationResult | null>(null);
+  const [isDemoModeOpen, setIsDemoModeOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: evaluatePlacement, isPending } = usePlacement();
@@ -159,21 +161,47 @@ export function AiPlacementPanel({ productId }: AiPlacementPanelProps) {
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: "rgba(0,0,0,0.4)",
-                  backdropFilter: "blur(2px)",
+                  background: "rgba(0,0,0,0.6)",
+                  backdropFilter: "blur(4px)",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
                   color: "white",
-                  gap: "1rem",
+                  gap: "1.5rem",
                 }}
               >
-                <ScanLine size={48} style={{ animation: "pulse 1.5s infinite" }} />
-                <div style={{ fontWeight: 600, letterSpacing: "0.05em" }}>ANALYZING SPACE...</div>
+                <ScanLine size={48} style={{ animation: "pulse 1.5s infinite" }} color="var(--accent)" />
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
+                  <div style={{ fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>✨ Analyzing space</div>
+                  <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>Reading relative depth & clearance...</div>
+                </div>
               </div>
             )}
           </div>
+
+          {/* Sequential Loading Indicator underneath */}
+          {isPending && (
+            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "1.5rem", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)" }}>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1rem" }}>
+                ✨ LIMATA is analyzing your room...
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease" }}>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <span>Understanding the room</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease 1s both" }}>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <span>Evaluating available space</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-secondary)", animation: "fadeIn 0.5s ease 2s both" }}>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Evaluating placement clearance</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Action / Result Area */}
           {!result && !isPending && (
@@ -204,58 +232,87 @@ export function AiPlacementPanel({ productId }: AiPlacementPanelProps) {
             <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               
               {/* Primary Result Banner */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "1rem",
-                  borderRadius: "var(--radius-md)",
-                  background: result.suitable ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                  border: `1px solid ${result.suitable ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
-                }}
-              >
-                {result.suitable ? (
-                  <CheckCircle2 size={24} color="#16a34a" />
-                ) : (
-                  <XCircle size={24} color="#dc2626" />
-                )}
-                <div>
-                  <div style={{ fontWeight: 700, color: result.suitable ? "#16a34a" : "#dc2626", fontSize: "1.05rem" }}>
-                    {result.suitable ? "Looks like a good fit!" : "Might be a tight fit"}
+              <div style={{ padding: "1.5rem", borderRadius: "var(--radius-lg)", background: "var(--bg-base)", border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--fg-primary)" }}>
+                    LIMATA understands your space
                   </div>
-                  {!result.suitable && result.limiting_factor && (
-                    <div style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", marginTop: "0.25rem" }}>
-                      Limiting Factor: {result.limiting_factor}
+
+                  {/* What we detected */}
+                  {!!result.evaluation_metadata?.objects_detected && Array.isArray(result.evaluation_metadata.objects_detected) && result.evaluation_metadata.objects_detected.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>What we detected</div>
+                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)" }}>
+                        {result.evaluation_metadata.objects_detected.map(o => String(o).toLowerCase()).join(", ")} identified in your photo.
+                      </div>
                     </div>
                   )}
-                </div>
-              </div>
 
-              {/* Data Grid */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "0.75rem",
-                }}
-              >
-                <div style={{ background: "var(--bg-base)", padding: "1rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
-                  <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", fontWeight: 600, textTransform: "uppercase", marginBottom: "0.25rem" }}>
-                    Confidence
+                  {/* Depth & space / Estimated clearance */}
+                  {result.estimated_clearance && (
+                    <div>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Depth & space</div>
+                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", marginBottom: "0.5rem" }}>
+                        LIMATA analyzed the visual depth of the scene.
+                      </div>
+                      <div style={{ display: "flex", gap: "1.5rem", fontSize: "0.9rem", color: "var(--fg-primary)", fontWeight: 500 }}>
+                        {Object.entries(result.estimated_clearance).map(([k, v]) => (
+                          <div key={k}>
+                            {k.charAt(0).toUpperCase() + k.slice(1)}: {String(v)} cm
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Placement assessment */}
+                  <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>Placement assessment</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                      {result.suitable ? <CheckCircle2 size={18} color="#16a34a" /> : <XCircle size={18} color="#dc2626" />}
+                      <div style={{ fontWeight: 600, color: result.suitable ? "#16a34a" : "#dc2626", fontSize: "1rem" }}>
+                        {result.suitable ? "This product appears suitable for the evaluated area." : "Space may be limited"}
+                      </div>
+                    </div>
+                    
+                    {!result.suitable && result.limiting_factor && (
+                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", marginTop: "0.25rem" }}>
+                        {result.limiting_factor.charAt(0).toUpperCase() + result.limiting_factor.slice(1)} appears to be the main consideration for this placement.
+                      </div>
+                    )}
                   </div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)" }}>
-                    Heuristic Confidence: {Math.round(result.evaluation_confidence * 100)}%
-                  </div>
-                </div>
-
-                <div style={{ background: "var(--bg-base)", padding: "1rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border)" }}>
-                  <div style={{ fontSize: "0.75rem", color: "var(--fg-muted)", fontWeight: 600, textTransform: "uppercase", marginBottom: "0.25rem" }}>
-                    Orientation
-                  </div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 600, color: "var(--fg-primary)" }}>
-                    {result.evaluated_orientation ? result.evaluated_orientation.replace("_", " ") : "N/A"}
-                  </div>
+                  
+                  {/* AR Handoff */}
+                  {result.suitable && onLaunchAr && (
+                    <div style={{ marginTop: "0.5rem", paddingTop: "1.25rem", borderTop: "1px dashed var(--border)" }}>
+                      <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", marginBottom: "0.75rem", fontWeight: 500 }}>
+                        AI fit check complete. Now visualize the product at full scale.
+                      </p>
+                      <button
+                        onClick={onLaunchAr}
+                        style={{
+                          width: "100%",
+                          padding: "0.875rem",
+                          background: "var(--accent)",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "var(--radius-full)",
+                          fontSize: "0.9375rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "var(--shadow-md)",
+                          transition: "transform 0.2s"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+                        onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+                      >
+                        See it in your room &rarr;
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -280,7 +337,7 @@ export function AiPlacementPanel({ productId }: AiPlacementPanelProps) {
                         <AlertTriangle size={16} color={isDimensionsWarning ? "#d97706" : "var(--fg-secondary)"} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
                         <span style={{ fontSize: "0.8125rem", color: isDimensionsWarning ? "#d97706" : "var(--fg-secondary)", lineHeight: 1.5, fontWeight: isDimensionsWarning ? 500 : 400 }}>
                           {isDimensionsWarning 
-                            ? "Notice: Exact product dimensions are currently unavailable. This result is a heuristic visual estimation of space, not a metric-accurate measurement."
+                            ? "These measurements are visual estimates. Please check the product's exact dimensions before purchasing."
                             : warning}
                         </span>
                       </div>

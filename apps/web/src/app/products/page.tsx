@@ -66,7 +66,13 @@ function ProductsPageContent() {
   const [showVisualRecPanel, setShowVisualRecPanel] = useState(false);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
 
-  const { mutate: fetchAiRecs, data: aiData, isPending: aiIsPending, isError: aiIsError, reset: resetAiRecs } = useRecommendations();
+  const {
+    mutate: fetchAiRecs,
+    data: aiData,
+    isPending: aiIsPending,
+    isError: aiIsError,
+    reset: resetAiRecs,
+  } = useRecommendations();
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
   const { data, isLoading, isError } = useProducts(
@@ -230,59 +236,63 @@ function ProductsPageContent() {
               marginTop: "1.75rem",
             }}
           >
-            {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
-              const isActive = categoryParam === name;
-              return (
-                <button
-                  key={name}
-                  onClick={() => {
-                    if (isActive) {
-                      router.push("/products");
-                    } else {
-                      router.push(
-                        `/products?category=${encodeURIComponent(name)}`,
-                      );
-                    }
-                  }}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.4rem 0.875rem",
-                    borderRadius: "var(--radius-full)",
-                    fontSize: "0.8rem",
-                    fontWeight: 600,
-                    border: "1.5px solid",
-                    borderColor: isActive
-                      ? "rgba(201,169,110,0.55)"
-                      : "rgba(255,255,255,0.12)",
-                    background: isActive
-                      ? "rgba(201,169,110,0.12)"
-                      : "rgba(255,255,255,0.06)",
-                    color: isActive ? "var(--accent)" : "rgba(250,249,247,0.7)",
-                    cursor: "pointer",
-                    transition: "all 0.18s ease",
-                    fontFamily: "var(--font-sans)",
-                    backdropFilter: "blur(6px)",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.borderColor = "rgba(201,169,110,0.55)";
-                    el.style.background = "rgba(201,169,110,0.12)";
-                    el.style.color = "var(--accent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.borderColor = "rgba(255,255,255,0.12)";
-                    el.style.background = "rgba(255,255,255,0.06)";
-                    el.style.color = "rgba(250,249,247,0.7)";
-                  }}
-                >
-                  <Icon size={14} strokeWidth={1.8} />
-                  {name}
-                </button>
-              );
-            })}
+            {allCategories.map(
+              ({ name, Icon }: { name: string; Icon: LucideIcon }) => {
+                const isActive = categoryParam === name;
+                return (
+                  <button
+                    key={name}
+                    onClick={() => {
+                      if (isActive) {
+                        router.push("/products");
+                      } else {
+                        router.push(
+                          `/products?category=${encodeURIComponent(name)}`,
+                        );
+                      }
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.4rem 0.875rem",
+                      borderRadius: "var(--radius-full)",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      border: "1.5px solid",
+                      borderColor: isActive
+                        ? "rgba(201,169,110,0.55)"
+                        : "rgba(255,255,255,0.12)",
+                      background: isActive
+                        ? "rgba(201,169,110,0.12)"
+                        : "rgba(255,255,255,0.06)",
+                      color: isActive
+                        ? "var(--accent)"
+                        : "rgba(250,249,247,0.7)",
+                      cursor: "pointer",
+                      transition: "all 0.18s ease",
+                      fontFamily: "var(--font-sans)",
+                      backdropFilter: "blur(6px)",
+                    }}
+                    onMouseEnter={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "rgba(201,169,110,0.55)";
+                      el.style.background = "rgba(201,169,110,0.12)";
+                      el.style.color = "var(--accent)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "rgba(255,255,255,0.12)";
+                      el.style.background = "rgba(255,255,255,0.06)";
+                      el.style.color = "rgba(250,249,247,0.7)";
+                    }}
+                  >
+                    <Icon size={14} strokeWidth={1.8} />
+                    {name}
+                  </button>
+                );
+              },
+            )}
 
             <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
               {/* AI Recommendations Toggle */}
@@ -303,13 +313,17 @@ function ProductsPageContent() {
                   fontSize: "0.8rem",
                   fontWeight: 700,
                   border: "1.5px solid rgba(201,169,110,0.55)",
-                  background: showAiPanel ? "var(--accent)" : "rgba(201,169,110,0.15)",
+                  background: showAiPanel
+                    ? "var(--accent)"
+                    : "rgba(201,169,110,0.15)",
                   color: showAiPanel ? "#fff" : "var(--accent)",
                   cursor: "pointer",
                   transition: "all 0.18s ease",
                   fontFamily: "var(--font-sans)",
                   backdropFilter: "blur(6px)",
-                  boxShadow: showAiPanel ? "0 4px 14px rgba(201,169,110,0.4)" : "none",
+                  boxShadow: showAiPanel
+                    ? "0 4px 14px rgba(201,169,110,0.4)"
+                    : "none",
                 }}
               >
                 <Sparkles size={14} strokeWidth={2} />
@@ -331,17 +345,21 @@ function ProductsPageContent() {
                   fontSize: "0.8rem",
                   fontWeight: 700,
                   border: "1.5px solid rgba(139,92,246,0.55)", // distinct color for Visual Recs
-                  background: showVisualRecPanel ? "rgba(139,92,246,1)" : "rgba(139,92,246,0.15)",
+                  background: showVisualRecPanel
+                    ? "rgba(139,92,246,1)"
+                    : "rgba(139,92,246,0.15)",
                   color: showVisualRecPanel ? "#fff" : "rgba(139,92,246,1)",
                   cursor: "pointer",
                   transition: "all 0.18s ease",
                   fontFamily: "var(--font-sans)",
                   backdropFilter: "blur(6px)",
-                  boxShadow: showVisualRecPanel ? "0 4px 14px rgba(139,92,246,0.4)" : "none",
+                  boxShadow: showVisualRecPanel
+                    ? "0 4px 14px rgba(139,92,246,0.4)"
+                    : "none",
                 }}
               >
                 <Sparkles size={14} strokeWidth={2} />
-                {showVisualRecPanel ? "Close Shop Room" : "✨ Shop This Room"}
+                {showVisualRecPanel ? "Close Shop Room" : "Shop This Room"}
               </button>
             </div>
           </div>
@@ -532,25 +550,27 @@ function ProductsPageContent() {
           {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
             <div>
-              {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
-                const products = grouped?.get(name) ?? [];
-                if (products.length === 0) return null; // Don't show empty sections
-                return (
-                  <div
-                    key={name}
-                    ref={(el) => {
-                      if (el) sectionRefs.current.set(name, el);
-                      else sectionRefs.current.delete(name);
-                    }}
-                  >
-                    <CategorySection
-                      category={name}
-                      Icon={Icon}
-                      products={products}
-                    />
-                  </div>
-                );
-              })}
+              {allCategories.map(
+                ({ name, Icon }: { name: string; Icon: LucideIcon }) => {
+                  const products = grouped?.get(name) ?? [];
+                  if (products.length === 0) return null; // Don't show empty sections
+                  return (
+                    <div
+                      key={name}
+                      ref={(el) => {
+                        if (el) sectionRefs.current.set(name, el);
+                        else sectionRefs.current.delete(name);
+                      }}
+                    >
+                      <CategorySection
+                        category={name}
+                        Icon={Icon}
+                        products={products}
+                      />
+                    </div>
+                  );
+                },
+              )}
 
               {/* All sections empty */}
               {data.length === 0 && <ProductEmpty />}

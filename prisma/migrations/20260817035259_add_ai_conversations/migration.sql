@@ -1,0 +1,37 @@
+-- CreateEnum
+CREATE TYPE "AiRole" AS ENUM ('USER', 'ASSISTANT');
+
+-- CreateTable
+CREATE TABLE "AiConversation" (
+    "aiConversationId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "title" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "AiConversation_pkey" PRIMARY KEY ("aiConversationId")
+);
+
+-- CreateTable
+CREATE TABLE "AiMessage" (
+    "aiMessageId" TEXT NOT NULL,
+    "aiConversationId" TEXT NOT NULL,
+    "role" "AiRole" NOT NULL,
+    "content" TEXT NOT NULL,
+    "recommendedProducts" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "AiMessage_pkey" PRIMARY KEY ("aiMessageId")
+);
+
+-- CreateIndex
+CREATE INDEX "AiConversation_userId_idx" ON "AiConversation"("userId");
+
+-- CreateIndex
+CREATE INDEX "AiMessage_aiConversationId_idx" ON "AiMessage"("aiConversationId");
+
+-- AddForeignKey
+ALTER TABLE "AiConversation" ADD CONSTRAINT "AiConversation_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("userId") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AiMessage" ADD CONSTRAINT "AiMessage_aiConversationId_fkey" FOREIGN KEY ("aiConversationId") REFERENCES "AiConversation"("aiConversationId") ON DELETE CASCADE ON UPDATE CASCADE;
