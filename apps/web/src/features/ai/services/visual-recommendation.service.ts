@@ -13,12 +13,7 @@ export async function fetchVisualRecommendations(file: File) {
 
   const res = await api.post<ApiResponse<VisualRecommendationResponse>>(
     "/ai/visual-recommend",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
 
   return res.data.data;
