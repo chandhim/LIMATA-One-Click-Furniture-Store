@@ -179,17 +179,7 @@ function ProductsPageContent() {
           </div>
 
           {/* Heading */}
-          <h1
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              color: "var(--fg-inverse)",
-              lineHeight: 1.05,
-              marginBottom: "0.75rem",
-            }}
-          >
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white leading-tight mb-3">
             Furniture for
             <br />
             <span
@@ -228,14 +218,7 @@ function ProductsPageContent() {
           </div>
 
           {/* Category pills */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              marginTop: "1.75rem",
-            }}
-          >
+          <div className="flex flex-wrap items-center gap-2 mt-7">
             {allCategories.map(
               ({ name, Icon }: { name: string; Icon: LucideIcon }) => {
                 const isActive = categoryParam === name;
@@ -294,7 +277,7 @@ function ProductsPageContent() {
               },
             )}
 
-            <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem" }}>
+            <div className="flex flex-wrap items-center gap-2 mt-4 sm:mt-0 sm:ml-auto w-full sm:w-auto">
               {/* AI Recommendations Toggle */}
               <button
                 onClick={() => {
