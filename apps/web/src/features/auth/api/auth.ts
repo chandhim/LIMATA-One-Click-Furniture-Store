@@ -93,12 +93,7 @@ export async function uploadAvatar(file: File) {
     formData.append("avatar", file);
     const response = await api.post<ApiResponse<{ url: string }>>(
       "/auth/profile/avatar",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
+      formData
     );
     return response.data.data.url;
   } catch (error) {

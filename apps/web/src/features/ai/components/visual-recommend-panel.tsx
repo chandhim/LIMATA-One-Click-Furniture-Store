@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, MessageSquare, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useVisualRecommend } from "../hooks/use-visual-recommend";
 import { ProductCard } from "@/features/products/components/product-card";
 import type { ProductSummary } from "@/features/products/types/product.types";
@@ -22,8 +23,13 @@ export function VisualRecommendPanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: analyzeRoom, isPending, data, isError, reset } = useVisualRecommend();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to use Shop This Room");
+      return;
+    }
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
@@ -44,6 +50,10 @@ export function VisualRecommendPanel({
   };
 
   const handleAnalyze = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to use Shop This Room");
+      return;
+    }
     if (!selectedImage) return;
     analyzeRoom(
       { image: selectedImage },

@@ -12,11 +12,10 @@ export async function evaluatePlacement(productId: string, image: File) {
   formData.append("productId", productId);
   formData.append("image", image);
 
-  const res = await api.post<ApiResponse<PlacementEvaluationResult>>("/ai/placement", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await api.post<ApiResponse<PlacementEvaluationResult>>(
+    "/ai/placement",
+    formData
+  );
 
   return res.data.data;
 }
