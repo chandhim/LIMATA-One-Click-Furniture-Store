@@ -44,6 +44,8 @@ export async function optimizeGlb(
     }
 
     // 2. Execute gltfpack
+    // This forks a child process to run an external C++ binary (gltfpack) that applies Draco compression 
+    // and mesh optimization algorithms to significantly reduce the 3D model file size without losing quality.
     const args = [
       '-i', tempInputPath,
       '-o', tempOutputPath,

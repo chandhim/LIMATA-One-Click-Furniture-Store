@@ -256,68 +256,6 @@ export async function toggleAdminUserStatusController(
   }
 }
 
-// 3. Review Management
-export async function listAdminReviewsController(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const reviews = await prisma.review.findMany({
-      orderBy: { createdAt: "desc" },
-      include: {
-        product: { select: { productId: true, name: true, images: true } },
-        user: { select: { userId: true, name: true, email: true } },
-      },
-    });
-
-    return sendResponse(res, 200, reviews);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function toggleReviewApprovalController(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const { reviewId } = req.params;
-    const { isApproved } = req.body;
-
-    if (typeof isApproved !== "boolean") {
-      throw new ApiError(400, "isApproved must be a boolean");
-    }
-
-    const updatedReview = await prisma.review.update({
-      where: { reviewId },
-      data: { isApproved },
-    });
-
-    return sendResponse(res, 200, updatedReview);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function deleteAdminReviewController(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const { reviewId } = req.params;
-
-    await prisma.review.delete({
-      where: { reviewId },
-    });
-
-    return sendResponse(res, 200, { reviewId });
-  } catch (error) {
-    return next(error);
-  }
-}
 
 // 4. Categories Management
 export async function listAdminCategoriesController(

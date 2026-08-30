@@ -9,6 +9,10 @@ import { ProductSearch } from "@/features/products/components/product-search";
 import { ProductEmpty } from "@/features/products/components/product-empty";
 import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import { CategorySection } from "@/features/products/components/category-section";
+import { AiRecommendationPanel } from "@/features/ai/components/ai-recommendation-panel";
+import { AiRecommendationView } from "@/features/ai/components/ai-recommendation-view";
+import { VisualRecommendPanel } from "@/features/ai/components/visual-recommend-panel";
+import { useRecommendations } from "@/features/ai/hooks/use-recommendations";
 import { MainLayout } from "@/components/layout/main-layout";
 import type { ProductSummary } from "@/features/products/types/product.types";
 import {
@@ -19,6 +23,7 @@ import {
   TreePine,
   ChefHat,
   Armchair,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,7 +62,17 @@ function ProductsPageContent() {
   const categoryParam = searchParams.get("category") || undefined;
 
   const [search, setSearch] = useState<string>("");
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const [showVisualRecPanel, setShowVisualRecPanel] = useState(false);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  const {
+    mutate: fetchAiRecs,
+    data: aiData,
+    isPending: aiIsPending,
+    isError: aiIsError,
+    reset: resetAiRecs,
+  } = useRecommendations();
 
   const debouncedSearch = search.trim().length >= 1 ? search.trim() : undefined;
   const { data, isLoading, isError } = useProducts(
@@ -164,17 +179,7 @@ function ProductsPageContent() {
           </div>
 
           {/* Heading */}
-          <h1
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              color: "var(--fg-inverse)",
-              lineHeight: 1.05,
-              marginBottom: "0.75rem",
-            }}
-          >
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-white leading-tight mb-3">
             Furniture for
             <br />
             <span
@@ -213,67 +218,133 @@ function ProductsPageContent() {
           </div>
 
           {/* Category pills */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              marginTop: "1.75rem",
-            }}
-          >
-            {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
-              const isActive = categoryParam === name;
-              return (
-                <button
-                  key={name}
-                  onClick={() => {
-                    if (isActive) {
-                      router.push("/products");
-                    } else {
-                      router.push(
-                        `/products?category=${encodeURIComponent(name)}`,
-                      );
-                    }
-                  }}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.4rem 0.875rem",
-                    borderRadius: "var(--radius-full)",
-                    fontSize: "0.8rem",
-                    fontWeight: 600,
-                    border: "1.5px solid",
-                    borderColor: isActive
-                      ? "rgba(201,169,110,0.55)"
-                      : "rgba(255,255,255,0.12)",
-                    background: isActive
-                      ? "rgba(201,169,110,0.12)"
-                      : "rgba(255,255,255,0.06)",
-                    color: isActive ? "var(--accent)" : "rgba(250,249,247,0.7)",
-                    cursor: "pointer",
-                    transition: "all 0.18s ease",
-                    fontFamily: "var(--font-sans)",
-                    backdropFilter: "blur(6px)",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.borderColor = "rgba(201,169,110,0.55)";
-                    el.style.background = "rgba(201,169,110,0.12)";
-                    el.style.color = "var(--accent)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.borderColor = "rgba(255,255,255,0.12)";
-                    el.style.background = "rgba(255,255,255,0.06)";
-                    el.style.color = "rgba(250,249,247,0.7)";
-                  }}
-                >
-                  <Icon size={14} strokeWidth={1.8} />
-                  {name}
-                </button>
-              );
-            })}
+          <div className="flex flex-wrap items-center gap-2 mt-7">
+            {allCategories.map(
+              ({ name, Icon }: { name: string; Icon: LucideIcon }) => {
+                const isActive = categoryParam === name;
+                return (
+                  <button
+                    key={name}
+                    onClick={() => {
+                      if (isActive) {
+                        router.push("/products");
+                      } else {
+                        router.push(
+                          `/products?category=${encodeURIComponent(name)}`,
+                        );
+                      }
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.4rem 0.875rem",
+                      borderRadius: "var(--radius-full)",
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      border: "1.5px solid",
+                      borderColor: isActive
+                        ? "rgba(201,169,110,0.55)"
+                        : "rgba(255,255,255,0.12)",
+                      background: isActive
+                        ? "rgba(201,169,110,0.12)"
+                        : "rgba(255,255,255,0.06)",
+                      color: isActive
+                        ? "var(--accent)"
+                        : "rgba(250,249,247,0.7)",
+                      cursor: "pointer",
+                      transition: "all 0.18s ease",
+                      fontFamily: "var(--font-sans)",
+                      backdropFilter: "blur(6px)",
+                    }}
+                    onMouseEnter={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "rgba(201,169,110,0.55)";
+                      el.style.background = "rgba(201,169,110,0.12)";
+                      el.style.color = "var(--accent)";
+                    }}
+                    onMouseLeave={(e) => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.borderColor = "rgba(255,255,255,0.12)";
+                      el.style.background = "rgba(255,255,255,0.06)";
+                      el.style.color = "rgba(250,249,247,0.7)";
+                    }}
+                  >
+                    <Icon size={14} strokeWidth={1.8} />
+                    {name}
+                  </button>
+                );
+              },
+            )}
+
+            <div className="flex flex-wrap items-center gap-2 mt-4 sm:mt-0 sm:ml-auto w-full sm:w-auto">
+              {/* AI Recommendations Toggle */}
+              <button
+                onClick={() => {
+                  setShowAiPanel(!showAiPanel);
+                  if (!showAiPanel) setShowVisualRecPanel(false);
+                  if (showAiPanel) {
+                    resetAiRecs();
+                  }
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.4rem 0.875rem",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  border: "1.5px solid rgba(201,169,110,0.55)",
+                  background: showAiPanel
+                    ? "var(--accent)"
+                    : "rgba(201,169,110,0.15)",
+                  color: showAiPanel ? "#fff" : "var(--accent)",
+                  cursor: "pointer",
+                  transition: "all 0.18s ease",
+                  fontFamily: "var(--font-sans)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: showAiPanel
+                    ? "0 4px 14px rgba(201,169,110,0.4)"
+                    : "none",
+                }}
+              >
+                <Sparkles size={14} strokeWidth={2} />
+                {showAiPanel ? "Close AI Matches" : "AI Recommendations"}
+              </button>
+
+              {/* Shop This Room Toggle */}
+              <button
+                onClick={() => {
+                  setShowVisualRecPanel(!showVisualRecPanel);
+                  if (!showVisualRecPanel) setShowAiPanel(false);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.4rem 0.875rem",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  border: "1.5px solid rgba(139,92,246,0.55)", // distinct color for Visual Recs
+                  background: showVisualRecPanel
+                    ? "rgba(139,92,246,1)"
+                    : "rgba(139,92,246,0.15)",
+                  color: showVisualRecPanel ? "#fff" : "rgba(139,92,246,1)",
+                  cursor: "pointer",
+                  transition: "all 0.18s ease",
+                  fontFamily: "var(--font-sans)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: showVisualRecPanel
+                    ? "0 4px 14px rgba(139,92,246,0.4)"
+                    : "none",
+                }}
+              >
+                <Sparkles size={14} strokeWidth={2} />
+                {showVisualRecPanel ? "Close Shop Room" : "Shop This Room"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -292,6 +363,38 @@ function ProductsPageContent() {
             margin: "0 auto",
           }}
         >
+          {/* ── AI Recommendations Panel ── */}
+          {showAiPanel && (
+            <div style={{ marginBottom: "2rem" }}>
+              <AiRecommendationPanel
+                onSubmit={(prefs) => fetchAiRecs(prefs)}
+                onClose={() => {
+                  setShowAiPanel(false);
+                  resetAiRecs();
+                }}
+              />
+              {(aiIsPending || aiIsError || aiData) && (
+                <AiRecommendationView
+                  isPending={aiIsPending}
+                  isError={aiIsError}
+                  data={aiData}
+                  allProducts={data || []}
+                  onClear={() => resetAiRecs()}
+                />
+              )}
+            </div>
+          )}
+
+          {/* ── Shop This Room Panel ── */}
+          {showVisualRecPanel && (
+            <div style={{ marginBottom: "2rem" }}>
+              <VisualRecommendPanel
+                allProducts={data || []}
+                onClose={() => setShowVisualRecPanel(false)}
+              />
+            </div>
+          )}
+
           {/* ── Loading Skeleton ── */}
           {isLoading && (
             <div
@@ -430,25 +533,27 @@ function ProductsPageContent() {
           {/* ── BROWSE MODE: category sections (full width) ── */}
           {!isLoading && !isSearchMode && data && (
             <div>
-              {allCategories.map(({ name, Icon }: { name: string; Icon: LucideIcon }) => {
-                const products = grouped?.get(name) ?? [];
-                if (products.length === 0) return null; // Don't show empty sections
-                return (
-                  <div
-                    key={name}
-                    ref={(el) => {
-                      if (el) sectionRefs.current.set(name, el);
-                      else sectionRefs.current.delete(name);
-                    }}
-                  >
-                    <CategorySection
-                      category={name}
-                      Icon={Icon}
-                      products={products}
-                    />
-                  </div>
-                );
-              })}
+              {allCategories.map(
+                ({ name, Icon }: { name: string; Icon: LucideIcon }) => {
+                  const products = grouped?.get(name) ?? [];
+                  if (products.length === 0) return null; // Don't show empty sections
+                  return (
+                    <div
+                      key={name}
+                      ref={(el) => {
+                        if (el) sectionRefs.current.set(name, el);
+                        else sectionRefs.current.delete(name);
+                      }}
+                    >
+                      <CategorySection
+                        category={name}
+                        Icon={Icon}
+                        products={products}
+                      />
+                    </div>
+                  );
+                },
+              )}
 
               {/* All sections empty */}
               {data.length === 0 && <ProductEmpty />}

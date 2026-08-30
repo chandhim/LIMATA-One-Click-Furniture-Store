@@ -4,6 +4,7 @@ import { ApiError } from "@/shared/errors/api-error";
 import type { CreateOrderInput } from "./order.validation";
 import { findOrders, findOrder, updateOrder } from "./order.repository";
 import { createNotification } from "../notifications/notification.service";
+import { deliveryService } from "../delivery/delivery.service";
 
 // Notify all Admins (acting as sellers)
 async function notifySellers(title: string, message: string) {
@@ -71,18 +72,8 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     subtotal += item.product.price * item.quantity;
   }
 
-  let standardCharge = 0;
-  if (subtotal < 5000) standardCharge = 1000;
-  else if (subtotal <= 15000) standardCharge = 3000;
-  else standardCharge = 5000;
-
-  let expressCharge = 0;
-  if (subtotal < 5000) expressCharge = 3000;
-  else if (subtotal <= 15000) expressCharge = 5000;
-  else expressCharge = 10000;
-
-  const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
-  const totalAmount = subtotal + shippingCharge;
+  const deliveryCharge = await deliveryService.calculateCharge(input.deliveryMethod, subtotal);
+  const totalAmount = subtotal + deliveryCharge;
 
   // 3. Execute database transaction
   const order = await prisma.$transaction(async (tx) => {
@@ -100,6 +91,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         shippingAddress: input.shippingAddress,
         shippingCity: input.shippingCity,
         deliveryMethod: input.deliveryMethod,
+        deliveryCharge,
       },
     });
 
@@ -388,3 +380,96 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
 
   return { success: true };
 }
+
+export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
+  const order = await findOrder(orderId);
+  if (!order) {
+    throw new ApiError(404, "Order not found");
+  }
+
+  // Ensure user owns the order
+  if (order.userId !== userId) {
+    throw new ApiError(403, "Forbidden");
+  }
+
+  // Ensure it's PayHere and pending
+  if (order.paymentMethod !== "PAYHERE") {
+    throw new ApiError(400, "Order is not a PayHere order");
+  }
+
+  if (order.paymentStatus === "PAID") {
+    return order; // Already paid
+  }
+
+  // Perform the same transaction as the webhook
+  await prisma.$transaction(async (tx) => {
+    // 1. Double check stock for final checkout
+    for (const item of order.items) {
+      const product = await tx.product.findUnique({
+        where: { productId: item.productId },
+        select: { stock: true, name: true },
+      });
+      if (!product || product.stock < item.quantity) {
+        throw new ApiError(
+          400,
+          `Stock check failed for "${product?.name || item.productId}" during payment settlement.`,
+        );
+      }
+    }
+
+    // 2. Update order statuses
+    await tx.order.update({
+      where: { orderId: order.orderId },
+      data: {
+        paymentStatus: "PAID",
+        orderStatus: "CONFIRMED",
+      },
+    });
+
+    // 3. Decrement product stocks
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { productId: item.productId },
+        data: {
+          stock: {
+            decrement: item.quantity,
+          },
+        },
+      });
+    }
+
+    // 4. Clear User Cart
+    const cart = await tx.cart.findUnique({
+      where: { userId: order.userId },
+      select: { cartId: true },
+    });
+    if (cart) {
+      await tx.cartItem.deleteMany({
+        where: { cartId: cart.cartId },
+      });
+    }
+  });
+
+  // Send notifications
+  await notifyCustomer(
+    order.userId,
+    "Payment Successful",
+    `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
+  );
+  await notifyCustomer(
+    order.userId,
+    "Order Confirmed",
+    `Your order #${order.orderId} has been confirmed.`,
+  );
+  await notifySellers(
+    "Payment Received",
+    `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
+  );
+  await notifySellers(
+    "Order Requires Processing",
+    `Order #${order.orderId} is confirmed and requires processing.`,
+  );
+
+  return findOrder(orderId);
+}
+

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAdminProducts } from "@/features/admin-products/hooks/use-admin-products";
@@ -10,6 +11,50 @@ import { Edit3, Trash2, Plus, Search, Package } from "lucide-react";
 export function ProductTable() {
   const { data: products, isLoading } = useAdminProducts();
   const deleteProduct = useDeleteProduct();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [stockFilter, setStockFilter] = useState("all");
+
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    return products.filter((product) => {
+      // Search
+      const matchesSearch =
+        searchTerm === "" ||
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.productId.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // Category filter (values: "all", "living", "bedroom", "dining", "office")
+      let matchesCategory = true;
+      if (categoryFilter !== "all") {
+        const dbCategory = product.category.toLowerCase();
+        if (categoryFilter === "living") {
+          matchesCategory = dbCategory.includes("living");
+        } else if (categoryFilter === "bedroom") {
+          matchesCategory = dbCategory.includes("bedroom");
+        } else if (categoryFilter === "dining") {
+          matchesCategory = dbCategory.includes("dining");
+        } else if (categoryFilter === "office") {
+          matchesCategory = dbCategory.includes("office");
+        }
+      }
+
+      // Stock filter (values: "all", "in-stock", "low", "out")
+      let matchesStock = true;
+      if (stockFilter !== "all") {
+        if (stockFilter === "out") {
+          matchesStock = product.stock === 0;
+        } else if (stockFilter === "low") {
+          matchesStock = product.stock > 0 && product.stock <= 5;
+        } else if (stockFilter === "in-stock") {
+          matchesStock = product.stock > 0; 
+        }
+      }
+
+      return matchesSearch && matchesCategory && matchesStock;
+    });
+  }, [products, searchTerm, categoryFilter, stockFilter]);
 
   if (isLoading) {
     return (
@@ -149,6 +194,8 @@ export function ProductTable() {
           <input
             type="text"
             placeholder="Search products by name or SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: "100%",
               padding: "0.5rem 1rem 0.5rem 2.25rem",
@@ -175,6 +222,8 @@ export function ProductTable() {
           />
         </div>
         <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
           style={{
             padding: "0.5rem 2rem 0.5rem 1rem",
             fontSize: "0.85rem",
@@ -199,6 +248,8 @@ export function ProductTable() {
           <option value="office">Office</option>
         </select>
         <select
+          value={stockFilter}
+          onChange={(e) => setStockFilter(e.target.value)}
           style={{
             padding: "0.5rem 2rem 0.5rem 1rem",
             fontSize: "0.85rem",
@@ -262,7 +313,14 @@ export function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product: Product, idx: number) => {
+            {filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ textAlign: "center", padding: "3rem", color: "var(--fg-muted)" }}>
+                  No products found matching your filters.
+                </td>
+              </tr>
+            ) : (
+              filteredProducts.map((product: Product, idx: number) => {
               const isHighStock = product.stock > 5;
               const isLowStock = product.stock > 0 && product.stock <= 5;
 
@@ -271,7 +329,7 @@ export function ProductTable() {
                   key={product.productId}
                   style={{
                     borderBottom:
-                      idx < products.length - 1
+                      idx < filteredProducts.length - 1
                         ? "1px solid var(--border)"
                         : "none",
                     transition: "background 0.2s ease",
@@ -492,7 +550,7 @@ export function ProductTable() {
                   </td>
                 </tr>
               );
-            })}
+            }))}
           </tbody>
         </table>
       </div>

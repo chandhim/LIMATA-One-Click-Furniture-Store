@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ai-service:
+    build: .
+    container_name: limata_ai_service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./weights:/app/weights
+      - /tmp/limata_ai_uploads:/tmp/limata_ai_uploads
+    environment:
+      - APP_NAME=LIMATA AI Service
+      - DEBUG=True
+      - HOST=0.0.0.0
+      - PORT=8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped

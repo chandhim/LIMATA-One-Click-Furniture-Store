@@ -12,11 +12,11 @@ import {
   ShoppingBag,
   ShoppingCart,
   Users,
-  Star,
   MessageSquare,
   Bell,
   ArrowUpRight,
   LogOut,
+  Truck,
 } from "lucide-react";
 
 type NavGroup = {
@@ -48,7 +48,6 @@ const navGroups: NavGroup[] = [
     group: "Users",
     items: [
       { label: "Customers", href: "/admin/customers", icon: Users },
-      { label: "Reviews", href: "/admin/reviews", icon: Star },
     ],
   },
   {
@@ -63,6 +62,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Homepage Content", href: "/admin/homepage", icon: Home },
       { label: "Footer Links", href: "/admin/footer", icon: FileText },
+      { label: "Delivery Rates", href: "/admin/delivery", icon: Truck },
       { label: "Store Settings", href: "/admin/settings", icon: Settings },
     ],
   },

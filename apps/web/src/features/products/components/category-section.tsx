@@ -23,16 +23,7 @@ export function CategorySection({
       style={{ marginBottom: "4rem" }}
     >
       {/* Section Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "space-between",
-          marginBottom: "1.75rem",
-          paddingBottom: "1.25rem",
-          borderBottom: "1px solid var(--border)",
-        }}
-      >
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-7 pb-5 border-b border-[var(--border)]">
         <div>
           <div
             style={{

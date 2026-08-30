@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useCreateOrder, ORDERS_QUERY_KEY } from "./use-orders";
-import { getPaymentParams, deleteDraftOrder } from "../services/order.service";
+import { getPaymentParams, deleteDraftOrder, confirmPaymentClientSide } from "../services/order.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCartStore } from "@/store/use-cart-store";
 import { updateProfile } from "@/features/auth/api/auth";
@@ -35,7 +35,7 @@ export function useCheckout() {
   const [shippingPhone, setShippingPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingCity, setShippingCity] = useState("");
-  const [deliveryMethod, setDeliveryMethod] = useState("Standard");
+  const [deliveryMethod, setDeliveryMethod] = useState<"STANDARD" | "FAST_COURIER">("STANDARD");
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "PAYHERE">("COD");
   const [saveToProfile, setSaveToProfile] = useState(false);
 
@@ -139,8 +139,16 @@ export function useCheckout() {
         ).payhere;
 
         if (typeof window !== "undefined" && payhere) {
-          payhere.onCompleted = function (orderId: string) {
+          payhere.onCompleted = async function (orderId: string) {
             console.log("Payment completed. OrderID:", orderId);
+            
+            try {
+              // Ensure order is marked as PAID immediately for local testing or when webhook is delayed
+              await confirmPaymentClientSide(orderId);
+            } catch (err) {
+              console.error("Failed to confirm payment on client side:", err);
+            }
+
             resetCartCount();
             queryClient.invalidateQueries({ queryKey: ["cart"] });
             queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
