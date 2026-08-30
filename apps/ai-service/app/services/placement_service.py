@@ -3,16 +3,12 @@ import numpy as np
 import logging
 from fastapi import UploadFile
 
-from app.ml.registry import registry
-from app.ml.model_loader import ModelLoader
 from app.ml.ai_orchestrator import AIOrchestrator
 from app.ml.placement.result import PlacementEvaluationResult, FurnitureMetadata
 from app.core.exceptions import AIServiceException
+from app.ml.dependencies import global_loader
 
 logger = logging.getLogger(__name__)
-
-# Instantiate global loader
-global_loader = ModelLoader(registry)
 
 class PlacementService:
     def __init__(self):
