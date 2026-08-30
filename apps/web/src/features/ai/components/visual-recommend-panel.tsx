@@ -104,7 +104,7 @@ export function VisualRecommendPanel({
         padding: "2rem",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
           <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.5rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
             <Sparkles size={24} color="var(--accent)" />
@@ -134,7 +134,7 @@ export function VisualRecommendPanel({
 
       {/* Input or Result Split */}
       {!data && !isError && (
-        <div style={{ display: "grid", gridTemplateColumns: selectedImage ? "1fr 1fr" : "1fr", gap: "2rem", alignItems: "start" }}>
+        <div className={`grid gap-8 items-start ${selectedImage ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
           
           {/* Upload / Camera Area */}
           {!selectedImage ? (
@@ -341,7 +341,7 @@ export function VisualRecommendPanel({
       {data && (
         <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "start" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
              <div style={{ position: "relative", width: "100%", aspectRatio: "4/3", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--border)" }}>
                {previewUrl && <Image src={previewUrl} alt="Analyzed Room" fill className="object-cover" />}
                
