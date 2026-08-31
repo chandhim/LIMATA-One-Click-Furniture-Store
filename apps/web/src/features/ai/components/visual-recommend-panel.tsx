@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, MessageSquare, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useVisualRecommend } from "../hooks/use-visual-recommend";
 import { ProductCard } from "@/features/products/components/product-card";
 import type { ProductSummary } from "@/features/products/types/product.types";
@@ -21,9 +22,14 @@ export function VisualRecommendPanel({
   const [isCameraActive, setIsCameraActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: analyzeRoom, isPending, data, isError, reset } = useVisualRecommend();
+  const { mutate: analyzeRoom, isPending, data, isError, error, reset } = useVisualRecommend();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to use Shop This Room");
+      return;
+    }
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
@@ -44,12 +50,16 @@ export function VisualRecommendPanel({
   };
 
   const handleAnalyze = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to use Shop This Room");
+      return;
+    }
     if (!selectedImage) return;
     analyzeRoom(
       { image: selectedImage },
       {
         onError: () => {
-          toast.error("Failed to analyze room. Please try again.");
+          // Toast removed here, error state handles it in the UI natively
         },
       }
     );
@@ -84,6 +94,7 @@ export function VisualRecommendPanel({
 
   return (
     <div
+      className="p-4 sm:p-8"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -91,10 +102,9 @@ export function VisualRecommendPanel({
         background: "var(--bg-surface)",
         borderRadius: "var(--radius-xl)",
         border: "1px solid var(--border)",
-        padding: "2rem",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
           <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.5rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
             <Sparkles size={24} color="var(--accent)" />
@@ -124,7 +134,7 @@ export function VisualRecommendPanel({
 
       {/* Input or Result Split */}
       {!data && !isError && (
-        <div style={{ display: "grid", gridTemplateColumns: selectedImage ? "1fr 1fr" : "1fr", gap: "2rem", alignItems: "start" }}>
+        <div className={`grid gap-8 items-start ${selectedImage ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
           
           {/* Upload / Camera Area */}
           {!selectedImage ? (
@@ -228,7 +238,7 @@ export function VisualRecommendPanel({
               </div>
 
               {!isPending && (
-                <div style={{ display: "flex", gap: "1rem" }}>
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
                   <button
                     onClick={handleAnalyze}
                     style={{
@@ -253,6 +263,7 @@ export function VisualRecommendPanel({
                   <button
                     onClick={handleClear}
                     style={{
+                      width: "100%",
                       padding: "0.875rem 1.5rem",
                       background: "var(--bg-base)",
                       color: "var(--fg-secondary)",
@@ -318,12 +329,20 @@ export function VisualRecommendPanel({
       )}
 
       {/* Error State */}
-      {isError && (
-        <div style={{ padding: "2rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
-          <AlertCircle size={32} color="#ef4444" style={{ marginBottom: "1rem", marginInline: "auto" }} />
-          <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No furniture could be confidently identified</h3>
-          <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "1.5rem" }}>Try uploading a clearer room photo with a wider view so our AI can see the space.</p>
-          <button onClick={handleClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "var(--bg-surface)", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Start Over</button>
+      {isError && error && (
+        <div 
+          aria-live="polite"
+          className="animate-fade-in"
+          style={{ padding: "2rem", background: "var(--bg-base)", border: "1px solid var(--border-strong)", borderRadius: "var(--radius-lg)", textAlign: "center" }}
+        >
+          <AlertCircle size={32} color="var(--accent-dark)" style={{ marginBottom: "1rem", marginInline: "auto" }} />
+          <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+            {error.type === 'validation' ? "Image Analysis Failed" : "Unable to scan"}
+          </h3>
+          <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "1.5rem" }}>
+            {error.message}
+          </p>
+          <button onClick={handleClear} className="btn-ghost" style={{ padding: "0.5rem 1rem", borderRadius: "var(--radius-full)", fontSize: "0.875rem", fontWeight: 500, cursor: "pointer" }}>Start Over</button>
         </div>
       )}
 
@@ -331,7 +350,7 @@ export function VisualRecommendPanel({
       {data && (
         <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "start" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
              <div style={{ position: "relative", width: "100%", aspectRatio: "4/3", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--border)" }}>
                {previewUrl && <Image src={previewUrl} alt="Analyzed Room" fill className="object-cover" />}
                

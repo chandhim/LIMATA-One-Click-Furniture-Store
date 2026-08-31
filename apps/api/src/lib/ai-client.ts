@@ -5,7 +5,7 @@ const AI_SERVICE_PORT = process.env.AI_SERVICE_PORT || "8000";
 const AI_SERVICE_TIMEOUT = parseInt(process.env.AI_SERVICE_TIMEOUT || "60000", 10);
 
 const protocol = AI_SERVICE_PORT === "443" ? "https" : "http";
-const baseURL = `${protocol}://${AI_SERVICE_HOST}${AI_SERVICE_PORT === "80" || AI_SERVICE_PORT === "443" ? "" : `:${AI_SERVICE_PORT}`}`;
+const baseURL = process.env.AI_SERVICE_URL || `${protocol}://${AI_SERVICE_HOST}${AI_SERVICE_PORT === "80" || AI_SERVICE_PORT === "443" ? "" : `:${AI_SERVICE_PORT}`}`;
 
 export const aiClient = axios.create({
   baseURL,
@@ -15,4 +15,16 @@ export const aiClient = axios.create({
   },
 });
 
-// Future interceptors can be configured here
+// Request interceptor to handle FormData boundary generation correctly
+aiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData && config.headers) {
+    if (typeof config.headers.delete === "function") {
+      config.headers.delete("Content-Type");
+      config.headers.delete("content-type");
+    } else {
+      delete config.headers["Content-Type"];
+      delete config.headers["content-type"];
+    }
+  }
+  return config;
+});
