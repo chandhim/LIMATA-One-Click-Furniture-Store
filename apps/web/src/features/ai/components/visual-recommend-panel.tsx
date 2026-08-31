@@ -22,7 +22,7 @@ export function VisualRecommendPanel({
   const [isCameraActive, setIsCameraActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate: analyzeRoom, isPending, data, isError, reset } = useVisualRecommend();
+  const { mutate: analyzeRoom, isPending, data, isError, error, reset } = useVisualRecommend();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +59,7 @@ export function VisualRecommendPanel({
       { image: selectedImage },
       {
         onError: () => {
-          toast.error("Failed to analyze room. Please try again.");
+          // Toast removed here, error state handles it in the UI natively
         },
       }
     );
@@ -328,12 +328,20 @@ export function VisualRecommendPanel({
       )}
 
       {/* Error State */}
-      {isError && (
-        <div style={{ padding: "2rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
-          <AlertCircle size={32} color="#ef4444" style={{ marginBottom: "1rem", marginInline: "auto" }} />
-          <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No furniture could be confidently identified</h3>
-          <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "1.5rem" }}>Try uploading a clearer room photo with a wider view so our AI can see the space.</p>
-          <button onClick={handleClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "var(--bg-surface)", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Start Over</button>
+      {isError && error && (
+        <div 
+          aria-live="polite"
+          className="animate-fade-in"
+          style={{ padding: "2rem", background: "var(--bg-base)", border: "1px solid var(--border-strong)", borderRadius: "var(--radius-lg)", textAlign: "center" }}
+        >
+          <AlertCircle size={32} color="var(--accent-dark)" style={{ marginBottom: "1rem", marginInline: "auto" }} />
+          <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>
+            {error.type === 'validation' ? "Image Analysis Failed" : "Unable to scan"}
+          </h3>
+          <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", marginBottom: "1.5rem" }}>
+            {error.message}
+          </p>
+          <button onClick={handleClear} className="btn-ghost" style={{ padding: "0.5rem 1rem", borderRadius: "var(--radius-full)", fontSize: "0.875rem", fontWeight: 500, cursor: "pointer" }}>Start Over</button>
         </div>
       )}
 

@@ -412,21 +412,28 @@ export function AiChatWidget() {
                 
                 {error && (
                   <div
+                    aria-live="polite"
+                    className="animate-fade-up"
                     style={{
                       display: "flex",
-                      alignItems: "center",
+                      alignItems: "flex-start",
                       gap: "0.5rem",
-                      color: "#e74c3c",
+                      color: "var(--accent-dark)",
                       fontSize: "0.85rem",
-                      justifyContent: "center",
                       marginTop: "0.5rem",
-                      padding: "0.75rem",
-                      background: "rgba(231, 76, 60, 0.1)",
-                      borderRadius: "var(--radius-md)"
+                      padding: "0.75rem 1rem",
+                      background: "rgba(245, 158, 11, 0.05)",
+                      border: "1px solid rgba(201, 169, 110, 0.3)",
+                      borderRadius: "16px 16px 16px 4px",
+                      maxWidth: "85%",
+                      boxShadow: "var(--shadow-sm)"
                     }}
                   >
-                    <AlertCircle size={16} />
-                    <span>{error}</span>
+                    <AlertCircle size={16} style={{ flexShrink: 0, marginTop: "0.1rem" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                      <span style={{ fontWeight: 600 }}>{error.type === 'network' ? 'Connection Issue' : 'Oops!'}</span>
+                      <span style={{ color: "var(--fg-secondary)", lineHeight: 1.4 }}>{error.message}</span>
+                    </div>
                   </div>
                 )}
                 
