@@ -69,8 +69,6 @@ export function ARLauncherView({ modelUrl, productName, dimensions }: ARLauncher
     "/r2-models",
   );
   
-  const iosUrl = modelUrl.replace(/\.glb$/i, ".usdz");
-
   // Post-AR Return Experience
   if (hasPresented && arStatus === "not-presenting") {
     return (
@@ -119,7 +117,6 @@ export function ARLauncherView({ modelUrl, productName, dimensions }: ARLauncher
         {React.createElement("model-viewer", {
           ref: modelViewerRef,
           src: fetchUrl,
-          "ios-src": iosUrl,
           ar: true,
           "ar-modes": "webxr scene-viewer quick-look",
           loading: "lazy",
