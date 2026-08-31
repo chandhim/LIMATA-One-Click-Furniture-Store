@@ -41,8 +41,9 @@ export function useAiChat() {
       setActiveConversationId(id);
       setMessages(data.messages);
       setError(null);
-    } catch (err: any) {
-      setError(err?.isAppError ? err : { isAppError: true, status: null, type: 'unknown', message: "Failed to load conversation history." });
+    } catch (err) {
+      const error = err as Record<string, unknown>;
+      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'unknown', message: "Failed to load conversation history." });
       console.error("Failed to load conversation:", err);
     } finally {
       setIsHistoryLoading(false);
@@ -82,8 +83,9 @@ export function useAiChat() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err: any) {
-      setError(err?.isAppError ? err : { isAppError: true, status: null, type: 'server', message: "Something went wrong. Please try again." });
+    } catch (err) {
+      const error = err as Record<string, unknown>;
+      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'server', message: "Something went wrong. Please try again." });
     } finally {
       setIsLoading(false);
     }

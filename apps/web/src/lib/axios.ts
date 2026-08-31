@@ -74,10 +74,10 @@ api.interceptors.response.use(
         message = "We couldn't process that request.";
         
         // Extract safe backend message if available
-        const data = error.response.data as any;
+        const data = error.response.data as Record<string, unknown> | undefined;
         if (data && typeof data.message === 'string' && data.message.length < 100) {
           message = data.message;
-        } else if (data && data.detail && typeof data.detail === 'string' && data.detail.length < 100) {
+        } else if (data && typeof data.detail === 'string' && data.detail.length < 100) {
            message = data.detail;
         }
       } else if (status === 413) {

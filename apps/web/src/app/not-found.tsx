@@ -8,7 +8,7 @@ export default function NotFound() {
         <Sparkles size={48} />
       </div>
       <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "var(--fg-primary)", marginBottom: "1rem", fontFamily: "var(--font-serif)" }}>
-        We couldn't find that page
+        We couldn&apos;t find that page
       </h2>
       <p style={{ fontSize: "1.1rem", color: "var(--fg-secondary)", maxWidth: "500px", marginBottom: "2rem" }}>
         The page you are looking for might have been moved, deleted, or never existed.
