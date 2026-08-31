@@ -204,8 +204,8 @@ function ProductsPageContent() {
               marginBottom: "2.5rem",
             }}
           >
-            Discover thoughtfully curated pieces — from statement sofas to
-            bedroom sanctuaries. Built to last, designed to inspire.
+            Discover thoughtfully curated pieces from statement sofas to bedroom
+            sanctuaries. Built to last, designed to inspire.
           </p>
 
           {/* Large hero search */}
