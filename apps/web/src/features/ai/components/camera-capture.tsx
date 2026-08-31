@@ -18,7 +18,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [capturedPreview, setCapturedPreview] = useState<string | null>(null);
-  const [guidanceMsg, setGuidanceMsg] = useState<string>("📷 Capture your room. Step back to include the floor and keep your main furniture fully visible.");
+  const [guidanceMsg, setGuidanceMsg] = useState<string>("Step back to include the floor and main furniture.");
   
   const stopTracks = useCallback(() => {
     if (streamRef.current) {
@@ -100,9 +100,9 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
               const avg = sum / (32 * 32);
               
               if (avg < 40) {
-                setGuidanceMsg("💡 More light would help.");
+                setGuidanceMsg("💡 Try a brighter view.");
               } else {
-                setGuidanceMsg("✓ Good lighting — ready to capture.");
+                setGuidanceMsg("Step back to include the floor and main furniture.");
               }
             }
           }
@@ -119,6 +119,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   const handleCapture = () => {
     if (videoRef.current) {
       setIsCapturing(true);
+      setGuidanceMsg("Hold steady...");
       const canvas = document.createElement("canvas");
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
@@ -145,7 +146,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
     }
     setCapturedBlob(null);
     setCapturedPreview(null);
-    setGuidanceMsg("📷 Capture your room. Step back to include the floor and keep your main furniture fully visible.");
+    setGuidanceMsg("Step back to include the floor and main furniture.");
     startCamera();
   };
 
@@ -158,13 +159,8 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
 
   return (
     <div
+      className="animate-fade-in z-[100] fixed inset-0 md:static md:w-full md:aspect-[4/3] md:rounded-lg md:overflow-hidden md:border md:border-[var(--border)]"
       style={{
-        position: "relative",
-        width: "100%",
-        aspectRatio: "4/3",
-        borderRadius: "var(--radius-lg)",
-        overflow: "hidden",
-        border: "1px solid var(--border)",
         background: "#000",
         display: "flex",
         flexDirection: "column",
@@ -176,19 +172,19 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
         onClick={onCancel}
         style={{
           position: "absolute",
-          top: "1rem",
-          right: "1rem",
+          top: "max(1.5rem, env(safe-area-inset-top))",
+          right: "max(1.5rem, env(safe-area-inset-right))",
           zIndex: 10,
           background: "rgba(0,0,0,0.5)",
           border: "none",
           borderRadius: "50%",
-          padding: "0.5rem",
+          padding: "0.75rem",
           color: "#fff",
           cursor: "pointer",
         }}
         aria-label="Close Camera"
       >
-        <X size={20} />
+        <X size={24} />
       </button>
 
       {hasPermission === false ? (
@@ -226,17 +222,19 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
           <canvas ref={canvasRef} style={{ display: "none" }} />
           
           <div
+            aria-live="polite"
+            className="animate-fade-up"
             style={{
               position: "absolute",
-              top: "1rem",
-              left: "1rem",
-              right: "4rem",
+              top: "max(1.5rem, env(safe-area-inset-top))",
+              left: "max(1.5rem, env(safe-area-inset-left))",
+              right: "5rem",
               background: "rgba(0,0,0,0.6)",
-              backdropFilter: "blur(4px)",
+              backdropFilter: "blur(8px)",
               color: "white",
-              padding: "0.5rem 1rem",
+              padding: "0.75rem 1rem",
               borderRadius: "var(--radius-md)",
-              fontSize: "0.85rem",
+              fontSize: "0.95rem",
               lineHeight: 1.4,
               pointerEvents: "none"
             }}
@@ -247,7 +245,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
           <div
             style={{
               position: "absolute",
-              bottom: "1.5rem",
+              bottom: "max(2rem, env(safe-area-inset-bottom))",
               display: "flex",
               justifyContent: "center",
               width: "100%",
@@ -257,11 +255,11 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
               onClick={handleCapture}
               disabled={isCapturing}
               style={{
-                width: "4rem",
-                height: "4rem",
+                width: "64px",
+                height: "64px",
                 borderRadius: "50%",
                 background: "rgba(255,255,255,0.9)",
-                border: "4px solid rgba(0,0,0,0.2)",
+                border: "6px solid rgba(0,0,0,0.2)",
                 cursor: isCapturing ? "wait" : "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -274,7 +272,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
               onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
               onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
             >
-              <Camera size={24} color="#000" />
+              <Camera size={28} color="#000" />
             </button>
           </div>
         </>
@@ -305,11 +303,31 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
             <h3 style={{ color: "white", fontSize: "1.25rem", fontWeight: 600, textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}>
               Does this photo look good?
             </h3>
-            <div style={{ display: "flex", gap: "1rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: "300px", paddingInline: "1rem" }}>
+              <button
+                onClick={handleConfirm}
+                style={{
+                  width: "100%",
+                  padding: "1rem 1.5rem",
+                  background: "var(--accent)",
+                  color: "var(--accent-fg, #fff)",
+                  border: "none",
+                  borderRadius: "var(--radius-full)",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem"
+                }}
+              >
+                <Check size={20} /> Use this photo
+              </button>
               <button
                 onClick={handleRetake}
                 style={{
-                  padding: "0.75rem 1.5rem",
+                  width: "100%",
+                  padding: "1rem 1.5rem",
                   background: "rgba(255,255,255,0.2)",
                   backdropFilter: "blur(4px)",
                   color: "white",
@@ -319,27 +337,11 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
+                  justifyContent: "center",
                   gap: "0.5rem"
                 }}
               >
-                <RefreshCw size={18} /> Retake
-              </button>
-              <button
-                onClick={handleConfirm}
-                style={{
-                  padding: "0.75rem 1.5rem",
-                  background: "var(--accent)",
-                  color: "var(--accent-fg, #fff)",
-                  border: "none",
-                  borderRadius: "var(--radius-full)",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem"
-                }}
-              >
-                <Check size={18} /> Use this photo
+                <RefreshCw size={20} /> Retake
               </button>
             </div>
           </div>

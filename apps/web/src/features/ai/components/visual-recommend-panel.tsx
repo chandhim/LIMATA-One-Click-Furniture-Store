@@ -94,6 +94,7 @@ export function VisualRecommendPanel({
 
   return (
     <div
+      className="p-4 sm:p-8"
       style={{
         display: "flex",
         flexDirection: "column",
@@ -101,7 +102,6 @@ export function VisualRecommendPanel({
         background: "var(--bg-surface)",
         borderRadius: "var(--radius-xl)",
         border: "1px solid var(--border)",
-        padding: "2rem",
       }}
     >
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
@@ -238,7 +238,7 @@ export function VisualRecommendPanel({
               </div>
 
               {!isPending && (
-                <div style={{ display: "flex", gap: "1rem" }}>
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
                   <button
                     onClick={handleAnalyze}
                     style={{
@@ -263,6 +263,7 @@ export function VisualRecommendPanel({
                   <button
                     onClick={handleClear}
                     style={{
+                      width: "100%",
                       padding: "0.875rem 1.5rem",
                       background: "var(--bg-base)",
                       color: "var(--fg-secondary)",
