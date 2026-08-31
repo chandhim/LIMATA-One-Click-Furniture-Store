@@ -7,11 +7,12 @@ import {
   type AiConversation 
 } from "../api/ai-chat.api";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
+import type { AppError } from "@/lib/axios";
 
 export function useAiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AppError | null>(null);
 
   const [conversations, setConversations] = useState<AiConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -41,7 +42,8 @@ export function useAiChat() {
       setMessages(data.messages);
       setError(null);
     } catch (err) {
-      setError("Failed to load conversation history.");
+      const error = err as Record<string, unknown>;
+      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'unknown', message: "Failed to load conversation history." });
       console.error("Failed to load conversation:", err);
     } finally {
       setIsHistoryLoading(false);
@@ -81,8 +83,9 @@ export function useAiChat() {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch {
-      setError("Sorry, I couldn't reach the LIMATA AI Assistant right now. Please try again.");
+    } catch (err) {
+      const error = err as Record<string, unknown>;
+      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'server', message: "Something went wrong. Please try again." });
     } finally {
       setIsLoading(false);
     }

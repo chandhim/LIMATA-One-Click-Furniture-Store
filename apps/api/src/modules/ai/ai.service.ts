@@ -236,11 +236,7 @@ export async function proxyPlacement(productId: string, file: Express.Multer.Fil
     formData.append("image", blob, file.originalname);
     formData.append("furniture_metadata", JSON.stringify(furnitureMetadata));
 
-    const response = await aiClient.post("/placement", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      },
-    });
+    const response = await aiClient.post("/placement", formData);
     
     return response.data;
   } catch (error) {
@@ -268,11 +264,7 @@ export async function proxyVisualRecommendation(file: Express.Multer.File) {
     formData.append("image", blob, file.originalname);
     formData.append("available_products", JSON.stringify(available_products));
 
-    const response = await aiClient.post("/visual-recommend", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      },
-    });
+    const response = await aiClient.post("/visual-recommend", formData);
     
     return response.data;
   } catch (error) {

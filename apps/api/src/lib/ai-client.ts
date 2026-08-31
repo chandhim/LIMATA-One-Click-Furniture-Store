@@ -15,4 +15,16 @@ export const aiClient = axios.create({
   },
 });
 
-// Future interceptors can be configured here
+// Request interceptor to handle FormData boundary generation correctly
+aiClient.interceptors.request.use((config) => {
+  if (config.data instanceof FormData && config.headers) {
+    if (typeof config.headers.delete === "function") {
+      config.headers.delete("Content-Type");
+      config.headers.delete("content-type");
+    } else {
+      delete config.headers["Content-Type"];
+      delete config.headers["content-type"];
+    }
+  }
+  return config;
+});

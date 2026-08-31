@@ -4,18 +4,16 @@ import logging
 from fastapi import UploadFile
 from typing import List
 
-from app.ml.registry import registry
-from app.ml.model_loader import ModelLoader
 from app.ml.ai_orchestrator import AIOrchestrator
 from app.services.recommendation_service import RecommendationService
 from app.ml.placement.constraints import calculate_congestion_index, evaluate_placement_region
 from app.models.requests import ProductMetadata, RecommendationRequest, RecommendationPreferences
 from app.models.responses import VisualRecommendationResponse, VisualContext
 from app.core.exceptions import AIServiceException
+from app.ml.dependencies import global_loader
 
 logger = logging.getLogger(__name__)
 
-global_loader = ModelLoader(registry)
 rec_service = RecommendationService()
 rec_service.initialize()
 
