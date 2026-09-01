@@ -88,7 +88,7 @@ The AI microservice handles the machine learning capabilities (YOLOv8, MiDaS, et
    cd ../../
    # Make sure you are in the root: LIMATA-One-Click-Furniture-Store
    # Install ultralytics globally or in your venv if not already present to download models
-   python download_yolo.py
+   python scripts/utilities/download_yolo.py
    python download_midas.py
    ```
    This will download the `yolov8n.pt` and `dpt_hybrid-midas-xxxxxxxx.pt` files and place them in the `models/yolo` and `models/midas` directories.

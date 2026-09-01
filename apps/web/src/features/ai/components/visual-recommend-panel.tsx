@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, MessageSquare, Loader2, Camera } from "lucide-react";
+import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, Loader2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useVisualRecommend } from "../hooks/use-visual-recommend";
@@ -79,18 +79,7 @@ export function VisualRecommendPanel({
     .map(id => allProducts.find(p => p.productId === id))
     .filter((p): p is ProductSummary => p !== undefined) || [];
 
-  const handleDiscussWithAI = () => {
-    // We can dispatch a custom event to tell the AiChatWidget to open, 
-    // or rely on a global state. The prompt said to reuse the existing chatbot 
-    // cleanly. Since we don't have access to the chat widget's state directly here,
-    // we can use a custom window event or modify the URL hash.
-    // A clean way is dispatching a CustomEvent that a listener in MainLayout or AiChatWidget can catch.
-    window.dispatchEvent(new CustomEvent("OPEN_AI_CHAT", { 
-      detail: { 
-        presetMessage: `I just scanned my room and it detected a ${data?.visual_context.detected_class}. Can you help me choose between the recommended products?` 
-      }
-    }));
-  };
+
 
   return (
     <div
@@ -263,7 +252,7 @@ export function VisualRecommendPanel({
                   <button
                     onClick={handleClear}
                     style={{
-                      width: "100%",
+                      flex: 1,
                       padding: "0.875rem 1.5rem",
                       background: "var(--bg-base)",
                       color: "var(--fg-secondary)",
@@ -504,33 +493,6 @@ export function VisualRecommendPanel({
               </div>
             )}
 
-            {/* AI Assistant Integration */}
-            {recommendedProducts.length > 0 && (
-              <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center" }}>
-                <button
-                  onClick={handleDiscussWithAI}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    padding: "0.75rem 1.5rem",
-                    borderRadius: "var(--radius-full)",
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border-strong)",
-                    color: "var(--fg-primary)",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    boxShadow: "var(--shadow-sm)"
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent-dark)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-strong)"; e.currentTarget.style.color = "var(--fg-primary)"; }}
-                >
-                  <MessageSquare size={18} /> Discuss these options with LIMATA AI
-                </button>
-              </div>
-            )}
 
 
           </div>
