@@ -15,7 +15,7 @@ export default function HomePage() {
       <FeaturesSection />
       <FeaturedProducts />
       <AboutSection />
-      {/* <AIFeaturesSection /> */}
+      <AIFeaturesSection />
       <CTASection />
     </MainLayout>
   );

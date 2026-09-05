@@ -393,7 +393,7 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
                       onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
                       onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
                     >
-                      <Sparkles size={18} /> Ask AI about this placement
+                      <Sparkles size={18} /> Discuss with LIMATA AI
                     </button>
                   </div>
                 </div>

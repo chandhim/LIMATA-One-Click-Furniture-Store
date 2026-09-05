@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,6 +50,26 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
 
   // View Mode
   const [viewMode, setViewMode] = useState<"photos" | "3d" | "placement">("photos");
+
+  // First-time discovery cue
+  const [showRoomFitCue, setShowRoomFitCue] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasSeen = localStorage.getItem("hasSeenRoomFitCue");
+      if (!hasSeen) {
+        setShowRoomFitCue(true);
+      }
+    }
+  }, []);
+
+  const handleRoomFitClick = () => {
+    setViewMode("placement");
+    if (showRoomFitCue) {
+      setShowRoomFitCue(false);
+      localStorage.setItem("hasSeenRoomFitCue", "true");
+    }
+  };
 
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
@@ -313,8 +333,9 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 3D & AR
               </button>
               <button
-                onClick={() => setViewMode("placement")}
+                onClick={handleRoomFitClick}
                 style={{
+                  position: "relative",
                   padding: "0.5rem 1.25rem",
                   borderRadius: "var(--radius-full)",
                   background:
@@ -331,6 +352,21 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 }}
               >
                 Will it fit? (AI)
+                {showRoomFitCue && viewMode !== "placement" && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "2px",
+                      right: "2px",
+                      width: "8px",
+                      height: "8px",
+                      background: "var(--accent)",
+                      borderRadius: "50%",
+                      boxShadow: "0 0 0 2px var(--bg-surface)",
+                      animation: "pulse 2s infinite",
+                    }}
+                  />
+                )}
               </button>
             </div>
 

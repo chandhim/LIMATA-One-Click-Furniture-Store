@@ -119,6 +119,41 @@ export function AiChatWidget() {
   const [view, setView] = useState<"chat" | "history">("chat");
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // First-time discovery tooltip
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasSeen = localStorage.getItem("hasSeenChatbotHint");
+      if (!hasSeen) {
+        setTimeout(() => setShowTooltip(true), 1000);
+      }
+    }
+  }, []);
+
+  const dismissTooltip = (e?: React.MouseEvent | KeyboardEvent) => {
+    if (e && 'stopPropagation' in e) {
+      e.stopPropagation();
+    }
+    setShowTooltip(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("hasSeenChatbotHint", "true");
+    }
+  };
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showTooltip) dismissTooltip(e);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [showTooltip]);
+
+  const handleToggleOpen = () => {
+    setIsOpen(!isOpen);
+    if (showTooltip) dismissTooltip();
+  };
+
   const { 
     messages, 
     isLoading, 
@@ -190,9 +225,64 @@ export function AiChatWidget() {
 
   return (
     <>
+      {showTooltip && !isOpen && (
+        <div
+          className="animate-fade-up"
+          style={{
+            position: "fixed",
+            bottom: "5.5rem",
+            left: "1.5rem",
+            background: "var(--bg-dark)",
+            color: "var(--fg-inverse)",
+            padding: "0.75rem 1rem",
+            borderRadius: "var(--radius-lg)",
+            border: "1px solid var(--border-strong)",
+            boxShadow: "var(--shadow-lg)",
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            maxWidth: "250px",
+            fontSize: "0.875rem",
+            lineHeight: 1.4,
+          }}
+        >
+          <span>✨ Need help deciding? Ask LIMATA AI.</span>
+          <button
+            onClick={dismissTooltip}
+            aria-label="Dismiss hint"
+            style={{
+              background: "none",
+              border: "none",
+              color: "var(--fg-secondary)",
+              cursor: "pointer",
+              padding: "0.25rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <X size={14} />
+          </button>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-6px",
+              left: "1.25rem",
+              width: "12px",
+              height: "12px",
+              background: "var(--bg-dark)",
+              borderBottom: "1px solid var(--border-strong)",
+              borderRight: "1px solid var(--border-strong)",
+              transform: "rotate(45deg)",
+            }}
+          />
+        </div>
+      )}
+
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Close AI Assistant" : "Open AI Assistant"}
+        onClick={handleToggleOpen}
+        aria-label={isOpen ? "Close LIMATA AI Assistant" : "Open LIMATA AI Assistant"}
         style={{
           position: "fixed",
           bottom: "1.5rem",

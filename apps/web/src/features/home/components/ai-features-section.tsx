@@ -4,19 +4,19 @@ import { usePublicSetting } from "@/features/admin/hooks/use-admin";
 
 const defaultAiFeatures = [
   {
-    title: "3D Visualization",
-    desc: "Rotate and inspect every detail before you buy. True sense of scale and texture.",
-    badge: "Coming Soon",
+    title: "Analyze Your Space",
+    desc: "Upload a photo of your room to check whether furniture works well in your space.",
+    badge: "Room Fit",
   },
   {
-    title: "AR Placement",
-    desc: "Drop any piece into your room via your phone camera. See it live before ordering.",
-    badge: "Beta",
+    title: "Find Better Matches",
+    desc: "Get context-aware recommendations that suit your room's style and available space.",
+    badge: "Smart",
   },
   {
-    title: "AI Style Match",
-    desc: "Tell us your aesthetic — our AI recommends pieces that work together beautifully.",
-    badge: "Coming Soon",
+    title: "Visualize in AR",
+    desc: "See how pieces look in your home using your phone's camera before you decide.",
+    badge: "Preview",
   },
 ];
 
@@ -96,7 +96,7 @@ export function AIFeaturesSection() {
                 background: "var(--accent)",
               }}
             />
-            Future Technology
+            LIMATA AI
             <span
               style={{
                 display: "block",
@@ -117,7 +117,7 @@ export function AIFeaturesSection() {
               marginBottom: "1rem",
             }}
           >
-            AI & AR Features
+            Shop Smarter with LIMATA
           </h2>
           <p
             className="animate-fade-up delay-200"
@@ -129,8 +129,7 @@ export function AIFeaturesSection() {
               lineHeight: 1.75,
             }}
           >
-            Practical tools to visualize, match, and place furniture in your
-            real space.
+            Analyze your room, find furniture that suits your space, and visualize it in AR.
           </p>
         </div>
 
