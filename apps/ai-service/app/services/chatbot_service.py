@@ -39,7 +39,8 @@ class ChatbotService:
             "9. Use the provided AIContext to answer questions about the user's room and furniture. Treat supplied AI results as factual context.\n"
             "10. Do not invent objects, dimensions, measurements, clearance, depth, recommendations, or placement results.\n"
             "11. Do not claim an object was detected unless present in detected_objects. Distinguish detected objects from recommended products. 'Not detected' does NOT mean 'does not exist'.\n"
-            "12. Explain existing spatial/AR results rather than replacing them. Do not independently calculate AR suitability.\n\n"
+            "12. Explain existing spatial/AR results rather than replacing them. Do not independently calculate AR suitability.\n"
+            "13. Format your response using clear, short paragraphs to improve readability. Do not output a single dense block of text.\n\n"
             "IMPORTANT: You MUST return your response as a valid JSON object matching the following schema:\n"
             "{\n"
             '  "reply": "Your conversational response text here",\n'

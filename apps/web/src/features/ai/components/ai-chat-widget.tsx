@@ -5,19 +5,113 @@ import { X, Loader2, Send, Sparkles, AlertCircle, Plus, ChevronLeft, MessageSqua
 import { useAiChat } from "../hooks/use-ai-chat";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import type { Product } from "@/features/products/types/product.types";
+import Link from "next/link";
 
-const SUGGESTED_PROMPTS = [
+const GENERIC_SUGGESTED_PROMPTS = [
   "Find a modern sofa",
   "Show office chairs",
   "Help furnish my living room",
   "Find something under Rs. 150,000"
 ];
 
-const FOLLOW_UP_SUGGESTIONS = [
+const GENERIC_FOLLOW_UP_SUGGESTIONS = [
   "Compare these",
   "Show cheaper options",
   "More like this"
 ];
+
+function isMeaningfulAssistantResponse(content: string, hasProducts: boolean): boolean {
+  if (hasProducts) return true;
+  const wordCount = content.trim().split(/\s+/).length;
+  const lowerContent = content.toLowerCase();
+  if (wordCount < 10 && (
+    lowerContent.includes("you're welcome") ||
+    lowerContent.includes("happy to help") ||
+    lowerContent.includes("hello") ||
+    lowerContent.includes("hi there") ||
+    lowerContent.match(/^(sure|okay|yes|no|thanks|thank you)[.!]*$/i)
+  )) {
+    return false;
+  }
+  return true;
+}
+
+function getDynamicPrompts(chatContext: any, messages: any[], isInitial: boolean): string[] {
+  const hasRoomContext = !!chatContext?.depth_analysis || !!(chatContext?.detected_objects && chatContext.detected_objects.length > 0);
+  const hasArContext = !!chatContext?.ar_placement;
+  
+  if (!hasRoomContext && !hasArContext) {
+    return isInitial ? GENERIC_SUGGESTED_PROMPTS : GENERIC_FOLLOW_UP_SUGGESTIONS;
+  }
+
+  const userMessages = messages.filter((m: any) => m.role === "user").map((m: any) => m.content.toLowerCase());
+  const checkIntent = (keywords: string[]) => userMessages.some((msg: string) => keywords.some(kw => msg.includes(kw)));
+  
+  const hasDiscussedSpace = checkIntent(["space", "fit", "room for", "maximize", "clearance", "how much room"]);
+  const hasDiscussedRecs = checkIntent(["recommend", "suggest", "match", "best option", "suitable", "why this", "good choice", "right choice"]);
+  const hasDiscussedComparison = checkIntent(["compare", "which one", "better", "another option", "alternative", "stronger match"]);
+  const hasDiscussedAr = checkIntent(["ar", "visualize", "see it in", "try it", "view it"]);
+  const hasDiscussedPlacement = checkIntent(["placement", "position", "too close", "move it", "improve"]);
+
+  const prompts: string[] = [];
+  const addPrompt = (p: string) => {
+    if (prompts.length < 3 && !userMessages.includes(p.toLowerCase())) {
+      prompts.push(p);
+    }
+  };
+
+  if (hasArContext) {
+    const isSuitable = chatContext.ar_placement.suitable;
+    if (isInitial) {
+      if (isSuitable) {
+        addPrompt("Why is this placement suitable?");
+        addPrompt("What should I consider about this placement?");
+        addPrompt("Would another position work better?");
+      } else {
+        addPrompt("Why isn't this placement suitable?");
+        addPrompt("How can I improve the placement?");
+        addPrompt("Would another furniture option work better?");
+      }
+    } else {
+      if (!hasDiscussedPlacement) {
+        addPrompt(isSuitable ? "Why is this placement suitable?" : "Why isn't this placement suitable?");
+      }
+      addPrompt(isSuitable ? "What should I consider about this placement?" : "How can I improve the placement?");
+      addPrompt("Would another furniture option work better?");
+    }
+    return prompts;
+  }
+
+  if (hasRoomContext) {
+    const space = chatContext.depth_analysis?.space_availability;
+    
+    if (isInitial) {
+      addPrompt("Why are these products suitable for my room?");
+      addPrompt("Which recommendation is the strongest match?");
+      if (space === "Limited") addPrompt("How can I make better use of this limited space?");
+      else if (space === "Moderate") addPrompt("Why do these products work well in this space?");
+      else if (space === "Generous") addPrompt("How could I make better use of this available space?");
+      else addPrompt("How can I make better use of this space?");
+    } else {
+      if (!hasDiscussedRecs) {
+        addPrompt("Why are these products suitable for my room?");
+      }
+      if (!hasDiscussedComparison) {
+        addPrompt("Which recommendation is the strongest match?");
+        addPrompt("Would another option work better?");
+      }
+      if (!hasDiscussedSpace && space) {
+        if (space === "Limited") addPrompt("What should I consider when choosing furniture for this room?");
+        else addPrompt("What furniture works well with this amount of space?");
+      }
+      if (hasDiscussedRecs && !hasDiscussedAr) {
+        addPrompt("Can I visualize the best match in my room?");
+      }
+    }
+  }
+
+  return prompts;
+}
 
 export function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,11 +126,17 @@ export function AiChatWidget() {
     sendMessage, 
     conversations,
     isHistoryLoading,
+    chatContext,
     setChatContext,
     loadConversations,
     loadConversation,
     startNewConversation
   } = useAiChat();
+  
+  const hasRoomContext = !!chatContext?.depth_analysis || !!(chatContext?.detected_objects && chatContext.detected_objects.length > 0);
+  const hasArContext = !!chatContext?.ar_placement;
+
+  const currentPrompts = getDynamicPrompts(chatContext, messages, true);
   
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
@@ -244,27 +344,57 @@ export function AiChatWidget() {
               <div style={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {messages.length === 0 ? (
                   <div className="animate-fade-up" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", margin: "auto 0" }}>
-                    <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                      <div style={{ background: "var(--bg-dark)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", marginBottom: "0.5rem" }}>
-                        <Sparkles size={28} />
-                      </div>
-                      <h2 style={{ fontSize: "1.1rem", fontWeight: 700, margin: 0, color: "var(--fg-primary)" }}>
-                        Hi! I&apos;m the LIMATA AI Assistant.
-                      </h2>
-                      <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", margin: 0, maxWidth: "250px" }}>
-                        I can help you find furniture, compare products, choose materials, and furnish your space.
-                      </p>
-                      
-                      {!isAuthenticated && (
-                        <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--fg-muted)", background: "var(--bg-elevated)", padding: "0.25rem 0.75rem", borderRadius: "var(--radius-full)" }}>
-                          Sign in to save your conversations.
+                    
+                    {/* Context Reference Card OR Generic Welcome */}
+                    {hasRoomContext ? (
+                      <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1rem" }}>
+                        <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                          <Sparkles size={14} /> Based on your room analysis
                         </div>
-                      )}
-                    </div>
+                        <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
+                          {chatContext?.detected_objects?.length > 0 && (
+                            <li>Detected: <span style={{ textTransform: "capitalize" }}>{chatContext.detected_objects[0]}</span></li>
+                          )}
+                          {chatContext?.depth_analysis?.space_availability && (
+                            <li>Space availability: {chatContext.depth_analysis.space_availability}</li>
+                          )}
+                        </ul>
+                      </div>
+                    ) : hasArContext ? (
+                      <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1rem" }}>
+                        <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
+                          <Sparkles size={14} /> About this placement
+                        </div>
+                        <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
+                          <li>Status: {chatContext.ar_placement.suitable ? "✅ Suitable" : "❌ Space may be limited"}</li>
+                          {chatContext.ar_placement.limiting_factor && (
+                            <li>Issue: <span style={{ textTransform: "capitalize" }}>{chatContext.ar_placement.limiting_factor}</span></li>
+                          )}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
+                        <div style={{ background: "var(--bg-dark)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", marginBottom: "0.5rem" }}>
+                          <Sparkles size={28} />
+                        </div>
+                        <h2 style={{ fontSize: "1.1rem", fontWeight: 700, margin: 0, color: "var(--fg-primary)" }}>
+                          Hi! I&apos;m the LIMATA AI Assistant.
+                        </h2>
+                        <p style={{ fontSize: "0.875rem", color: "var(--fg-secondary)", margin: 0, maxWidth: "250px" }}>
+                          I can help you find furniture, compare products, choose materials, and furnish your space.
+                        </p>
+                        
+                        {!isAuthenticated && (
+                          <div style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--fg-muted)", background: "var(--bg-elevated)", padding: "0.25rem 0.75rem", borderRadius: "var(--radius-full)" }}>
+                            Sign in to save your conversations.
+                          </div>
+                        )}
+                      </div>
+                    )}
                     
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <div className="section-label" style={{ fontSize: "0.65rem", justifyContent: "center", marginBottom: "0.25rem" }}>Suggested Prompts</div>
-                      {SUGGESTED_PROMPTS.map((prompt, i) => (
+                      {currentPrompts.map((prompt, i) => (
                         <button
                           key={i}
                           onClick={() => handleSubmit(undefined, prompt)}
@@ -333,11 +463,10 @@ export function AiChatWidget() {
                               gap: "0.75rem" 
                             }}>
                               {msg.recommendedProducts!.slice(0, 4).map((p: Product) => (
-                                <a 
+                                <Link 
                                   key={p.productId} 
                                   href={`/products/${p.productId}`}
-                                  target="_blank"
-                                  rel="noreferrer"
+                                  target="_self"
                                   className="card"
                                   style={{ 
                                     padding: "0.5rem",
@@ -370,31 +499,36 @@ export function AiChatWidget() {
                                   <div style={{ fontSize: "0.75rem", color: "var(--accent)", fontWeight: 600, padding: "0.25rem 0.25rem 0", borderTop: "1px solid var(--border)", marginTop: "auto" }}>
                                     View details &rarr;
                                   </div>
-                                </a>
+                                </Link>
                               ))}
                             </div>
-                            
-                            {/* Follow up suggestions */}
-                            {isLastAssistantMessage && !isLoading && (
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
-                                {FOLLOW_UP_SUGGESTIONS.map((suggestion, i) => (
-                                  <button
-                                    key={i}
-                                    onClick={() => handleSubmit(undefined, suggestion)}
-                                    style={{
-                                      background: "var(--bg-elevated)", border: "1px solid var(--border-strong)",
-                                      borderRadius: "var(--radius-full)", padding: "0.4rem 0.8rem",
-                                      fontSize: "0.75rem", color: "var(--fg-secondary)", cursor: "pointer",
-                                      transition: "all 0.2s"
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent-dark)"; }}
-                                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-strong)"; e.currentTarget.style.color = "var(--fg-secondary)"; }}
-                                  >
-                                    {suggestion}
-                                  </button>
-                                ))}
-                              </div>
+                          </div>
+                        )}
+                        
+                        {/* Follow up suggestions */}
+                        {isLastAssistantMessage && !isLoading && isMeaningfulAssistantResponse(displayContent, hasProducts) && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginTop: "0.5rem", width: "100%" }}>
+                            {getDynamicPrompts(chatContext, messages, false).length > 0 && (
+                              <div style={{ fontSize: "0.7rem", color: "var(--fg-muted)", paddingLeft: "0.5rem" }}>You might also ask:</div>
                             )}
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                              {getDynamicPrompts(chatContext, messages, false).map((suggestion, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => handleSubmit(undefined, suggestion)}
+                                  style={{
+                                    background: "var(--bg-elevated)", border: "1px solid var(--border-strong)",
+                                    borderRadius: "var(--radius-full)", padding: "0.4rem 0.8rem",
+                                    fontSize: "0.75rem", color: "var(--fg-secondary)", cursor: "pointer",
+                                    transition: "all 0.2s"
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--accent-dark)"; }}
+                                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border-strong)"; e.currentTarget.style.color = "var(--fg-secondary)"; }}
+                                >
+                                  {suggestion}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
