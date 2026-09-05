@@ -15,8 +15,13 @@ class ChatbotService:
         if not self.client:
             self.initialize()
 
-        context = request.context or {}
-        available_products = context.get("available_products", [])
+        context = request.context
+        if context:
+            available_products = [p.model_dump() for p in context.available_products]
+            room_context_json = context.model_dump_json(exclude={'available_products', 'conversationId'}, indent=2)
+        else:
+            available_products = []
+            room_context_json = "No room context provided."
         
         system_instruction = (
             "You are the LIMATA AI Furniture Assistant. You help customers discover furniture, "
@@ -30,12 +35,17 @@ class ChatbotService:
             "5. Give concise, helpful furniture-focused answers.\n"
             "6. Ask a clarification question when required information is missing.\n"
             "7. Maintain conversation context when responding to follow-up questions.\n"
-            "8. Do NOT list product names or prices in the 'reply' text. Provide the products only in the 'recommended_product_ids' array, and the UI will automatically render them as a grid.\n\n"
+            "8. Do NOT list product names or prices in the 'reply' text. Provide the products only in the 'recommended_product_ids' array, and the UI will automatically render them as a grid.\n"
+            "9. Use the provided AIContext to answer questions about the user's room and furniture. Treat supplied AI results as factual context.\n"
+            "10. Do not invent objects, dimensions, measurements, clearance, depth, recommendations, or placement results.\n"
+            "11. Do not claim an object was detected unless present in detected_objects. Distinguish detected objects from recommended products. 'Not detected' does NOT mean 'does not exist'.\n"
+            "12. Explain existing spatial/AR results rather than replacing them. Do not independently calculate AR suitability.\n\n"
             "IMPORTANT: You MUST return your response as a valid JSON object matching the following schema:\n"
             "{\n"
             '  "reply": "Your conversational response text here",\n'
             '  "recommended_product_ids": ["productId1", "productId2", ...] // List of recommended product IDs, or empty array if none\n'
             "}\n\n"
+            f"AIContext (Room Analysis Context):\n{room_context_json}\n\n"
             f"AVAILABLE PRODUCTS IN CONTEXT:\n{json.dumps(available_products, indent=2)}"
         )
 

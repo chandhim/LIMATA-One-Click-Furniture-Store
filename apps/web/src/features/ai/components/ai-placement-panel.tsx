@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2 } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult } from "../types/placement.types";
 
@@ -311,7 +311,51 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
                         See it in your room &rarr;
                       </button>
                     </div>
+                    </div>
                   )}
+
+                  {/* Chat with LIMATA AI Button */}
+                  <div style={{ marginTop: "0.5rem", paddingTop: "1.25rem", borderTop: "1px dashed var(--border)" }}>
+                    <button
+                      onClick={() => {
+                        window.dispatchEvent(
+                          new CustomEvent("open-ai-chat", {
+                            detail: {
+                              context: {
+                                ar_placement: {
+                                  suitable: result.suitable,
+                                  limiting_factor: result.limiting_factor,
+                                  estimated_clearance: result.estimated_clearance,
+                                  warnings: result.warnings || []
+                                }
+                              }
+                            }
+                          })
+                        );
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "0.875rem",
+                        background: "var(--bg-base)",
+                        color: "var(--accent-dark)",
+                        border: "1px solid var(--accent)",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.9375rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        boxShadow: "var(--shadow-sm)",
+                        transition: "transform 0.2s"
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+                      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+                    >
+                      <Sparkles size={18} /> Ask AI about this placement
+                    </button>
+                  </div>
                 </div>
               </div>
 

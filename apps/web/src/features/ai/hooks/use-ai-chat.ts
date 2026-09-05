@@ -17,6 +17,7 @@ export function useAiChat() {
   const [conversations, setConversations] = useState<AiConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [chatContext, setChatContext] = useState<Record<string, any>>({});
   
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
@@ -54,6 +55,7 @@ export function useAiChat() {
     setActiveConversationId(null);
     setMessages([]);
     setError(null);
+    setChatContext({});
   }, []);
 
   const sendMessage = async (content: string) => {
@@ -69,7 +71,10 @@ export function useAiChat() {
       const response = await sendAiChatMessage({
         message: content,
         history: messages,
-        context: activeConversationId ? { conversationId: activeConversationId } : undefined
+        context: {
+          ...(activeConversationId ? { conversationId: activeConversationId } : {}),
+          ...chatContext
+        }
       });
 
       if (response.conversationId && !activeConversationId) {
@@ -100,6 +105,8 @@ export function useAiChat() {
     conversations,
     activeConversationId,
     isHistoryLoading,
+    chatContext,
+    setChatContext,
     loadConversations,
     loadConversation,
     startNewConversation

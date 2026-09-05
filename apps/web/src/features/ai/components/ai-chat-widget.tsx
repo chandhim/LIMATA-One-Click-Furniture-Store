@@ -32,6 +32,7 @@ export function AiChatWidget() {
     sendMessage, 
     conversations,
     isHistoryLoading,
+    setChatContext,
     loadConversations,
     loadConversation,
     startNewConversation
@@ -42,6 +43,17 @@ export function AiChatWidget() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, view]);
+
+  useEffect(() => {
+    const handleOpenChat = (e: CustomEvent) => {
+      setIsOpen(true);
+      if (e.detail?.context) {
+        setChatContext(e.detail.context);
+      }
+    };
+    window.addEventListener("open-ai-chat", handleOpenChat as EventListener);
+    return () => window.removeEventListener("open-ai-chat", handleOpenChat as EventListener);
+  }, [setChatContext]);
 
   useEffect(() => {
     if (isOpen && view === "history") {
