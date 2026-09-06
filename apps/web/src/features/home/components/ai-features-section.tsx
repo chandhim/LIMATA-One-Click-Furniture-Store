@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { usePublicSetting } from "@/features/admin/hooks/use-admin";
 
 const defaultAiFeatures = [
@@ -9,18 +10,25 @@ const defaultAiFeatures = [
     desc: "Upload a photo of your room to check whether furniture works well in your space.",
     badge: "Room Fit",
     image: "/assets/ai/analyze.jpg",
+    ctaText: "Try Room Fit &rarr;",
+    href: "/shop-my-room",
   },
   {
     title: "Find Better Matches",
     desc: "Get context-aware recommendations that suit your room's style and available space.",
     badge: "Smart",
     image: "/assets/ai/matches.jpg",
+    ctaText: "Ask LIMATA AI &rarr;",
+    href: "#",
+    action: "chat",
   },
   {
     title: "Visualize in AR",
     desc: "See how pieces look in your home using your phone's camera before you decide.",
     badge: "Preview",
     image: "/assets/ai/ar.jpg",
+    ctaText: "Experience AR &rarr;",
+    href: "/products/cmqnju4670006ud6cpdni1ij9?hint=ar",
   },
 ];
 
@@ -29,6 +37,9 @@ interface AIFeature {
   desc: string;
   badge: string;
   image: string;
+  ctaText: string;
+  href: string;
+  action?: string;
 }
 
 export function AIFeaturesSection() {
@@ -191,7 +202,14 @@ export function AIFeaturesSection() {
               </div>
 
               {/* Text Body */}
-              <div style={{ padding: "2rem" }}>
+              <div
+                style={{
+                  padding: "2rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  flexGrow: 1,
+                }}
+              >
                 {/* Badge */}
                 <div
                   style={{
@@ -205,6 +223,7 @@ export function AIFeaturesSection() {
                     borderRadius: "var(--radius-full)",
                     padding: "0.2rem 0.6rem",
                     marginBottom: "0.875rem",
+                    alignSelf: "flex-start",
                   }}
                 >
                   {f.badge}
@@ -226,10 +245,63 @@ export function AIFeaturesSection() {
                     fontSize: "0.875rem",
                     color: "rgba(250,249,247,0.45)",
                     lineHeight: 1.75,
+                    marginBottom: "1.5rem",
                   }}
                 >
                   {f.desc}
                 </p>
+
+                {/* CTA Link */}
+                {f.action === "chat" ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent("open-ai-chat", { detail: { open: true } }));
+                      }
+                    }}
+                    style={{
+                      marginTop: "auto",
+                      display: "inline-block",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--accent)",
+                      background: "transparent",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                    }}
+                    dangerouslySetInnerHTML={{ __html: f.ctaText }}
+                  />
+                ) : (
+                  <Link
+                    href={f.href}
+                    style={{
+                      marginTop: "auto",
+                      display: "inline-block",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--accent)",
+                      textDecoration: "none",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                    }}
+                    dangerouslySetInnerHTML={{ __html: f.ctaText }}
+                  />
+                )}
               </div>
             </div>
           ))}
