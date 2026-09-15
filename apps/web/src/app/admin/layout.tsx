@@ -41,6 +41,7 @@ export default function AdminRootLayout({
           justifyContent: "center",
           background: "var(--bg-dark)",
         }}
+        suppressHydrationWarning
       >
         <div
           style={{

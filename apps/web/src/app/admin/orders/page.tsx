@@ -599,6 +599,7 @@ export default function AdminOrdersPage() {
                                   padding: "0.4rem 0.75rem",
                                   fontSize: "0.75rem",
                                   fontWeight: 600,
+                                  whiteSpace: "nowrap",
                                   borderRadius: "var(--radius-md)",
                                   background: (order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") 
                                     ? "var(--bg-muted)" 
@@ -626,6 +627,7 @@ export default function AdminOrdersPage() {
                                   padding: "0.4rem 0.75rem",
                                   fontSize: "0.75rem",
                                   fontWeight: 600,
+                                  whiteSpace: "nowrap",
                                   borderRadius: "var(--radius-md)",
                                   background: "transparent",
                                   color: "#c0392b",
@@ -646,6 +648,7 @@ export default function AdminOrdersPage() {
                                   padding: "0.4rem 0.75rem",
                                   fontSize: "0.75rem",
                                   fontWeight: 600,
+                                  whiteSpace: "nowrap",
                                   borderRadius: "var(--radius-md)",
                                   background: "#276e47",
                                   color: "#fff",
