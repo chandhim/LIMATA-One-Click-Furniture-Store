@@ -5,55 +5,41 @@ import {
   useAdminOrders,
   useUpdateOrderStatus,
 } from "@/features/admin/hooks/use-admin";
-import { Search, CreditCard } from "lucide-react";
+import { Search, CreditCard, CheckCircle, Truck, XCircle, Package } from "lucide-react";
 
 type OrderStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "PROCESSING"
+  | "ACCEPTED"
   | "SHIPPED"
   | "DELIVERED"
-  | "CANCELLED"
-  | "CANCELLATION_REQUESTED";
+  | "CANCELLED";
 
 const statusColors: Record<
   OrderStatus,
-  { bg: string; color: string; border: string }
+  { bg: string; color: string; border: string; icon: React.ElementType }
 > = {
-  PENDING: {
-    bg: "rgba(220,160,80,0.08)",
-    color: "#a85f10",
-    border: "rgba(220,160,80,0.18)",
-  },
-  CONFIRMED: {
+  ACCEPTED: {
     bg: "rgba(100,130,220,0.08)",
     color: "#2a4a9a",
     border: "rgba(100,130,220,0.18)",
-  },
-  PROCESSING: {
-    bg: "rgba(100,130,220,0.15)",
-    color: "#1a3a7a",
-    border: "rgba(100,130,220,0.25)",
+    icon: CheckCircle
   },
   SHIPPED: {
     bg: "rgba(160,100,220,0.08)",
     color: "#6a2a9a",
     border: "rgba(160,100,220,0.18)",
+    icon: Truck
   },
   DELIVERED: {
     bg: "rgba(74,166,120,0.08)",
     color: "#276e47",
     border: "rgba(74,166,120,0.18)",
+    icon: Package
   },
   CANCELLED: {
     bg: "rgba(220,80,80,0.06)",
     color: "#c0392b",
     border: "rgba(220,80,80,0.15)",
-  },
-  CANCELLATION_REQUESTED: {
-    bg: "rgba(220,80,80,0.12)",
-    color: "#902015",
-    border: "rgba(220,80,80,0.25)",
+    icon: XCircle
   },
 };
 
@@ -84,11 +70,12 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
-  async function handleStatusChange(orderId: string, status: string) {
+  async function handleStatusChange(orderId: string, status: OrderStatus) {
     try {
       await updateStatusMutation.mutateAsync({ orderId, status });
     } catch (err) {
       console.error("Failed to update status:", err);
+      alert("Failed to update status. Please check requirements (e.g. PayHere orders must be paid before shipping).");
     }
   }
 
@@ -106,13 +93,10 @@ export default function AdminOrdersPage() {
   });
 
   const orderStatusesList: OrderStatus[] = [
-    "PENDING",
-    "CONFIRMED",
-    "PROCESSING",
+    "ACCEPTED",
     "SHIPPED",
     "DELIVERED",
     "CANCELLED",
-    "CANCELLATION_REQUESTED",
   ];
 
   if (isLoading) {
@@ -312,7 +296,7 @@ export default function AdminOrdersPage() {
                   "Payment Mode",
                   "Grand Total",
                   "Status Badge",
-                  "Actions Status",
+                  "Actions",
                 ].map((h) => (
                   <th
                     key={h}
@@ -597,41 +581,88 @@ export default function AdminOrdersPage() {
                         </span>
                       </td>
 
-                      {/* Select Action Dropdown */}
+                      {/* Contextual Actions */}
                       <td style={{ padding: "1.25rem 1.5rem" }}>
                         <div
                           style={{
-                            position: "relative",
-                            display: "inline-block",
+                            display: "flex",
+                            gap: "0.5rem",
+                            flexDirection: "column"
                           }}
                         >
-                          <select
-                            value={order.orderStatus}
-                            onChange={(e) =>
-                              handleStatusChange(order.orderId, e.target.value)
-                            }
-                            className="input-base"
-                            style={{
-                              padding: "0.4rem 1.75rem 0.4rem 0.75rem",
-                              fontSize: "0.75rem",
-                              fontWeight: 600,
-                              minWidth: 140,
-                              borderRadius: "var(--radius-md)",
-                              background: "var(--bg-surface)",
-                              cursor: "pointer",
-                              border: "1px solid var(--border)",
-                            }}
-                          >
-                            <option value="PENDING">Pending</option>
-                            <option value="CONFIRMED">Confirmed</option>
-                            <option value="PROCESSING">Processing</option>
-                            <option value="SHIPPED">Shipped</option>
-                            <option value="DELIVERED">Delivered</option>
-                            <option value="CANCELLED">Cancelled</option>
-                            <option value="CANCELLATION_REQUESTED">
-                              Cancel Requested
-                            </option>
-                          </select>
+                          {order.orderStatus === "ACCEPTED" && (
+                            <>
+                              <button
+                                onClick={() => handleStatusChange(order.orderId, "SHIPPED")}
+                                disabled={order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID"}
+                                style={{
+                                  padding: "0.4rem 0.75rem",
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  borderRadius: "var(--radius-md)",
+                                  background: (order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") 
+                                    ? "var(--bg-muted)" 
+                                    : "var(--accent)",
+                                  color: (order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID")
+                                    ? "var(--fg-muted)"
+                                    : "#fff",
+                                  border: "none",
+                                  cursor: (order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID")
+                                    ? "not-allowed"
+                                    : "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                                title={(order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") ? "Cannot ship unpaid PayHere order" : "Mark as shipped"}
+                              >
+                                Ship Order
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to cancel this order?")) {
+                                    handleStatusChange(order.orderId, "CANCELLED");
+                                  }
+                                }}
+                                style={{
+                                  padding: "0.4rem 0.75rem",
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  borderRadius: "var(--radius-md)",
+                                  background: "transparent",
+                                  color: "#c0392b",
+                                  border: "1px solid #c0392b",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                              >
+                                Cancel Order
+                              </button>
+                            </>
+                          )}
+                          
+                          {order.orderStatus === "SHIPPED" && (
+                            <button
+                                onClick={() => handleStatusChange(order.orderId, "DELIVERED")}
+                                style={{
+                                  padding: "0.4rem 0.75rem",
+                                  fontSize: "0.75rem",
+                                  fontWeight: 600,
+                                  borderRadius: "var(--radius-md)",
+                                  background: "#276e47",
+                                  color: "#fff",
+                                  border: "none",
+                                  cursor: "pointer",
+                                  transition: "all 0.2s"
+                                }}
+                              >
+                                Mark Delivered
+                            </button>
+                          )}
+                          
+                          {(order.orderStatus === "DELIVERED" || order.orderStatus === "CANCELLED") && (
+                            <span style={{ fontSize: "0.75rem", color: "var(--fg-muted)", fontStyle: "italic" }}>
+                              No actions available
+                            </span>
+                          )}
                         </div>
                       </td>
                     </tr>

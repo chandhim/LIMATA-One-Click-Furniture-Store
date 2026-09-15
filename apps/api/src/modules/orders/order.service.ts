@@ -76,39 +76,33 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
   const totalAmount = subtotal + deliveryCharge;
 
   // 3. Execute database transaction
-  const order = await prisma.$transaction(async (tx) => {
-    // A. Create the Order
-    const createdOrder = await tx.order.create({
-      data: {
-        userId,
-        paymentMethod: input.paymentMethod,
-        paymentStatus: input.paymentMethod === "COD" ? "UNPAID" : "PENDING",
-        orderStatus: "PENDING",
-        totalAmount,
-        shippingName: input.shippingName,
-        shippingEmail: input.shippingEmail,
-        shippingPhone: input.shippingPhone,
-        shippingAddress: input.shippingAddress,
-        shippingCity: input.shippingCity,
-        deliveryMethod: input.deliveryMethod,
-        deliveryCharge,
-      },
-    });
-
-    // B. Create the Order Items
-    for (const item of cart.items) {
-      await tx.orderItem.create({
+  const result = await prisma.$transaction(async (tx) => {
+    if (input.paymentMethod === "COD") {
+      // Create ACCEPTED order directly
+      const createdOrder = await tx.order.create({
         data: {
-          orderId: createdOrder.orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.product.price,
+          userId,
+          paymentMethod: "COD",
+          paymentStatus: "UNPAID",
+          orderStatus: "ACCEPTED",
+          totalAmount,
+          shippingName: input.shippingName,
+          shippingEmail: input.shippingEmail,
+          shippingPhone: input.shippingPhone,
+          shippingAddress: input.shippingAddress,
+          shippingCity: input.shippingCity,
+          deliveryMethod: input.deliveryMethod,
+          deliveryCharge,
+          items: {
+            create: cart.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price,
+            }))
+          }
         },
       });
-    }
 
-    // C. COD Flow specific database writes (stock dec + clear cart)
-    if (input.paymentMethod === "COD") {
       // Reduce stock
       for (const item of cart.items) {
         await tx.product.update({
@@ -125,13 +119,40 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
       await tx.cartItem.deleteMany({
         where: { cartId: cart.cartId },
       });
-    }
 
-    return createdOrder;
+      return { type: 'ORDER', data: createdOrder };
+    } else {
+      // PayHere: Create a CheckoutAttempt, not an Order!
+      const attempt = await tx.checkoutAttempt.create({
+        data: {
+          userId,
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+          totalAmount,
+          shippingName: input.shippingName,
+          shippingEmail: input.shippingEmail,
+          shippingPhone: input.shippingPhone,
+          shippingAddress: input.shippingAddress,
+          shippingCity: input.shippingCity,
+          deliveryMethod: input.deliveryMethod,
+          deliveryCharge,
+          items: {
+            create: cart.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price,
+            }))
+          }
+        }
+      });
+      // Do NOT reduce stock or clear cart yet.
+      return { type: 'ATTEMPT', data: attempt };
+    }
   });
 
   // 4. Send initial notifications
-  if (input.paymentMethod === "COD") {
+  if (result.type === 'ORDER') {
+    const order = result.data;
     await notifyCustomer(
       userId,
       "Order Placed",
@@ -141,29 +162,20 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
       "New Order",
       `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
-    await notifySellers(
-      "Order Requires Processing",
-      `COD order #${order.orderId} is pending processing.`,
-    );
+    
+    // Return order matching expected interface
+    return order;
   } else {
-    // PayHere
-    await notifyCustomer(
-      userId,
-      "Order Placed",
-      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
-    );
+    const attempt = result.data;
     await notifyCustomer(
       userId,
       "Payment Initiated",
-      `Payment checkout page loaded for order #${order.orderId}.`,
+      `Payment checkout page loaded for attempt #${attempt.attemptId}.`,
     );
-    await notifySellers(
-      "New Order",
-      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
-    );
+    
+    // Return attempt, mocking the orderId property for the frontend compatibility during checkout
+    return { ...attempt, orderId: attempt.attemptId };
   }
-
-  return order;
 }
 
 export async function getUserOrders(userId: string) {
@@ -174,12 +186,6 @@ export async function getUserOrders(userId: string) {
 
   if (user?.role === "ADMIN") {
     return prisma.order.findMany({
-      where: {
-        NOT: {
-          paymentMethod: "PAYHERE",
-          paymentStatus: "PENDING",
-        }
-      },
       include: {
         items: {
           include: {
@@ -209,9 +215,42 @@ export async function getUserOrders(userId: string) {
 }
 
 export async function getOrderById(orderId: string, userId: string) {
-  const order = await findOrder(orderId);
+  let order: any = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    // Fallback to check if it's an abandoned checkout attempt
+    const attempt = await prisma.checkoutAttempt.findUnique({
+      where: { attemptId: orderId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                productId: true,
+                name: true,
+                price: true,
+                images: true,
+              },
+            },
+          },
+          orderBy: { attemptItemId: "asc" },
+        },
+      },
+    });
+
+    if (!attempt) {
+      throw new ApiError(404, "Order not found");
+    }
+    
+    // Mock it as an Order for the frontend to render the payment page
+    order = {
+      ...attempt,
+      orderId: attempt.attemptId,
+      orderStatus: "PAYMENT_PENDING", // Treated specially by the frontend
+      items: attempt.items.map((item: any) => ({
+        ...item,
+        orderItemId: item.attemptItemId,
+      }))
+    };
   }
 
   // Authorization check: Only owner or admin can view order
@@ -245,63 +284,44 @@ export async function cancelOrder(orderId: string, userId: string) {
     }
   }
 
-  // Status check: Allow PENDING or CONFIRMED only
-  const validStatusForCancellation = ["PENDING", "CONFIRMED"];
-  if (!validStatusForCancellation.includes(order.orderStatus)) {
+  // Status check: Allow ACCEPTED only
+  if (order.orderStatus !== "ACCEPTED") {
     throw new ApiError(
       400,
-      `Cannot cancel order in its current status: ${order.orderStatus}`,
+      `Cannot cancel order in its current status: ${order.orderStatus}. Please contact support if you need to cancel a shipped order.`,
     );
   }
 
-  if (order.paymentMethod === "COD") {
-    // COD -> CANCELLED
-    await prisma.$transaction(async (tx) => {
-      await tx.order.update({
-        where: { orderId },
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { orderId },
+      data: {
+        orderStatus: "CANCELLED",
+      },
+    });
+
+    // Restore stock for both COD and PayHere
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { productId: item.productId },
         data: {
-          orderStatus: "CANCELLED",
+          stock: {
+            increment: item.quantity,
+          },
         },
       });
+    }
+  });
 
-      // Restore stock (since COD decs stock at checkout)
-      for (const item of order.items) {
-        await tx.product.update({
-          where: { productId: item.productId },
-          data: {
-            stock: {
-              increment: item.quantity,
-            },
-          },
-        });
-      }
-    });
-
-    await notifyCustomer(
-      order.userId,
-      "Order Cancelled",
-      `Your COD order #${order.orderId} has been cancelled.`,
-    );
-    await notifySellers(
-      "Order Cancelled",
-      `COD order #${order.orderId} has been cancelled by the user.`,
-    );
-  } else {
-    // PayHere -> CANCELLATION_REQUESTED
-    await updateOrder(orderId, {
-      orderStatus: "CANCELLATION_REQUESTED",
-    });
-
-    await notifyCustomer(
-      order.userId,
-      "Cancellation Requested",
-      `Cancellation request received for PayHere order #${order.orderId}.`,
-    );
-    await notifySellers(
-      "Cancellation Requested",
-      `Customer requested cancellation for PayHere order #${order.orderId}.`,
-    );
-  }
+  await notifyCustomer(
+    order.userId,
+    "Order Cancelled",
+    `Your order #${order.orderId} has been cancelled.`,
+  );
+  await notifySellers(
+    "Order Cancelled",
+    `Order #${order.orderId} has been cancelled by the user.`,
+  );
 
   return findOrder(orderId);
 }
@@ -324,19 +344,56 @@ export async function updateOrderStatusByAdmin(
   if (!order) {
     throw new ApiError(404, "Order not found");
   }
+  
+  // Transition Logic Matrix Enforced
+  const isValidTransition = 
+    (order.orderStatus === "ACCEPTED" && newStatus === "SHIPPED") ||
+    (order.orderStatus === "ACCEPTED" && newStatus === "CANCELLED") ||
+    (order.orderStatus === "SHIPPED" && newStatus === "DELIVERED");
+    
+  if (!isValidTransition) {
+    throw new ApiError(400, `Invalid state transition from ${order.orderStatus} to ${newStatus}`);
+  }
+  
+  // Extra Validation for PayHere
+  if (newStatus === "SHIPPED" && order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") {
+    throw new ApiError(400, `Cannot ship PayHere order that is not PAID`);
+  }
 
-  const updatedOrder = await updateOrder(orderId, { orderStatus: newStatus });
+  let updatedOrder;
+  
+  await prisma.$transaction(async (tx) => {
+    let paymentStatus = order.paymentStatus;
+    
+    // Atomic update for COD upon delivery
+    if (newStatus === "DELIVERED" && order.paymentMethod === "COD") {
+      paymentStatus = "PAID";
+    }
+    
+    updatedOrder = await tx.order.update({
+      where: { orderId },
+      data: { 
+        orderStatus: newStatus,
+        paymentStatus
+      },
+      include: {
+        items: true,
+        user: true
+      }
+    });
+    
+    // Restore stock if Admin Cancels an ACCEPTED order
+    if (newStatus === "CANCELLED" && order.orderStatus === "ACCEPTED") {
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { productId: item.productId },
+          data: { stock: { increment: item.quantity } }
+        });
+      }
+    }
+  });
 
-  // Custom status notifications mapping
-  const statusLabels: Record<string, string> = {
-    CONFIRMED: "Order Confirmed",
-    PROCESSING: "Processing",
-    SHIPPED: "Shipped",
-    DELIVERED: "Delivered",
-    CANCELLED: "Cancelled",
-  };
-
-  const statusLabel = statusLabels[newStatus] || newStatus;
+  const statusLabel = newStatus;
   await notifyCustomer(
     order.userId,
     statusLabel,
@@ -347,13 +404,19 @@ export async function updateOrderStatusByAdmin(
 }
 
 export async function deleteDraftOrder(orderId: string, userId: string) {
-  const order = await findOrder(orderId);
-  if (!order) {
-    throw new ApiError(404, "Order not found");
+  // This function used to delete PENDING PayHere orders.
+  // Now, those are CheckoutAttempt records. We will try deleting the checkout attempt.
+  const attempt = await prisma.checkoutAttempt.findUnique({
+    where: { attemptId: orderId }
+  });
+  
+  if (!attempt) {
+    // Legacy support or already deleted
+    return { success: true };
   }
 
   // Authorization check
-  if (order.userId !== userId) {
+  if (attempt.userId !== userId) {
     const user = await prisma.user.findUnique({
       where: { userId },
       select: { role: true },
@@ -363,18 +426,12 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
     }
   }
 
-  // Only allow deleting PENDING PayHere orders
-  if (order.paymentMethod !== "PAYHERE" || order.orderStatus !== "PENDING") {
-    throw new ApiError(400, "Only pending PayHere orders can be deleted");
-  }
-
-  // Hard delete the order items and order
   await prisma.$transaction(async (tx) => {
-    await tx.orderItem.deleteMany({
-      where: { orderId },
+    await tx.checkoutAttemptItem.deleteMany({
+      where: { attemptId: orderId },
     });
-    await tx.order.delete({
-      where: { orderId },
+    await tx.checkoutAttempt.delete({
+      where: { attemptId: orderId },
     });
   });
 
@@ -382,29 +439,31 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
 }
 
 export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
-  const order = await findOrder(orderId);
-  if (!order) {
-    throw new ApiError(404, "Order not found");
+  // orderId here is the CheckoutAttempt ID.
+  const attempt = await prisma.checkoutAttempt.findUnique({
+    where: { attemptId: orderId },
+    include: { items: true }
+  });
+  
+  if (!attempt) {
+    // If not found in attempts, it might already be a fully processed Order.
+    const order = await findOrder(orderId);
+    if (order) return order;
+    
+    throw new ApiError(404, "Checkout attempt not found");
   }
 
-  // Ensure user owns the order
-  if (order.userId !== userId) {
+  // Ensure user owns the attempt
+  if (attempt.userId !== userId) {
     throw new ApiError(403, "Forbidden");
   }
 
-  // Ensure it's PayHere and pending
-  if (order.paymentMethod !== "PAYHERE") {
-    throw new ApiError(400, "Order is not a PayHere order");
-  }
+  let finalOrder;
 
-  if (order.paymentStatus === "PAID") {
-    return order; // Already paid
-  }
-
-  // Perform the same transaction as the webhook
+  // Perform the conversion from CheckoutAttempt -> Order
   await prisma.$transaction(async (tx) => {
     // 1. Double check stock for final checkout
-    for (const item of order.items) {
+    for (const item of attempt.items) {
       const product = await tx.product.findUnique({
         where: { productId: item.productId },
         select: { stock: true, name: true },
@@ -417,17 +476,34 @@ export async function confirmPayherePaymentClientSide(orderId: string, userId: s
       }
     }
 
-    // 2. Update order statuses
-    await tx.order.update({
-      where: { orderId: order.orderId },
+    // 2. Create the final ACCEPTED Order (reusing the attemptId as orderId)
+    finalOrder = await tx.order.create({
       data: {
+        orderId: attempt.attemptId,
+        userId: attempt.userId,
+        paymentMethod: attempt.paymentMethod,
         paymentStatus: "PAID",
-        orderStatus: "CONFIRMED",
-      },
+        orderStatus: "ACCEPTED",
+        totalAmount: attempt.totalAmount,
+        shippingName: attempt.shippingName,
+        shippingEmail: attempt.shippingEmail,
+        shippingPhone: attempt.shippingPhone,
+        shippingAddress: attempt.shippingAddress,
+        shippingCity: attempt.shippingCity,
+        deliveryMethod: attempt.deliveryMethod,
+        deliveryCharge: attempt.deliveryCharge,
+        items: {
+          create: attempt.items.map(item => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        }
+      }
     });
 
     // 3. Decrement product stocks
-    for (const item of order.items) {
+    for (const item of attempt.items) {
       await tx.product.update({
         where: { productId: item.productId },
         data: {
@@ -440,7 +516,7 @@ export async function confirmPayherePaymentClientSide(orderId: string, userId: s
 
     // 4. Clear User Cart
     const cart = await tx.cart.findUnique({
-      where: { userId: order.userId },
+      where: { userId: attempt.userId },
       select: { cartId: true },
     });
     if (cart) {
@@ -448,28 +524,28 @@ export async function confirmPayherePaymentClientSide(orderId: string, userId: s
         where: { cartId: cart.cartId },
       });
     }
+    
+    // 5. Delete the CheckoutAttempt
+    await tx.checkoutAttempt.delete({
+      where: { attemptId: attempt.attemptId }
+    });
   });
 
   // Send notifications
   await notifyCustomer(
-    order.userId,
+    attempt.userId,
     "Payment Successful",
-    `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
+    `Your payment of Rs. ${attempt.totalAmount.toLocaleString()} for order #${attempt.attemptId} was successful.`,
   );
   await notifyCustomer(
-    order.userId,
-    "Order Confirmed",
-    `Your order #${order.orderId} has been confirmed.`,
+    attempt.userId,
+    "Order Accepted",
+    `Your order #${attempt.attemptId} has been successfully placed.`,
   );
   await notifySellers(
-    "Payment Received",
-    `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
-  );
-  await notifySellers(
-    "Order Requires Processing",
-    `Order #${order.orderId} is confirmed and requires processing.`,
+    "Payment Received & Order Placed",
+    `Payment of Rs. ${attempt.totalAmount.toLocaleString()} received for new order #${attempt.attemptId}.`,
   );
 
-  return findOrder(orderId);
+  return finalOrder;
 }
-

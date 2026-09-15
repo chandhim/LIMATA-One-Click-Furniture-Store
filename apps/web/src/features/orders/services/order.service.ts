@@ -17,16 +17,14 @@ export interface OrderItem {
 export interface Order {
   orderId: string;
   userId: string;
-  paymentMethod: "PAYHERE" | "COD";
+  paymentMethod: "COD" | "PAYHERE";
   paymentStatus: "PENDING" | "PAID" | "UNPAID" | "FAILED" | "REFUNDED";
   orderStatus:
-    | "PENDING"
-    | "CONFIRMED"
-    | "PROCESSING"
+    | "PAYMENT_PENDING"
+    | "ACCEPTED"
     | "SHIPPED"
     | "DELIVERED"
-    | "CANCELLED"
-    | "CANCELLATION_REQUESTED";
+    | "CANCELLED";
   totalAmount: number;
   shippingName: string;
   shippingEmail: string;
