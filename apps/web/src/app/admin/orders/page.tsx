@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import {
   useAdminOrders,
   useUpdateOrderStatus,
@@ -69,6 +71,7 @@ export default function AdminOrdersPage() {
   const updateStatusMutation = useUpdateOrderStatus();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
 
   async function handleStatusChange(orderId: string, status: OrderStatus) {
     try {
@@ -618,11 +621,7 @@ export default function AdminOrdersPage() {
                                 Ship Order
                               </button>
                               <button
-                                onClick={() => {
-                                  if (confirm("Are you sure you want to cancel this order?")) {
-                                    handleStatusChange(order.orderId, "CANCELLED");
-                                  }
-                                }}
+                                onClick={() => setOrderToCancel(order.orderId)}
                                 style={{
                                   padding: "0.4rem 0.75rem",
                                   fontSize: "0.75rem",
@@ -676,6 +675,21 @@ export default function AdminOrdersPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={orderToCancel !== null}
+        title="Cancel Order"
+        message="Are you sure you want to cancel this order? This action cannot be undone."
+        confirmText="Yes, Cancel Order"
+        onConfirm={() => {
+          if (orderToCancel) {
+            handleStatusChange(orderToCancel, "CANCELLED");
+            setOrderToCancel(null);
+          }
+        }}
+        onCancel={() => setOrderToCancel(null)}
+        isDestructive={true}
+      />
     </div>
   );
 }
