@@ -38,7 +38,7 @@ api.interceptors.request.use((config) => {
 });
 
 export class AppError extends Error {
-  isAppError: true = true;
+  isAppError = true as const;
   status: number | null;
   type: 'network' | 'auth' | 'validation' | 'server' | 'rate-limit' | 'unknown';
 

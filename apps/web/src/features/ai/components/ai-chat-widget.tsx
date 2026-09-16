@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { X, Loader2, Send, Sparkles, AlertCircle, Plus, ChevronLeft, MessageSquare, Clock } from "lucide-react";
-import { useAiChat } from "../hooks/use-ai-chat";
+import { useAiChat, type ChatContext } from "../hooks/use-ai-chat";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import type { Product } from "@/features/products/types/product.types";
 import Link from "next/link";
@@ -36,7 +36,7 @@ function isMeaningfulAssistantResponse(content: string, hasProducts: boolean): b
   return true;
 }
 
-function getDynamicPrompts(chatContext: any, messages: any[], isInitial: boolean): string[] {
+function getDynamicPrompts(chatContext: ChatContext | undefined | null, messages: { role: string; content: string }[], isInitial: boolean): string[] {
   const hasRoomContext = !!chatContext?.depth_analysis || !!(chatContext?.detected_objects && chatContext.detected_objects.length > 0);
   const hasArContext = !!chatContext?.ar_placement;
   
@@ -44,7 +44,7 @@ function getDynamicPrompts(chatContext: any, messages: any[], isInitial: boolean
     return isInitial ? GENERIC_SUGGESTED_PROMPTS : GENERIC_FOLLOW_UP_SUGGESTIONS;
   }
 
-  const userMessages = messages.filter((m: any) => m.role === "user").map((m: any) => m.content.toLowerCase());
+  const userMessages = messages.filter((m) => m.role === "user").map((m) => m.content.toLowerCase());
   const checkIntent = (keywords: string[]) => userMessages.some((msg: string) => keywords.some(kw => msg.includes(kw)));
   
   const hasDiscussedSpace = checkIntent(["space", "fit", "room for", "maximize", "clearance", "how much room"]);
@@ -61,7 +61,7 @@ function getDynamicPrompts(chatContext: any, messages: any[], isInitial: boolean
   };
 
   if (hasArContext) {
-    const isSuitable = chatContext.ar_placement.suitable;
+    const isSuitable = chatContext?.ar_placement?.suitable;
     if (isInitial) {
       if (isSuitable) {
         addPrompt("Why is this placement suitable?");
@@ -442,7 +442,7 @@ export function AiChatWidget() {
                           <Sparkles size={14} /> Based on your room analysis
                         </div>
                         <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                          {chatContext?.detected_objects?.length > 0 && (
+                          {chatContext?.detected_objects && chatContext.detected_objects.length > 0 && (
                             <li>Detected: <span style={{ textTransform: "capitalize" }}>{chatContext.detected_objects[0]}</span></li>
                           )}
                           {chatContext?.depth_analysis?.space_availability && (
@@ -456,9 +456,9 @@ export function AiChatWidget() {
                           <Sparkles size={14} /> About this placement
                         </div>
                         <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                          <li>Status: {chatContext.ar_placement.suitable ? "✅ Suitable" : "❌ Space may be limited"}</li>
-                          {chatContext.ar_placement.limiting_factor && (
-                            <li>Issue: <span style={{ textTransform: "capitalize" }}>{chatContext.ar_placement.limiting_factor}</span></li>
+                          <li>Status: {chatContext?.ar_placement?.suitable ? "✅ Suitable" : "❌ Space may be limited"}</li>
+                          {chatContext?.ar_placement?.limiting_factor && (
+                            <li>Issue: <span style={{ textTransform: "capitalize" }}>{chatContext?.ar_placement?.limiting_factor}</span></li>
                           )}
                         </ul>
                       </div>
@@ -506,7 +506,7 @@ export function AiChatWidget() {
                 ) : (
                   messages.map((msg, idx) => {
                     let displayContent = msg.content;
-                    const hasProducts = msg.role === "assistant" && msg.recommendedProducts && msg.recommendedProducts.length > 0;
+                    const hasProducts = !!(msg.role === "assistant" && msg.recommendedProducts && msg.recommendedProducts.length > 0);
                     
                     if (hasProducts) {
                       displayContent = displayContent
@@ -567,6 +567,7 @@ export function AiChatWidget() {
                                     color: "inherit",
                                   }}
                                 >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img 
                                     src={p.images?.[0] || "/placeholder.png"} 
                                     alt={p.name} 

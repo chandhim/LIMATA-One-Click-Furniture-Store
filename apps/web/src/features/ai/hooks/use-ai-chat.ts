@@ -9,6 +9,13 @@ import {
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { AppError } from "@/lib/axios";
 
+export interface ChatContext {
+  depth_analysis?: { space_availability?: string };
+  detected_objects?: string[];
+  ar_placement?: { suitable?: boolean; limiting_factor?: string };
+  [key: string]: unknown;
+}
+
 export function useAiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +24,7 @@ export function useAiChat() {
   const [conversations, setConversations] = useState<AiConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
-  const [chatContext, setChatContext] = useState<Record<string, any>>({});
+  const [chatContext, setChatContext] = useState<ChatContext>({});
   
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 

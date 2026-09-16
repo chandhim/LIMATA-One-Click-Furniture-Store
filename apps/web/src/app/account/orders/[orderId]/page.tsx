@@ -138,7 +138,8 @@ export default function OrderDetailsPage() {
     minute: "2-digit",
   });
 
-  const handleConfirmCancel = async (reason: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleConfirmCancel = async (_reason: string) => {
     try {
       // In a real app, you might want to send the reason to the backend
       // await cancelOrderMutation.mutateAsync({ orderId: order.orderId, reason });
