@@ -7,7 +7,7 @@ import {
   type AiConversation 
 } from "../api/ai-chat.api";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
-import type { AppError } from "@/lib/axios";
+import { AppError } from "@/lib/axios";
 
 export function useAiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -44,7 +44,7 @@ export function useAiChat() {
       setError(null);
     } catch (err) {
       const error = err as Record<string, unknown>;
-      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'unknown', message: "Failed to load conversation history." });
+      setError(error?.isAppError ? (error as unknown as AppError) : new AppError("Failed to load conversation history.", null, 'unknown'));
       console.error("Failed to load conversation:", err);
     } finally {
       setIsHistoryLoading(false);
@@ -90,7 +90,7 @@ export function useAiChat() {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       const error = err as Record<string, unknown>;
-      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'server', message: "Something went wrong. Please try again." });
+      setError(error?.isAppError ? (error as unknown as AppError) : new AppError("Something went wrong. Please try again.", null, 'server'));
     } finally {
       setIsLoading(false);
     }

@@ -83,7 +83,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         data: {
           userId,
           paymentMethod: "COD",
-          paymentStatus: "UNPAID",
+          paymentStatus: "PENDING",
           orderStatus: "ACCEPTED",
           totalAmount,
           shippingName: input.shippingName,
@@ -167,12 +167,6 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
     return order;
   } else {
     const attempt = result.data;
-    await notifyCustomer(
-      userId,
-      "Payment Initiated",
-      `Payment checkout page loaded for attempt #${attempt.attemptId}.`,
-    );
-    
     // Return attempt, mocking the orderId property for the frontend compatibility during checkout
     return { ...attempt, orderId: attempt.attemptId };
   }
@@ -439,15 +433,19 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
 }
 
 export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
-  // orderId here is the CheckoutAttempt ID.
+  // Check if it already exists as an Order
+  let order: any = await findOrder(orderId);
+  if (order) return order;
+
+  // Otherwise, find the CheckoutAttempt
   const attempt = await prisma.checkoutAttempt.findUnique({
     where: { attemptId: orderId },
-    include: { items: true }
+    include: { items: true },
   });
-  
+
   if (!attempt) {
-    // If not found in attempts, it might already be a fully processed Order.
-    const order = await findOrder(orderId);
+    // Maybe the webhook already processed it just now?
+    order = await findOrder(orderId);
     if (order) return order;
     
     throw new ApiError(404, "Checkout attempt not found");
@@ -458,94 +456,49 @@ export async function confirmPayherePaymentClientSide(orderId: string, userId: s
     throw new ApiError(403, "Forbidden");
   }
 
-  let finalOrder;
+  // We DO NOT mutate the database here in production.
+  // The client is just informing us that the PayHere UI completed.
+  // We must wait for the secure server-to-server webhook to actually 
+  // verify the payment and convert the CheckoutAttempt to an Order.
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[DEV MODE] Simulating successful PayHere webhook for attempt", orderId);
+    try {
+      const { processPayHereNotification } = await import("../payments/payment.service");
+      const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
+      const merchantSecret =
+        process.env.PAYHERE_MERCHANT_SECRET ||
+        "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
+      const crypto = await import("crypto");
+      
+      const secretMd5 = crypto.createHash("md5").update(merchantSecret).digest("hex").toUpperCase();
+      const payload = merchantId + attempt.attemptId + attempt.totalAmount.toFixed(2) + "LKR" + "2" + secretMd5;
+      const md5sig = crypto.createHash("md5").update(payload).digest("hex").toUpperCase();
 
-  // Perform the conversion from CheckoutAttempt -> Order
-  await prisma.$transaction(async (tx) => {
-    // 1. Double check stock for final checkout
-    for (const item of attempt.items) {
-      const product = await tx.product.findUnique({
-        where: { productId: item.productId },
-        select: { stock: true, name: true },
+      await processPayHereNotification({
+        merchant_id: merchantId,
+        order_id: attempt.attemptId,
+        payhere_amount: attempt.totalAmount.toFixed(2),
+        payhere_currency: "LKR",
+        status_code: "2",
+        md5sig
       });
-      if (!product || product.stock < item.quantity) {
-        throw new ApiError(
-          400,
-          `Stock check failed for "${product?.name || item.productId}" during payment settlement.`,
-        );
-      }
+
+      const confirmedOrder = await findOrder(orderId);
+      if (confirmedOrder) return confirmedOrder;
+    } catch (err) {
+      console.error("[DEV MODE] Failed to simulate webhook:", err);
     }
+  }
 
-    // 2. Create the final ACCEPTED Order (reusing the attemptId as orderId)
-    finalOrder = await tx.order.create({
-      data: {
-        orderId: attempt.attemptId,
-        userId: attempt.userId,
-        paymentMethod: attempt.paymentMethod,
-        paymentStatus: "PAID",
-        orderStatus: "ACCEPTED",
-        totalAmount: attempt.totalAmount,
-        shippingName: attempt.shippingName,
-        shippingEmail: attempt.shippingEmail,
-        shippingPhone: attempt.shippingPhone,
-        shippingAddress: attempt.shippingAddress,
-        shippingCity: attempt.shippingCity,
-        deliveryMethod: attempt.deliveryMethod,
-        deliveryCharge: attempt.deliveryCharge,
-        items: {
-          create: attempt.items.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.price
-          }))
-        }
-      }
-    });
-
-    // 3. Decrement product stocks
-    for (const item of attempt.items) {
-      await tx.product.update({
-        where: { productId: item.productId },
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      });
-    }
-
-    // 4. Clear User Cart
-    const cart = await tx.cart.findUnique({
-      where: { userId: attempt.userId },
-      select: { cartId: true },
-    });
-    if (cart) {
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.cartId },
-      });
-    }
-    
-    // 5. Delete the CheckoutAttempt
-    await tx.checkoutAttempt.delete({
-      where: { attemptId: attempt.attemptId }
-    });
-  });
-
-  // Send notifications
-  await notifyCustomer(
-    attempt.userId,
-    "Payment Successful",
-    `Your payment of Rs. ${attempt.totalAmount.toLocaleString()} for order #${attempt.attemptId} was successful.`,
-  );
-  await notifyCustomer(
-    attempt.userId,
-    "Order Accepted",
-    `Your order #${attempt.attemptId} has been successfully placed.`,
-  );
-  await notifySellers(
-    "Payment Received & Order Placed",
-    `Payment of Rs. ${attempt.totalAmount.toLocaleString()} received for new order #${attempt.attemptId}.`,
-  );
-
-  return finalOrder;
+  // So we simply return the CheckoutAttempt mocked as an Order, 
+  // just like getOrderById does for pending attempts.
+  return {
+    ...attempt,
+    orderId: attempt.attemptId,
+    orderStatus: "PAYMENT_PENDING",
+    items: attempt.items.map((item: any) => ({
+      ...item,
+      orderItemId: item.attemptItemId,
+    })),
+  };
 }
