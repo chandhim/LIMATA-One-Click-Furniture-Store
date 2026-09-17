@@ -51,7 +51,7 @@ export async function startConversation(
   const existingConversation = await findConversationsByCustomerId(customerId);
 
   if (existingConversation.length > 0) {
-    throw new ApiError(400, "Customer already has an active conversation");
+    throw new ApiError(400, "You already have an open support conversation. Please use your existing chat.");
   }
 
   return createConversation(customerId);
@@ -65,11 +65,11 @@ export async function sendMessage(data: {
   const conversation = await findConversationById(data.conversationId);
 
   if (!conversation) {
-    throw new ApiError(404, "Conversation not found");
+    throw new ApiError(404, "This conversation could not be found.");
   }
 
   if (!data.content || data.content.trim() === "") {
-    throw new ApiError(400, "Message content cannot be empty");
+    throw new ApiError(400, "Please type a message before sending.");
   }
 
   return createMessage({

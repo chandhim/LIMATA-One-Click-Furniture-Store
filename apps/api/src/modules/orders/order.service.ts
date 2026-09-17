@@ -54,19 +54,19 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
   });
 
   if (!cart || cart.items.length === 0) {
-    throw new ApiError(400, "Your cart is empty");
+    throw new ApiError(400, "Your cart is empty. Please add items before placing an order.");
   }
 
   // 2. Validate stock availability and calculate backend pricing
   let subtotal = 0;
   for (const item of cart.items) {
     if (!item.product) {
-      throw new ApiError(404, `Product for item ${item.productId} not found`);
+      throw new ApiError(404, "One or more products in your cart are no longer available. Please review your cart and remove unavailable items.");
     }
     if (item.product.stock < item.quantity) {
       throw new ApiError(
         400,
-        `Insufficient stock for product "${item.product.name}"`,
+        `Sorry, "${item.product.name}" does not have enough stock for your requested quantity. Please reduce the quantity or remove it from your cart.`,
       );
     }
     subtotal += item.product.price * item.quantity;
@@ -232,7 +232,7 @@ export async function getOrderById(orderId: string, userId: string) {
     });
 
     if (!attempt) {
-      throw new ApiError(404, "Order not found");
+      throw new ApiError(404, "This order could not be found.");
     }
     
     // Mock it as an Order for the frontend to render the payment page
@@ -254,7 +254,7 @@ export async function getOrderById(orderId: string, userId: string) {
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
-      throw new ApiError(403, "Forbidden");
+      throw new ApiError(403, "You do not have permission to view this order.");
     }
   }
 
@@ -264,7 +264,7 @@ export async function getOrderById(orderId: string, userId: string) {
 export async function cancelOrder(orderId: string, userId: string) {
   const order = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    throw new ApiError(404, "This order could not be found.");
   }
 
   // Authorization check
@@ -274,7 +274,7 @@ export async function cancelOrder(orderId: string, userId: string) {
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
-      throw new ApiError(403, "Forbidden");
+      throw new ApiError(403, "You can only cancel your own orders.");
     }
   }
 
@@ -331,12 +331,12 @@ export async function updateOrderStatusByAdmin(
     select: { role: true },
   });
   if (admin?.role !== "ADMIN") {
-    throw new ApiError(403, "Only admins can update order states");
+    throw new ApiError(403, "You do not have permission to update order status.");
   }
 
   const order = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    throw new ApiError(404, "This order could not be found.");
   }
   
   // Transition Logic Matrix Enforced
@@ -346,12 +346,12 @@ export async function updateOrderStatusByAdmin(
     (order.orderStatus === "SHIPPED" && newStatus === "DELIVERED");
     
   if (!isValidTransition) {
-    throw new ApiError(400, `Invalid state transition from ${order.orderStatus} to ${newStatus}`);
+    throw new ApiError(400, `This order cannot be moved from ${order.orderStatus} to ${newStatus} status. Please follow the correct order flow.`);
   }
   
   // Extra Validation for PayHere
   if (newStatus === "SHIPPED" && order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") {
-    throw new ApiError(400, `Cannot ship PayHere order that is not PAID`);
+    throw new ApiError(400, "This order cannot be shipped yet because the payment has not been confirmed.");
   }
 
   let updatedOrder;
