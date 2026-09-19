@@ -287,7 +287,7 @@ export default function AdminOverviewPage() {
                     {stats.recentOrders.map(
                       (order: DashboardRecentOrder, idx: number) => {
                         const isDelivered = order.orderStatus === "DELIVERED";
-                        const isPending = order.orderStatus === "PENDING";
+                        const isPending = order.orderStatus === "ACCEPTED";
                         return (
                           <tr
                             key={order.orderId}

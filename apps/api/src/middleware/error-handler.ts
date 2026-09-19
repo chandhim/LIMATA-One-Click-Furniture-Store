@@ -16,7 +16,7 @@ export function errorHandler(
   if (error instanceof ZodError) {
     return res.status(400).json({
       success: false,
-      message: error.issues[0]?.message ?? "Validation failed",
+      message: error.issues[0]?.message ?? "Some of the information you entered is invalid. Please check your details and try again.",
     });
   }
 
@@ -38,18 +38,18 @@ export function errorHandler(
         // Unique constraint violation
         return res.status(409).json({
           success: false,
-          message: "A record with that value already exists.",
+          message: "This information is already in use. Please try a different value.",
         });
       case "P2025":
         // Record not found
         return res.status(404).json({
           success: false,
-          message: "Record not found.",
+          message: "The item you are looking for could not be found.",
         });
       default:
         return res.status(500).json({
           success: false,
-          message: "A database error occurred.",
+          message: "Something went wrong on our end. Please try again later.",
         });
     }
   }
@@ -59,14 +59,14 @@ export function errorHandler(
     console.error("[Prisma] Validation error:", error.message);
     return res.status(400).json({
       success: false,
-      message: "Invalid data provided.",
+      message: "Some of the information you submitted is invalid. Please check and try again.",
     });
   }
 
   // Generic API errors and unexpected errors
   const typedError = error as ErrorWithStatus;
   const statusCode = typedError.statusCode ?? 500;
-  const message = typedError.message ?? "Internal Server Error";
+  const message = typedError.message ?? "Something went wrong on our end. Please try again, or contact support if the problem persists."
 
   res.status(statusCode).json({
     success: false,

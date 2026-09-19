@@ -159,7 +159,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
 
   return (
     <div
-      className="animate-fade-in z-[100] fixed inset-0 md:static md:w-full md:aspect-[4/3] md:rounded-lg md:overflow-hidden md:border md:border-[var(--border)]"
+      className="animate-fade-in z-[100] fixed inset-0"
       style={{
         background: "#000",
         display: "flex",

@@ -431,22 +431,57 @@ export function VisualRecommendPanel({
                  </div>
                )}
                
-               <button
-                 onClick={handleClear}
-                 style={{
-                   padding: "0.6rem 1rem",
-                   background: "transparent",
-                   color: "var(--fg-secondary)",
-                   border: "1px solid var(--border)",
-                   borderRadius: "var(--radius-full)",
-                   fontSize: "0.875rem",
-                   fontWeight: 600,
-                   cursor: "pointer",
-                   alignSelf: "flex-start"
-                 }}
-               >
-                 Scan Another Room
-               </button>
+               <div style={{ display: "flex", gap: "1rem", alignSelf: "flex-start", flexWrap: "wrap" }}>
+                 <button
+                   onClick={() => {
+                     window.dispatchEvent(
+                       new CustomEvent("open-ai-chat", {
+                         detail: {
+                           context: {
+                             detected_objects: data.visual_context.detected_class ? [data.visual_context.detected_class] : [],
+                             depth_analysis: { space_availability: data.visual_context.space_availability },
+                             recommendations: data.recommended_product_ids.map(id => ({
+                               productId: id,
+                               match_score: data.matching_info[id]?.score,
+                               reasons: data.matching_info[id]?.reasons || []
+                             }))
+                           }
+                         }
+                       })
+                     );
+                   }}
+                   style={{
+                     padding: "0.6rem 1rem",
+                     background: "var(--accent)",
+                     color: "#fff",
+                     border: "none",
+                     borderRadius: "var(--radius-full)",
+                     fontSize: "0.875rem",
+                     fontWeight: 600,
+                     cursor: "pointer",
+                     display: "flex",
+                     alignItems: "center",
+                     gap: "0.5rem"
+                   }}
+                 >
+                   <Sparkles size={16} /> Chat with LIMATA AI
+                 </button>
+                 <button
+                   onClick={handleClear}
+                   style={{
+                     padding: "0.6rem 1rem",
+                     background: "transparent",
+                     color: "var(--fg-secondary)",
+                     border: "1px solid var(--border)",
+                     borderRadius: "var(--radius-full)",
+                     fontSize: "0.875rem",
+                     fontWeight: 600,
+                     cursor: "pointer",
+                   }}
+                 >
+                   Scan Another Room
+                 </button>
+               </div>
              </div>
           </div>
 

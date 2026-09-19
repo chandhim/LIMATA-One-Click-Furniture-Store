@@ -65,7 +65,7 @@ export async function profileController(
 ) {
   try {
     if (!req.user) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "You need to be logged in to view your profile.");
     }
 
     const profile = await getProfile(req.user.id);
@@ -85,7 +85,7 @@ export async function adminController(
 ) {
   try {
     if (!req.user) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "You need to be logged in to access this area.");
     }
 
     return sendAuthResponse(res, 200, "Admin access granted", {
@@ -104,7 +104,7 @@ export async function updateProfileController(
 ) {
   try {
     if (!req.user) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "Authentication required. Please log in to update your profile.");
     }
 
     const parsedBody = updateProfileSchema.parse(req.body);
@@ -125,15 +125,15 @@ export async function uploadAvatarController(
 ) {
   try {
     if (!req.user) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "You need to be logged in to upload a profile picture.");
     }
     if (!req.file) {
-      throw new ApiError(400, "No file uploaded");
+      throw new ApiError(400, "Please select an image file to upload.");
     }
 
     const validMimes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     if (!validMimes.includes(req.file.mimetype)) {
-      throw new ApiError(400, `Invalid file type: ${req.file.mimetype}`);
+      throw new ApiError(400, "That file type is not supported. Please upload a JPEG, PNG, or WebP image.");
     }
 
     const key = makeKey(`users/${req.user.id}/avatar`, req.file.originalname);

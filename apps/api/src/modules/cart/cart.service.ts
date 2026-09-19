@@ -34,11 +34,11 @@ export async function addItemToCart(userId: string, input: AddToCartInput) {
   });
 
   if (!product) {
-    throw new ApiError(404, "Product not found");
+    throw new ApiError(404, "This product could not be found. It may have been removed from the store.");
   }
 
   if (product.stock < input.quantity) {
-    throw new ApiError(400, "Insufficient stock");
+    throw new ApiError(400, "Sorry, there is not enough stock available for the quantity you requested.");
   }
 
   const cart = await findOrCreateCart(userId);
@@ -47,7 +47,7 @@ export async function addItemToCart(userId: string, input: AddToCartInput) {
   if (existing) {
     const newQty = existing.quantity + input.quantity;
     if (product.stock < newQty) {
-      throw new ApiError(400, "Insufficient stock for requested quantity");
+      throw new ApiError(400, "Adding that many would exceed the available stock. Please reduce the quantity.");
     }
     await incrementCartItemQuantity(existing.cartItemId, input.quantity);
   } else {
@@ -68,12 +68,12 @@ export async function updateCartItem(
 ) {
   const item = await findCartItemById(cartItemId);
   if (!item) {
-    throw new ApiError(404, "Cart item not found");
+    throw new ApiError(404, "This item could not be found in your cart.");
   }
 
   const cart = await findCartByUserId(userId);
   if (!cart || item.cartId !== cart.cartId) {
-    throw new ApiError(403, "Forbidden");
+    throw new ApiError(403, "You do not have permission to modify this cart item.");
   }
 
   const product = await prisma.product.findUnique({
@@ -82,7 +82,7 @@ export async function updateCartItem(
   });
 
   if (!product || product.stock < input.quantity) {
-    throw new ApiError(400, "Insufficient stock");
+    throw new ApiError(400, "Sorry, there is not enough stock available for the quantity you requested.");
   }
 
   return updateCartItemQuantity(cartItemId, input);
@@ -95,12 +95,12 @@ export async function updateCartItem(
 export async function removeCartItem(userId: string, cartItemId: string) {
   const item = await findCartItemById(cartItemId);
   if (!item) {
-    throw new ApiError(404, "Cart item not found");
+    throw new ApiError(404, "This item could not be found in your cart.");
   }
 
   const cart = await findCartByUserId(userId);
   if (!cart || item.cartId !== cart.cartId) {
-    throw new ApiError(403, "Forbidden");
+    throw new ApiError(403, "You do not have permission to modify this cart item.");
   }
 
   return deleteCartItem(cartItemId);

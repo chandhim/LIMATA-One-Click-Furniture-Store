@@ -3,9 +3,10 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2 } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult } from "../types/placement.types";
+import { CameraCapture } from "./camera-capture";
 
 interface AiPlacementPanelProps {
   productId: string;
@@ -16,6 +17,7 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [result, setResult] = useState<PlacementEvaluationResult | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: evaluatePlacement, isPending } = usePlacement();
@@ -31,6 +33,13 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
       setPreviewUrl(URL.createObjectURL(file));
       setResult(null);
     }
+  };
+
+  const handleCameraCapture = (file: File) => {
+    setSelectedImage(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setIsCameraActive(false);
+    setResult(null);
   };
 
   const handleAnalyze = () => {
@@ -53,6 +62,7 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
     setSelectedImage(null);
     setPreviewUrl(null);
     setResult(null);
+    setIsCameraActive(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -103,40 +113,71 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
       </div>
 
       {!selectedImage ? (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "1rem",
-            border: "2px dashed var(--border-strong)",
-            borderRadius: "var(--radius-lg)",
-            padding: "3rem 2rem",
-            cursor: "pointer",
-            transition: "background 0.2s",
-            background: "rgba(0,0,0,0.02)",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-base)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(0,0,0,0.02)")}
-        >
-          <div style={{ background: "var(--bg-base)", padding: "1rem", borderRadius: "50%", color: "var(--accent-dark)", boxShadow: "var(--shadow-sm)" }}>
-            <UploadCloud size={32} />
+        isCameraActive ? (
+          <CameraCapture onCapture={handleCameraCapture} onCancel={() => setIsCameraActive(false)} />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--fg-primary)", textAlign: "center" }}>How would you like to add your room?</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1.5rem" }}>
+              <div
+                onClick={() => setIsCameraActive(true)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "1rem",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-lg)",
+                  padding: "2.5rem 1.5rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  background: "var(--bg-base)",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}
+              >
+                <div style={{ background: "var(--bg-surface)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", boxShadow: "var(--shadow-sm)" }}>
+                  <Camera size={28} />
+                </div>
+                <div style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "1.05rem" }}>Take a photo</div>
+              </div>
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "1rem",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-lg)",
+                  padding: "2.5rem 1.5rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  background: "var(--bg-base)",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "none"; }}
+              >
+                <div style={{ background: "var(--bg-surface)", padding: "1rem", borderRadius: "50%", color: "var(--accent)", boxShadow: "var(--shadow-sm)" }}>
+                  <UploadCloud size={28} />
+                </div>
+                <div style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "1.05rem" }}>Upload a photo</div>
+              </div>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileSelect}
+            />
           </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.25rem" }}>Click to upload a room photo</div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--fg-muted)" }}>Supports JPG, PNG, WEBP</div>
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleFileSelect}
-          />
-        </div>
+        )
       ) : (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {/* Image Preview Area */}
@@ -312,6 +353,49 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
                       </button>
                     </div>
                   )}
+
+                  {/* Chat with LIMATA AI Button */}
+                  <div style={{ marginTop: "0.5rem", paddingTop: "1.25rem", borderTop: "1px dashed var(--border)" }}>
+                    <button
+                      onClick={() => {
+                        window.dispatchEvent(
+                          new CustomEvent("open-ai-chat", {
+                            detail: {
+                              context: {
+                                ar_placement: {
+                                  suitable: result.suitable,
+                                  limiting_factor: result.limiting_factor,
+                                  estimated_clearance: result.estimated_clearance,
+                                  warnings: result.warnings || []
+                                }
+                              }
+                            }
+                          })
+                        );
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "0.875rem",
+                        background: "var(--bg-base)",
+                        color: "var(--accent-dark)",
+                        border: "1px solid var(--accent)",
+                        borderRadius: "var(--radius-full)",
+                        fontSize: "0.9375rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        boxShadow: "var(--shadow-sm)",
+                        transition: "transform 0.2s"
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
+                      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+                    >
+                      <Sparkles size={18} /> Discuss with LIMATA AI
+                    </button>
+                  </div>
                 </div>
               </div>
 

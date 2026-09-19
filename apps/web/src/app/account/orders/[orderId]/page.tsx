@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/env";
 import Link from "next/link";
 import { OrderProductReview } from "./order-product-review";
+import { CancellationChatModal } from "./cancellation-chat-modal";
 import { Armchair } from "lucide-react";
 
 export default function OrderDetailsPage() {
@@ -31,6 +32,7 @@ export default function OrderDetailsPage() {
   const cancelOrderMutation = useCancelOrder();
 
   const [isPaying, setIsPaying] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   // Load PayHere script
   useEffect(() => {
@@ -136,12 +138,14 @@ export default function OrderDetailsPage() {
     minute: "2-digit",
   });
 
-  const handleCancelOrder = async () => {
-    if (!confirm("Are you sure you want to cancel this order?")) return;
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleConfirmCancel = async (_reason: string) => {
     try {
+      // In a real app, you might want to send the reason to the backend
+      // await cancelOrderMutation.mutateAsync({ orderId: order.orderId, reason });
       await cancelOrderMutation.mutateAsync(order.orderId);
-      alert("Order status updated.");
+      setIsCancelModalOpen(false);
+      alert("Order successfully cancelled.");
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to cancel order.";
@@ -230,12 +234,11 @@ export default function OrderDetailsPage() {
   };
 
   // Define steps for order tracker
-  const steps = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
-  const currentStepIndex = steps.indexOf(order.orderStatus);
+  const steps = ["ACCEPTED", "SHIPPED", "DELIVERED"];
+  const effectiveStatus = order.orderStatus === "PAYMENT_PENDING" ? "ACCEPTED" : order.orderStatus;
+  const currentStepIndex = order.orderStatus === "PAYMENT_PENDING" ? -1 : steps.indexOf(effectiveStatus);
 
-  const isCancelled =
-    order.orderStatus === "CANCELLED" ||
-    order.orderStatus === "CANCELLATION_REQUESTED";
+  const isCancelled = order.orderStatus === "CANCELLED";
 
   return (
     <MainLayout>
@@ -418,7 +421,7 @@ export default function OrderDetailsPage() {
                   style={{
                     position: "absolute",
                     left: "2rem",
-                    width: `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 4rem)`,
+                    width: currentStepIndex < 0 ? "0" : `calc(${(currentStepIndex / (steps.length - 1)) * 100}% - 4rem)`,
                     top: "16px",
                     height: "3px",
                     background: "var(--accent)",
@@ -920,7 +923,7 @@ export default function OrderDetailsPage() {
                     {/* Pay Now Button (if PayHere payment is still pending) */}
                     {order.paymentMethod === "PAYHERE" &&
                       order.paymentStatus === "PENDING" &&
-                      order.orderStatus === "PENDING" && (
+                      order.orderStatus === "PAYMENT_PENDING" && (
                         <button
                           onClick={handlePayNow}
                           disabled={isPaying}
@@ -947,9 +950,9 @@ export default function OrderDetailsPage() {
                 </div>
 
                 {/* Cancellation trigger */}
-                {["PENDING", "CONFIRMED"].includes(order.orderStatus) && (
+                {(order.orderStatus === "ACCEPTED" || order.orderStatus === "SHIPPED") && (
                   <button
-                    onClick={handleCancelOrder}
+                    onClick={() => setIsCancelModalOpen(true)}
                     disabled={cancelOrderMutation.isPending}
                     style={{
                       width: "100%",
@@ -984,6 +987,15 @@ export default function OrderDetailsPage() {
           </div>
         </div>
       </div>
+      
+      <CancellationChatModal
+        isOpen={isCancelModalOpen}
+        onClose={() => setIsCancelModalOpen(false)}
+        onConfirmCancel={handleConfirmCancel}
+        isCancelling={cancelOrderMutation.isPending}
+        orderStatus={order.orderStatus}
+        orderId={order.orderId}
+      />
       <style jsx global>{`
         @media (max-width: 768px) {
           .order-details-grid {

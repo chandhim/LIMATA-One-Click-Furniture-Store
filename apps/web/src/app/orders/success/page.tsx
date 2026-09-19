@@ -32,13 +32,13 @@ function OrderSuccessContent() {
           textAlign: "center",
         }}
       >
-        {/* Success Icon */}
+        {/* Dynamic Icon based on payment status */}
         <div
           style={{
             width: "4rem",
             height: "4rem",
-            background: "rgba(34, 197, 94, 0.1)",
-            color: "#22c55e",
+            background: order?.orderStatus === "PAYMENT_PENDING" ? "rgba(234, 179, 8, 0.1)" : "rgba(34, 197, 94, 0.1)",
+            color: order?.orderStatus === "PAYMENT_PENDING" ? "#eab308" : "#22c55e",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
@@ -47,7 +47,7 @@ function OrderSuccessContent() {
             margin: "0 auto 1.5rem",
           }}
         >
-          ✓
+          {order?.orderStatus === "PAYMENT_PENDING" ? "⏳" : "✓"}
         </div>
 
         <h1
@@ -59,7 +59,9 @@ function OrderSuccessContent() {
             marginBottom: "0.5rem",
           }}
         >
-          Thank You for Your Order!
+          {order?.orderStatus === "PAYMENT_PENDING"
+            ? "Waiting for Payment Confirmation"
+            : "Thank You for Your Order!"}
         </h1>
         <p
           style={{
@@ -68,8 +70,9 @@ function OrderSuccessContent() {
             marginBottom: "2rem",
           }}
         >
-          Your order has been placed successfully. A confirmation email has been
-          sent to {order?.shippingEmail || "your email"}.
+          {order?.orderStatus === "PAYMENT_PENDING"
+            ? "We are waiting for PayHere to securely confirm your payment. If you have already completed the payment, this page will update shortly once we receive the confirmation."
+            : "Your order has been placed successfully."}
         </p>
 
         {isLoading ? (

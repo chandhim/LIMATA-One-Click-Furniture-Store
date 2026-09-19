@@ -1002,9 +1002,11 @@ export default function CheckoutPage() {
                     }}
                   >
                     {isProcessing
-                      ? "Processing Order..."
+                      ? paymentMethod === "PAYHERE"
+                        ? "Awaiting Payment..."
+                        : "Processing Order..."
                       : paymentMethod === "COD"
-                        ? "Place COD Order"
+                        ? "Place Order"
                         : "Proceed to Online Payment"}
                   </button>
 
