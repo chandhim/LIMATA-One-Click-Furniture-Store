@@ -26,8 +26,8 @@ const defaultFeatures: HomeFeature[] = [
     desc: "Professional assembly and delivery straight to your door, on your schedule.",
   },
   {
-    title: "AR Visualization",
-    desc: "See exactly how any piece looks inside your home before you buy — powered by augmented reality.",
+    title: "Expert Support",
+    desc: "Our dedicated support team is available 24/7 to help with orders, returns, and delivery scheduling.",
   },
 ];
 

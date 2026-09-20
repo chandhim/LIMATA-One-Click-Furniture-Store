@@ -1,0 +1,31 @@
+image,productId,status,latency_ms,suitable,evaluation_confidence,estimated_clearance,limiting_factor,warnings
+01_living_sofa.jpg,cmqnju4670006ud6cpdni1ij9,200,920,True,0.8772042222969165,,,
+01_living_sofa.jpg,cmqko6doz0017sn8o438qdkfx,200,966,True,0.8772042222969165,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+02_living_tv.jpg,cmqnju4670006ud6cpdni1ij9,200,1089,True,0.8785003217305547,,,
+02_living_tv.jpg,cmqko6doz0017sn8o438qdkfx,200,918,True,0.8785003217305547,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+03_living_sofa_tv.jpg,cmqnju4670006ud6cpdni1ij9,200,900,True,0.9194066139359954,,,
+03_living_sofa_tv.jpg,cmqko6doz0017sn8o438qdkfx,200,932,True,0.9194066139359954,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+04_person_only.jpg,cmqnju4670006ud6cpdni1ij9,200,873,False,0.9011813203422122,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 721.54).|Evaluated at 90° orientation due to constraints.
+04_person_only.jpg,cmqko6doz0017sn8o438qdkfx,200,920,False,0.9011813203422122,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 721.54).|Evaluated at 90° orientation due to constraints.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+05_empty_room.jpg,cmqnju4670006ud6cpdni1ij9,200,892,True,1,,,
+05_empty_room.jpg,cmqko6doz0017sn8o438qdkfx,200,913,True,1,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+06_bedroom_bed.jpg,cmqnju4670006ud6cpdni1ij9,200,924,True,0.8710933681525894,,,
+06_bedroom_bed.jpg,cmqko6doz0017sn8o438qdkfx,200,914,True,0.8710933681525894,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+07_bedroom_bed_wardrobe.jpg,cmqnju4670006ud6cpdni1ij9,200,952,False,0.9068397383024035,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 760.95).|Evaluated at 90° orientation due to constraints.
+07_bedroom_bed_wardrobe.jpg,cmqko6doz0017sn8o438qdkfx,200,906,False,0.9068397383024035,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 760.95).|Evaluated at 90° orientation due to constraints.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+08_bedroom_unrelated.jpg,cmqnju4670006ud6cpdni1ij9,200,904,True,0.6799999999999999,,,Moderate scene congestion.
+08_bedroom_unrelated.jpg,cmqko6doz0017sn8o438qdkfx,200,890,True,0.6799999999999999,,,Moderate scene congestion.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+09_dining_table.jpg,cmqnju4670006ud6cpdni1ij9,200,893,True,0.6799999999999999,,,Moderate scene congestion.
+09_dining_table.jpg,cmqko6doz0017sn8o438qdkfx,200,913,True,0.6799999999999999,,,Moderate scene congestion.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+10_dining_table_chairs.jpg,cmqnju4670006ud6cpdni1ij9,200,933,True,0.7384665805125953,,,Moderate scene congestion.
+10_dining_table_chairs.jpg,cmqko6doz0017sn8o438qdkfx,200,1024,True,0.7384665805125953,,,Moderate scene congestion.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+11_multiple_furniture.jpg,cmqnju4670006ud6cpdni1ij9,200,949,False,0.628126982885067,,CONGESTION,High scene congestion detected.|Nearest obstacle is too close (Depth scalar: 690.37).
+11_multiple_furniture.jpg,cmqko6doz0017sn8o438qdkfx,200,888,False,0.628126982885067,,CONGESTION,High scene congestion detected.|Nearest obstacle is too close (Depth scalar: 690.37).|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+12_blurry_room.jpg,cmqnju4670006ud6cpdni1ij9,200,897,False,0.9310040000411989,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 575.85).|Evaluated at 90° orientation due to constraints.
+12_blurry_room.jpg,cmqko6doz0017sn8o438qdkfx,200,1834,False,0.9310040000411989,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 575.85).|Evaluated at 90° orientation due to constraints.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+13_cluttered_room.jpg,cmqnju4670006ud6cpdni1ij9,200,1068,False,0.7883502000228967,,OBSTACLE_PROXIMITY,Moderate scene congestion.|Nearest obstacle is too close (Depth scalar: 809.53).|Evaluated at 90° orientation due to constraints.
+13_cluttered_room.jpg,cmqko6doz0017sn8o438qdkfx,200,1183,False,0.7883502000228967,,OBSTACLE_PROXIMITY,Moderate scene congestion.|Nearest obstacle is too close (Depth scalar: 809.53).|Evaluated at 90° orientation due to constraints.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+14_unusual_viewpoint.jpg,cmqnju4670006ud6cpdni1ij9,200,896,False,0.9035725908997454,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 370.20).|Evaluated at 90° orientation due to constraints.
+14_unusual_viewpoint.jpg,cmqko6doz0017sn8o438qdkfx,200,921,False,0.9035725908997454,,OBSTACLE_PROXIMITY,Nearest obstacle is too close (Depth scalar: 370.20).|Evaluated at 90° orientation due to constraints.|DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.
+15_extreme_lighting.jpg,cmqnju4670006ud6cpdni1ij9,200,890,True,0.9892826189173325,,,
+15_extreme_lighting.jpg,cmqko6doz0017sn8o438qdkfx,200,891,True,0.9892826189173325,,,DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.

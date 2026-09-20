@@ -6,16 +6,17 @@ import { FeaturedProducts } from "@/features/home/components/featured-products";
 
 import { CTASection } from "@/features/home/components/cta-section";
 import { AboutSection } from "@/features/home/components/about-section";
+import { AIFeaturesSection } from "@/features/home/components/ai-features-section";
 
 export default function HomePage() {
   return (
     <MainLayout>
       <HeroSection />
+      <AIFeaturesSection />
       <CategoriesSection />
-      <FeaturesSection />
       <FeaturedProducts />
+      <FeaturesSection />
       <AboutSection />
-      {/* <AIFeaturesSection /> */}
       <CTASection />
     </MainLayout>
   );

@@ -41,6 +41,8 @@ export function generatePaymentHash(
   amount: number,
   currency: string,
 ) {
+  // Generate the MD5 hash required by PayHere to securely initiate a payment session from the client
+  // The hash prevents tampering with the order amount and ID during the checkout redirect
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
     process.env.PAYHERE_MERCHANT_SECRET ||
@@ -78,6 +80,8 @@ interface PayHereNotification {
   [key: string]: unknown;
 }
 
+// Verifies the authenticity of server-to-server notifications sent by PayHere (webhook payload)
+// It recalculates the MD5 signature using the secret and compares it to the provided md5sig
 export function verifyPayHereSignature(body: PayHereNotification): boolean {
   const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
   const merchantSecret =
@@ -133,24 +137,39 @@ export async function processPayHereNotification(body: PayHereNotification) {
     throw new ApiError(400, "Missing required fields in payment notification");
   }
 
-  // Retrieve the order details
-  const order = await findOrder(order_id);
-  if (!order) {
-    throw new ApiError(404, `Order ${order_id} not found`);
-  }
-
-  // Idempotency: if already paid, skip reprocessing
-  if (order.paymentStatus === "PAID") {
-    return { status: "ignored", reason: "order already paid" };
-  }
+  // Look for the CheckoutAttempt
+  const attempt = await prisma.checkoutAttempt.findUnique({
+    where: { attemptId: order_id },
+    include: { items: true }
+  });
 
   const statusCodeNum = parseInt(status_code, 10);
 
+  if (!attempt) {
+    // If not found in attempts, it might already be an Order (e.g. processed by client-side confirm)
+    const existingOrder = await findOrder(order_id);
+    if (existingOrder) {
+      if (existingOrder.paymentStatus === "PAID") {
+        return { status: "ignored", reason: "order already paid and migrated" };
+      }
+      
+      // Edge case: If it exists in Order table but payment failed/refunded?
+      if (statusCodeNum !== 2) {
+        await prisma.order.update({
+          where: { orderId: existingOrder.orderId },
+          data: { paymentStatus: "FAILED" },
+        });
+        return { status: "processed", payment: "failed_existing" };
+      }
+    }
+    throw new ApiError(404, `CheckoutAttempt ${order_id} not found`);
+  }
+
   if (statusCodeNum === 2) {
-    // Payment Success
+    // Payment Success -> Migrate CheckoutAttempt to Order
     await prisma.$transaction(async (tx) => {
       // 1. Double check stock for final checkout
-      for (const item of order.items) {
+      for (const item of attempt.items) {
         const product = await tx.product.findUnique({
           where: { productId: item.productId },
           select: { stock: true, name: true },
@@ -163,17 +182,34 @@ export async function processPayHereNotification(body: PayHereNotification) {
         }
       }
 
-      // 2. Update order statuses
-      await tx.order.update({
-        where: { orderId: order.orderId },
+      // 2. Create Order
+      await tx.order.create({
         data: {
+          orderId: attempt.attemptId,
+          userId: attempt.userId,
+          paymentMethod: attempt.paymentMethod,
           paymentStatus: "PAID",
-          orderStatus: "CONFIRMED",
-        },
+          orderStatus: "ACCEPTED",
+          totalAmount: attempt.totalAmount,
+          shippingName: attempt.shippingName,
+          shippingEmail: attempt.shippingEmail,
+          shippingPhone: attempt.shippingPhone,
+          shippingAddress: attempt.shippingAddress,
+          shippingCity: attempt.shippingCity,
+          deliveryMethod: attempt.deliveryMethod,
+          deliveryCharge: attempt.deliveryCharge,
+          items: {
+            create: attempt.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          }
+        }
       });
 
       // 3. Decrement product stocks
-      for (const item of order.items) {
+      for (const item of attempt.items) {
         await tx.product.update({
           where: { productId: item.productId },
           data: {
@@ -186,7 +222,7 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
       // 4. Clear User Cart
       const cart = await tx.cart.findUnique({
-        where: { userId: order.userId },
+        where: { userId: attempt.userId },
         select: { cartId: true },
       });
       if (cart) {
@@ -194,33 +230,39 @@ export async function processPayHereNotification(body: PayHereNotification) {
           where: { cartId: cart.cartId },
         });
       }
+      
+      // 5. Delete CheckoutAttempt
+      await tx.checkoutAttempt.delete({
+        where: { attemptId: attempt.attemptId }
+      });
     });
 
     // Send notifications
     await notifyCustomer(
-      order.userId,
+      attempt.userId,
       "Payment Successful",
-      `Your payment of Rs. ${order.totalAmount.toLocaleString()} for order #${order.orderId} was successful.`,
+      `Your payment of Rs. ${attempt.totalAmount.toLocaleString()} for order #${attempt.attemptId} was successful.`,
     );
     await notifyCustomer(
-      order.userId,
+      attempt.userId,
       "Order Confirmed",
-      `Your order #${order.orderId} has been confirmed.`,
+      `Your order #${attempt.attemptId} has been confirmed.`,
     );
     await notifySellers(
       "Payment Received",
-      `Payment of Rs. ${order.totalAmount.toLocaleString()} received for order #${order.orderId}.`,
+      `Payment of Rs. ${attempt.totalAmount.toLocaleString()} received for order #${attempt.attemptId}.`,
     );
     await notifySellers(
       "Order Requires Processing",
-      `Order #${order.orderId} is confirmed and requires processing.`,
+      `Order #${attempt.attemptId} is confirmed and requires processing.`,
     );
 
     return { status: "processed", payment: "success" };
   } else {
     // Payment Failed/Canceled/Failed processing
-    await prisma.order.update({
-      where: { orderId: order.orderId },
+    // Update CheckoutAttempt paymentStatus
+    await prisma.checkoutAttempt.update({
+      where: { attemptId: attempt.attemptId },
       data: {
         paymentStatus: "FAILED",
       },
@@ -228,13 +270,13 @@ export async function processPayHereNotification(body: PayHereNotification) {
 
     // Send failure notifications
     await notifyCustomer(
-      order.userId,
+      attempt.userId,
       "Payment Failed",
-      `Your payment for order #${order.orderId} failed or was cancelled.`,
+      `Your payment for checkout #${attempt.attemptId} failed or was cancelled.`,
     );
     await notifySellers(
       "Payment Failed",
-      `Payment failed for order #${order.orderId}.`,
+      `Payment failed for checkout #${attempt.attemptId}.`,
     );
 
     return { status: "processed", payment: "failed" };

@@ -12,6 +12,7 @@ import { deleteFromR2 } from "@/lib/storage";
 export async function getProducts(opts: {
   search?: string;
   category?: string;
+  includeDetails?: boolean;
 }) {
   return findProducts(opts);
 }

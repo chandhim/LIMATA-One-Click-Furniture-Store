@@ -22,26 +22,6 @@ export async function toggleAdminUserStatus(userId: string, isActive: boolean) {
   return res.data.data;
 }
 
-// 3. Review Management
-export async function getAdminReviews() {
-  const res = await api.get("/admin/reviews");
-  return res.data.data;
-}
-
-export async function toggleReviewApproval(
-  reviewId: string,
-  isApproved: boolean,
-) {
-  const res = await api.patch(`/admin/reviews/${reviewId}/approve`, {
-    isApproved,
-  });
-  return res.data.data;
-}
-
-export async function deleteAdminReview(reviewId: string) {
-  const res = await api.delete(`/admin/reviews/${reviewId}`);
-  return res.data.data;
-}
 
 // 4. Categories CRUD
 export async function getAdminCategories() {

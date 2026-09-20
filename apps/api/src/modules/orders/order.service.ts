@@ -4,6 +4,7 @@ import { ApiError } from "@/shared/errors/api-error";
 import type { CreateOrderInput } from "./order.validation";
 import { findOrders, findOrder, updateOrder } from "./order.repository";
 import { createNotification } from "../notifications/notification.service";
+import { deliveryService } from "../delivery/delivery.service";
 
 // Notify all Admins (acting as sellers)
 async function notifySellers(title: string, message: string) {
@@ -53,70 +54,55 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
   });
 
   if (!cart || cart.items.length === 0) {
-    throw new ApiError(400, "Your cart is empty");
+    throw new ApiError(400, "Your cart is empty. Please add items before placing an order.");
   }
 
   // 2. Validate stock availability and calculate backend pricing
   let subtotal = 0;
   for (const item of cart.items) {
     if (!item.product) {
-      throw new ApiError(404, `Product for item ${item.productId} not found`);
+      throw new ApiError(404, "One or more products in your cart are no longer available. Please review your cart and remove unavailable items.");
     }
     if (item.product.stock < item.quantity) {
       throw new ApiError(
         400,
-        `Insufficient stock for product "${item.product.name}"`,
+        `Sorry, "${item.product.name}" does not have enough stock for your requested quantity. Please reduce the quantity or remove it from your cart.`,
       );
     }
     subtotal += item.product.price * item.quantity;
   }
 
-  let standardCharge = 0;
-  if (subtotal < 5000) standardCharge = 1000;
-  else if (subtotal <= 15000) standardCharge = 3000;
-  else standardCharge = 5000;
-
-  let expressCharge = 0;
-  if (subtotal < 5000) expressCharge = 3000;
-  else if (subtotal <= 15000) expressCharge = 5000;
-  else expressCharge = 10000;
-
-  const shippingCharge = input.deliveryMethod === "Express" ? expressCharge : standardCharge;
-  const totalAmount = subtotal + shippingCharge;
+  const deliveryCharge = await deliveryService.calculateCharge(input.deliveryMethod, subtotal);
+  const totalAmount = subtotal + deliveryCharge;
 
   // 3. Execute database transaction
-  const order = await prisma.$transaction(async (tx) => {
-    // A. Create the Order
-    const createdOrder = await tx.order.create({
-      data: {
-        userId,
-        paymentMethod: input.paymentMethod,
-        paymentStatus: input.paymentMethod === "COD" ? "UNPAID" : "PENDING",
-        orderStatus: "PENDING",
-        totalAmount,
-        shippingName: input.shippingName,
-        shippingEmail: input.shippingEmail,
-        shippingPhone: input.shippingPhone,
-        shippingAddress: input.shippingAddress,
-        shippingCity: input.shippingCity,
-        deliveryMethod: input.deliveryMethod,
-      },
-    });
-
-    // B. Create the Order Items
-    for (const item of cart.items) {
-      await tx.orderItem.create({
+  const result = await prisma.$transaction(async (tx) => {
+    if (input.paymentMethod === "COD") {
+      // Create ACCEPTED order directly
+      const createdOrder = await tx.order.create({
         data: {
-          orderId: createdOrder.orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.product.price,
+          userId,
+          paymentMethod: "COD",
+          paymentStatus: "PENDING",
+          orderStatus: "ACCEPTED",
+          totalAmount,
+          shippingName: input.shippingName,
+          shippingEmail: input.shippingEmail,
+          shippingPhone: input.shippingPhone,
+          shippingAddress: input.shippingAddress,
+          shippingCity: input.shippingCity,
+          deliveryMethod: input.deliveryMethod,
+          deliveryCharge,
+          items: {
+            create: cart.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price,
+            }))
+          }
         },
       });
-    }
 
-    // C. COD Flow specific database writes (stock dec + clear cart)
-    if (input.paymentMethod === "COD") {
       // Reduce stock
       for (const item of cart.items) {
         await tx.product.update({
@@ -133,13 +119,40 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
       await tx.cartItem.deleteMany({
         where: { cartId: cart.cartId },
       });
-    }
 
-    return createdOrder;
+      return { type: 'ORDER' as const, data: createdOrder };
+    } else {
+      // PayHere: Create a CheckoutAttempt, not an Order!
+      const attempt = await tx.checkoutAttempt.create({
+        data: {
+          userId,
+          paymentMethod: "PAYHERE",
+          paymentStatus: "PENDING",
+          totalAmount,
+          shippingName: input.shippingName,
+          shippingEmail: input.shippingEmail,
+          shippingPhone: input.shippingPhone,
+          shippingAddress: input.shippingAddress,
+          shippingCity: input.shippingCity,
+          deliveryMethod: input.deliveryMethod,
+          deliveryCharge,
+          items: {
+            create: cart.items.map(item => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              price: item.product.price,
+            }))
+          }
+        }
+      });
+      // Do NOT reduce stock or clear cart yet.
+      return { type: 'ATTEMPT' as const, data: attempt };
+    }
   });
 
   // 4. Send initial notifications
-  if (input.paymentMethod === "COD") {
+  if (result.type === 'ORDER') {
+    const order = result.data;
     await notifyCustomer(
       userId,
       "Order Placed",
@@ -149,29 +162,14 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
       "New Order",
       `New COD order #${order.orderId} received from ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
     );
-    await notifySellers(
-      "Order Requires Processing",
-      `COD order #${order.orderId} is pending processing.`,
-    );
+    
+    // Return order matching expected interface
+    return order;
   } else {
-    // PayHere
-    await notifyCustomer(
-      userId,
-      "Order Placed",
-      `Your order #${order.orderId} has been created. Total amount is Rs. ${totalAmount.toLocaleString()}.`,
-    );
-    await notifyCustomer(
-      userId,
-      "Payment Initiated",
-      `Payment checkout page loaded for order #${order.orderId}.`,
-    );
-    await notifySellers(
-      "New Order",
-      `New order #${order.orderId} initiated (PayHere) by ${input.shippingName} for Rs. ${totalAmount.toLocaleString()}.`,
-    );
+    const attempt = result.data;
+    // Return attempt, mocking the orderId property for the frontend compatibility during checkout
+    return { ...attempt, orderId: attempt.attemptId };
   }
-
-  return order;
 }
 
 export async function getUserOrders(userId: string) {
@@ -182,12 +180,6 @@ export async function getUserOrders(userId: string) {
 
   if (user?.role === "ADMIN") {
     return prisma.order.findMany({
-      where: {
-        NOT: {
-          paymentMethod: "PAYHERE",
-          paymentStatus: "PENDING",
-        }
-      },
       include: {
         items: {
           include: {
@@ -217,9 +209,42 @@ export async function getUserOrders(userId: string) {
 }
 
 export async function getOrderById(orderId: string, userId: string) {
-  const order = await findOrder(orderId);
+  let order: any = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    // Fallback to check if it's an abandoned checkout attempt
+    const attempt = await prisma.checkoutAttempt.findUnique({
+      where: { attemptId: orderId },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                productId: true,
+                name: true,
+                price: true,
+                images: true,
+              },
+            },
+          },
+          orderBy: { attemptItemId: "asc" },
+        },
+      },
+    });
+
+    if (!attempt) {
+      throw new ApiError(404, "This order could not be found.");
+    }
+    
+    // Mock it as an Order for the frontend to render the payment page
+    order = {
+      ...attempt,
+      orderId: attempt.attemptId,
+      orderStatus: "PAYMENT_PENDING", // Treated specially by the frontend
+      items: attempt.items.map((item: any) => ({
+        ...item,
+        orderItemId: item.attemptItemId,
+      }))
+    };
   }
 
   // Authorization check: Only owner or admin can view order
@@ -229,7 +254,7 @@ export async function getOrderById(orderId: string, userId: string) {
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
-      throw new ApiError(403, "Forbidden");
+      throw new ApiError(403, "You do not have permission to view this order.");
     }
   }
 
@@ -239,7 +264,7 @@ export async function getOrderById(orderId: string, userId: string) {
 export async function cancelOrder(orderId: string, userId: string) {
   const order = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    throw new ApiError(404, "This order could not be found.");
   }
 
   // Authorization check
@@ -249,67 +274,48 @@ export async function cancelOrder(orderId: string, userId: string) {
       select: { role: true },
     });
     if (user?.role !== "ADMIN") {
-      throw new ApiError(403, "Forbidden");
+      throw new ApiError(403, "You can only cancel your own orders.");
     }
   }
 
-  // Status check: Allow PENDING or CONFIRMED only
-  const validStatusForCancellation = ["PENDING", "CONFIRMED"];
-  if (!validStatusForCancellation.includes(order.orderStatus)) {
+  // Status check: Allow ACCEPTED only
+  if (order.orderStatus !== "ACCEPTED") {
     throw new ApiError(
       400,
-      `Cannot cancel order in its current status: ${order.orderStatus}`,
+      `Cannot cancel order in its current status: ${order.orderStatus}. Please contact support if you need to cancel a shipped order.`,
     );
   }
 
-  if (order.paymentMethod === "COD") {
-    // COD -> CANCELLED
-    await prisma.$transaction(async (tx) => {
-      await tx.order.update({
-        where: { orderId },
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { orderId },
+      data: {
+        orderStatus: "CANCELLED",
+      },
+    });
+
+    // Restore stock for both COD and PayHere
+    for (const item of order.items) {
+      await tx.product.update({
+        where: { productId: item.productId },
         data: {
-          orderStatus: "CANCELLED",
+          stock: {
+            increment: item.quantity,
+          },
         },
       });
+    }
+  });
 
-      // Restore stock (since COD decs stock at checkout)
-      for (const item of order.items) {
-        await tx.product.update({
-          where: { productId: item.productId },
-          data: {
-            stock: {
-              increment: item.quantity,
-            },
-          },
-        });
-      }
-    });
-
-    await notifyCustomer(
-      order.userId,
-      "Order Cancelled",
-      `Your COD order #${order.orderId} has been cancelled.`,
-    );
-    await notifySellers(
-      "Order Cancelled",
-      `COD order #${order.orderId} has been cancelled by the user.`,
-    );
-  } else {
-    // PayHere -> CANCELLATION_REQUESTED
-    await updateOrder(orderId, {
-      orderStatus: "CANCELLATION_REQUESTED",
-    });
-
-    await notifyCustomer(
-      order.userId,
-      "Cancellation Requested",
-      `Cancellation request received for PayHere order #${order.orderId}.`,
-    );
-    await notifySellers(
-      "Cancellation Requested",
-      `Customer requested cancellation for PayHere order #${order.orderId}.`,
-    );
-  }
+  await notifyCustomer(
+    order.userId,
+    "Order Cancelled",
+    `Your order #${order.orderId} has been cancelled.`,
+  );
+  await notifySellers(
+    "Order Cancelled",
+    `Order #${order.orderId} has been cancelled by the user.`,
+  );
 
   return findOrder(orderId);
 }
@@ -325,26 +331,63 @@ export async function updateOrderStatusByAdmin(
     select: { role: true },
   });
   if (admin?.role !== "ADMIN") {
-    throw new ApiError(403, "Only admins can update order states");
+    throw new ApiError(403, "You do not have permission to update order status.");
   }
 
   const order = await findOrder(orderId);
   if (!order) {
-    throw new ApiError(404, "Order not found");
+    throw new ApiError(404, "This order could not be found.");
+  }
+  
+  // Transition Logic Matrix Enforced
+  const isValidTransition = 
+    (order.orderStatus === "ACCEPTED" && newStatus === "SHIPPED") ||
+    (order.orderStatus === "ACCEPTED" && newStatus === "CANCELLED") ||
+    (order.orderStatus === "SHIPPED" && newStatus === "DELIVERED");
+    
+  if (!isValidTransition) {
+    throw new ApiError(400, `This order cannot be moved from ${order.orderStatus} to ${newStatus} status. Please follow the correct order flow.`);
+  }
+  
+  // Extra Validation for PayHere
+  if (newStatus === "SHIPPED" && order.paymentMethod === "PAYHERE" && order.paymentStatus !== "PAID") {
+    throw new ApiError(400, "This order cannot be shipped yet because the payment has not been confirmed.");
   }
 
-  const updatedOrder = await updateOrder(orderId, { orderStatus: newStatus });
+  let updatedOrder;
+  
+  await prisma.$transaction(async (tx) => {
+    let paymentStatus = order.paymentStatus;
+    
+    // Atomic update for COD upon delivery
+    if (newStatus === "DELIVERED" && order.paymentMethod === "COD") {
+      paymentStatus = "PAID";
+    }
+    
+    updatedOrder = await tx.order.update({
+      where: { orderId },
+      data: { 
+        orderStatus: newStatus,
+        paymentStatus
+      },
+      include: {
+        items: true,
+        user: true
+      }
+    });
+    
+    // Restore stock if Admin Cancels an ACCEPTED order
+    if (newStatus === "CANCELLED" && order.orderStatus === "ACCEPTED") {
+      for (const item of order.items) {
+        await tx.product.update({
+          where: { productId: item.productId },
+          data: { stock: { increment: item.quantity } }
+        });
+      }
+    }
+  });
 
-  // Custom status notifications mapping
-  const statusLabels: Record<string, string> = {
-    CONFIRMED: "Order Confirmed",
-    PROCESSING: "Processing",
-    SHIPPED: "Shipped",
-    DELIVERED: "Delivered",
-    CANCELLED: "Cancelled",
-  };
-
-  const statusLabel = statusLabels[newStatus] || newStatus;
+  const statusLabel = newStatus;
   await notifyCustomer(
     order.userId,
     statusLabel,
@@ -355,13 +398,19 @@ export async function updateOrderStatusByAdmin(
 }
 
 export async function deleteDraftOrder(orderId: string, userId: string) {
-  const order = await findOrder(orderId);
-  if (!order) {
-    throw new ApiError(404, "Order not found");
+  // This function used to delete PENDING PayHere orders.
+  // Now, those are CheckoutAttempt records. We will try deleting the checkout attempt.
+  const attempt = await prisma.checkoutAttempt.findUnique({
+    where: { attemptId: orderId }
+  });
+  
+  if (!attempt) {
+    // Legacy support or already deleted
+    return { success: true };
   }
 
   // Authorization check
-  if (order.userId !== userId) {
+  if (attempt.userId !== userId) {
     const user = await prisma.user.findUnique({
       where: { userId },
       select: { role: true },
@@ -371,20 +420,85 @@ export async function deleteDraftOrder(orderId: string, userId: string) {
     }
   }
 
-  // Only allow deleting PENDING PayHere orders
-  if (order.paymentMethod !== "PAYHERE" || order.orderStatus !== "PENDING") {
-    throw new ApiError(400, "Only pending PayHere orders can be deleted");
-  }
-
-  // Hard delete the order items and order
   await prisma.$transaction(async (tx) => {
-    await tx.orderItem.deleteMany({
-      where: { orderId },
+    await tx.checkoutAttemptItem.deleteMany({
+      where: { attemptId: orderId },
     });
-    await tx.order.delete({
-      where: { orderId },
+    await tx.checkoutAttempt.delete({
+      where: { attemptId: orderId },
     });
   });
 
   return { success: true };
+}
+
+export async function confirmPayherePaymentClientSide(orderId: string, userId: string) {
+  // Check if it already exists as an Order
+  let order: any = await findOrder(orderId);
+  if (order) return order;
+
+  // Otherwise, find the CheckoutAttempt
+  const attempt = await prisma.checkoutAttempt.findUnique({
+    where: { attemptId: orderId },
+    include: { items: true },
+  });
+
+  if (!attempt) {
+    // Maybe the webhook already processed it just now?
+    order = await findOrder(orderId);
+    if (order) return order;
+    
+    throw new ApiError(404, "Checkout attempt not found");
+  }
+
+  // Ensure user owns the attempt
+  if (attempt.userId !== userId) {
+    throw new ApiError(403, "Forbidden");
+  }
+
+  // We DO NOT mutate the database here in production.
+  // The client is just informing us that the PayHere UI completed.
+  // We must wait for the secure server-to-server webhook to actually 
+  // verify the payment and convert the CheckoutAttempt to an Order.
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[DEV MODE] Simulating successful PayHere webhook for attempt", orderId);
+    try {
+      const { processPayHereNotification } = await import("../payments/payment.service.js");
+      const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
+      const merchantSecret =
+        process.env.PAYHERE_MERCHANT_SECRET ||
+        "NzYwODc2MTk3MzIyMDMxMzkxMDgwNjU1MTU1OTMyOTAzNzMxMzk=";
+      const crypto = await import("crypto");
+      
+      const secretMd5 = crypto.createHash("md5").update(merchantSecret).digest("hex").toUpperCase();
+      const payload = merchantId + attempt.attemptId + attempt.totalAmount.toFixed(2) + "LKR" + "2" + secretMd5;
+      const md5sig = crypto.createHash("md5").update(payload).digest("hex").toUpperCase();
+
+      await processPayHereNotification({
+        merchant_id: merchantId,
+        order_id: attempt.attemptId,
+        payhere_amount: attempt.totalAmount.toFixed(2),
+        payhere_currency: "LKR",
+        status_code: "2",
+        md5sig
+      });
+
+      const confirmedOrder = await findOrder(orderId);
+      if (confirmedOrder) return confirmedOrder;
+    } catch (err) {
+      console.error("[DEV MODE] Failed to simulate webhook:", err);
+    }
+  }
+
+  // So we simply return the CheckoutAttempt mocked as an Order, 
+  // just like getOrderById does for pending attempts.
+  return {
+    ...attempt,
+    orderId: attempt.attemptId,
+    orderStatus: "PAYMENT_PENDING",
+    items: attempt.items.map((item: any) => ({
+      ...item,
+      orderItemId: item.attemptItemId,
+    })),
+  };
 }

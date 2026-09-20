@@ -17,16 +17,14 @@ export interface OrderItem {
 export interface Order {
   orderId: string;
   userId: string;
-  paymentMethod: "PAYHERE" | "COD";
+  paymentMethod: "COD" | "PAYHERE";
   paymentStatus: "PENDING" | "PAID" | "UNPAID" | "FAILED" | "REFUNDED";
   orderStatus:
-    | "PENDING"
-    | "CONFIRMED"
-    | "PROCESSING"
+    | "PAYMENT_PENDING"
+    | "ACCEPTED"
     | "SHIPPED"
     | "DELIVERED"
-    | "CANCELLED"
-    | "CANCELLATION_REQUESTED";
+    | "CANCELLED";
   totalAmount: number;
   shippingName: string;
   shippingEmail: string;
@@ -107,3 +105,11 @@ export async function deleteDraftOrder(orderId: string): Promise<boolean> {
   );
   return res.data.success;
 }
+
+export async function confirmPaymentClientSide(orderId: string): Promise<Order> {
+  const res = await api.patch<ApiResponse<Order>>(
+    `/orders/${orderId}/confirm-payment`,
+  );
+  return res.data.data;
+}
+

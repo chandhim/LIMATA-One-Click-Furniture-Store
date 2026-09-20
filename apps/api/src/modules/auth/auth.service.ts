@@ -43,9 +43,10 @@ export async function registerUser(input: RegisterInput): Promise<AuthPayload> {
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new ApiError(409, "Email is already registered");
+    throw new ApiError(409, "An account with this email address already exists. Please sign in or use a different email.");
   }
 
+  // Hash the plaintext password using bcrypt before storing it in the database for security
   const hashedPassword = await bcrypt.hash(input.password, 10);
 
   const user = await createUser({
@@ -65,7 +66,7 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
   const user = await findUserByEmail(email);
 
   if (!user) {
-    throw new ApiError(401, "Invalid credentials");
+    throw new ApiError(401, "We couldn't find an account with those details. Please check your email and password.");
   }
 
   if (user.isActive === false) {
@@ -75,10 +76,11 @@ export async function loginUser(input: LoginInput): Promise<AuthPayload> {
     );
   }
 
+  // Securely compare the provided plaintext password against the stored bcrypt hash
   const passwordMatches = await bcrypt.compare(input.password, user.password);
 
   if (!passwordMatches) {
-    throw new ApiError(401, "Invalid credentials");
+    throw new ApiError(401, "We couldn't find an account with those details. Please check your email and password.");
   }
 
   return {
@@ -91,7 +93,7 @@ export async function getProfile(userId: string) {
   const user = await findUserById(userId);
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "We couldn't find your account. It may have been removed.");
   }
 
   return mapUser(user);
@@ -115,7 +117,7 @@ export async function updateUserProfile(
 ) {
   const user = await findUserById(userId);
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "We couldn't find your account. It may have been removed.");
   }
 
   let name = user.name;

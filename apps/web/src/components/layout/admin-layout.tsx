@@ -19,7 +19,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     if (path.startsWith("/admin/categories")) return "Categories";
     if (path.startsWith("/admin/orders")) return "Orders";
     if (path.startsWith("/admin/customers")) return "Customers";
-    if (path.startsWith("/admin/reviews")) return "Reviews";
+
     if (path.startsWith("/admin/chats")) return "Chats";
     if (path.startsWith("/admin/notifications")) return "Notifications";
     if (path.startsWith("/admin/homepage")) return "Homepage Content";
@@ -36,10 +36,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     )
       return "Catalog";
     if (path.startsWith("/admin/orders")) return "Sales";
-    if (
-      path.startsWith("/admin/customers") ||
-      path.startsWith("/admin/reviews")
-    )
+    if (path.startsWith("/admin/customers"))
       return "Users";
     if (
       path.startsWith("/admin/chats") ||

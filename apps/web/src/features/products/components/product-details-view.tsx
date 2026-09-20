@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,7 @@ const Product3DViewer = dynamic(
   { ssr: false },
 );
 import { ARLauncherView } from "./ar-launcher-view";
+import { AiPlacementPanel } from "@/features/ai/components/ai-placement-panel";
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
@@ -48,7 +49,31 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
   >("description");
 
   // View Mode
-  const [viewMode, setViewMode] = useState<"photos" | "3d">("photos");
+  const [viewMode, setViewMode] = useState<"photos" | "3d" | "placement">("photos");
+
+  // First-time discovery cue & URL hints
+  const [showRoomFitCue, setShowRoomFitCue] = useState(false);
+  const [urlHint, setUrlHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasSeen = localStorage.getItem("hasSeenRoomFitCue");
+      if (!hasSeen) {
+        setShowRoomFitCue(true);
+      }
+      
+      const params = new URLSearchParams(window.location.search);
+      setUrlHint(params.get("hint"));
+    }
+  }, []);
+
+  const handleRoomFitClick = () => {
+    setViewMode("placement");
+    if (showRoomFitCue) {
+      setShowRoomFitCue(false);
+      localStorage.setItem("hasSeenRoomFitCue", "true");
+    }
+  };
 
   // Hover Zoom State
   const [isZoomed, setIsZoomed] = useState(false);
@@ -292,8 +317,12 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 Photos
               </button>
               <button
-                onClick={() => setViewMode("3d")}
+                onClick={() => {
+                  setViewMode("3d");
+                  if (urlHint === "ar") setUrlHint(null);
+                }}
                 style={{
+                  position: "relative",
                   padding: "0.5rem 1.25rem",
                   borderRadius: "var(--radius-full)",
                   background:
@@ -310,6 +339,65 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                 }}
               >
                 3D & AR
+                {urlHint === "ar" && viewMode !== "3d" && (
+                  <span
+                    className="animate-bounce"
+                    style={{
+                      position: "absolute",
+                      top: "-36px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      background: "var(--accent)",
+                      color: "var(--bg-base)",
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                      zIndex: 10,
+                    }}
+                  >
+                    Click to view in AR!
+                    <div style={{ position: "absolute", bottom: "-5px", left: "50%", transform: "translateX(-50%)", borderTop: "6px solid var(--accent)", borderLeft: "6px solid transparent", borderRight: "6px solid transparent" }} />
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={handleRoomFitClick}
+                style={{
+                  position: "relative",
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "var(--radius-full)",
+                  background:
+                    viewMode === "placement" ? "var(--bg-dark)" : "transparent",
+                  color:
+                    viewMode === "placement"
+                      ? "var(--fg-inverse)"
+                      : "var(--fg-secondary)",
+                  border: "none",
+                  fontWeight: 600,
+                  fontSize: "0.875rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                Will it fit? (AI)
+                {showRoomFitCue && viewMode !== "placement" && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "2px",
+                      right: "2px",
+                      width: "8px",
+                      height: "8px",
+                      background: "var(--accent)",
+                      borderRadius: "50%",
+                      boxShadow: "0 0 0 2px var(--bg-surface)",
+                      animation: "pulse 2s infinite",
+                    }}
+                  />
+                )}
               </button>
             </div>
 
@@ -428,7 +516,7 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : viewMode === "3d" ? (
               <div
                 style={{
                   display: "flex",
@@ -440,9 +528,18 @@ export function ProductDetailsView({ product }: ProductDetailsViewProps) {
                   <Product3DViewer modelUrl={product.model3dUrl} />
                 </div>
                 {product.model3dUrl && (
-                  <ARLauncherView modelUrl={product.model3dUrl} />
+                  <ARLauncherView 
+                    modelUrl={product.model3dUrl} 
+                    productName={product.name}
+                    dimensions={product.width && product.depth && product.height ? { width: product.width, depth: product.depth, height: product.height } : undefined}
+                  />
                 )}
               </div>
+            ) : (
+              <AiPlacementPanel 
+                productId={product.productId} 
+                onLaunchAr={product.model3dUrl ? () => setViewMode("3d") : undefined}
+              />
             )}
           </div>
 

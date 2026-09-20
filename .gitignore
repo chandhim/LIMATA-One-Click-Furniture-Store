@@ -168,7 +168,6 @@ desktop.ini
 npm-debug.log*
 .cache/
 
-```gitignore
 # =========================
 # LIMATA Specific
 # =========================
@@ -176,8 +175,9 @@ npm-debug.log*
 # AI model weights
 *.pt
 *.pth
+*.tar
 weights/
-models/
+apps/ai-service/models/
 
 # Upload folders
 uploads/
@@ -197,4 +197,3 @@ env/
 # Optional generated Python runtime folders
 Python/
 Python/**
-```

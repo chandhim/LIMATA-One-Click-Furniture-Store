@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PaymentMethod } from "@prisma/client";
+import { PaymentMethod, DeliveryMethodEnum } from "@prisma/client";
 
 export const createOrderSchema = z.object({
   shippingName: z.string().min(1, "Name is required"),
@@ -8,7 +8,7 @@ export const createOrderSchema = z.object({
   shippingAddress: z.string().min(1, "Address is required"),
   shippingCity: z.string().min(1, "City is required"),
   paymentMethod: z.nativeEnum(PaymentMethod),
-  deliveryMethod: z.string().min(1, "Delivery method is required"),
+  deliveryMethod: z.nativeEnum(DeliveryMethodEnum),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
