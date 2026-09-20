@@ -2,11 +2,13 @@ import cv2
 import numpy as np
 import logging
 from fastapi import UploadFile
+from typing import List, Optional
 
 from app.ml.ai_orchestrator import AIOrchestrator
 from app.ml.placement.result import PlacementEvaluationResult, FurnitureMetadata
 from app.core.exceptions import AIServiceException
 from app.ml.dependencies import global_loader
+from app.models.requests import ProductMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +17,18 @@ class PlacementService:
         # Instantiate orchestrator with the global loader
         self.orchestrator = AIOrchestrator(loader=global_loader)
 
-    async def evaluate(self, image_file: UploadFile, furniture: FurnitureMetadata) -> PlacementEvaluationResult:
+    async def evaluate(
+        self,
+        image_file: UploadFile,
+        furniture: FurnitureMetadata,
+        available_products: Optional[List[ProductMetadata]] = None,
+    ) -> PlacementEvaluationResult:
         """
         Decodes the uploaded image and evaluates placement feasibility via the AIOrchestrator.
+
+        `available_products`, when provided, are same-category candidates the
+        orchestrator may recommend as spatially better alternatives if `furniture`
+        does not fit (see AIOrchestrator.evaluate_placement / placement/alternatives.py).
         """
         try:
             # Read file bytes safely
@@ -34,15 +45,14 @@ class PlacementService:
 
             # Run evaluation
             logger.info(f"Evaluating placement for category: {furniture.category}")
-            
-            # The PlacementEvaluationEngine performs heuristics.
-            result = self.orchestrator.evaluate_placement(image_cv2, furniture)
-            
-            # Since dimensions were normalized (if unavailable), add warning on our side if we detect 1.0x1.0x1.0
-            if furniture.width == 1.0 and furniture.depth == 1.0 and furniture.height == 1.0:
-                if "DIMENSIONS_UNAVAILABLE" not in result.warnings:
-                    result.warnings.append("DIMENSIONS_UNAVAILABLE: Real dimensions were not provided. Using normalized dimensions. Results are heuristic and not metric-accurate.")
-                    
+
+            # The PlacementEvaluationEngine performs heuristics (congestion, obstacle
+            # proximity, dimensional fit, movement space) and, when applicable, ranks
+            # spatially suitable alternatives from available_products.
+            result = self.orchestrator.evaluate_placement(
+                image_cv2, furniture, available_products=available_products
+            )
+
             return result
 
         except Exception as e:

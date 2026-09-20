@@ -212,6 +212,20 @@ export async function proxyChat(payload: Record<string, any>, user?: any) {
   }
 }
 
+interface CandidateProduct {
+  productId: string;
+  name: string;
+  description?: string | null;
+  category: string;
+  material?: string | null;
+  price: number;
+  stock: number;
+  images?: string[];
+  width?: number | null;
+  depth?: number | null;
+  height?: number | null;
+}
+
 export async function proxyPlacement(productId: string, file: Express.Multer.File) {
   try {
     const product = await getProductById(productId);
@@ -219,26 +233,65 @@ export async function proxyPlacement(productId: string, file: Express.Multer.Fil
       throw new ApiError(404, `Product with ID ${productId} not found.`);
     }
 
+    // Real product dimensions, when recorded. Do NOT default missing dimensions to a
+    // placeholder number (e.g. 1.0) — that used to masquerade as a "real" measurement.
+    // `null` lets the AI service correctly report DIMENSIONS_UNAVAILABLE instead of
+    // silently comparing a fabricated size against the estimated available space.
     const furnitureMetadata = {
-      width: product.width ?? 1.0,
-      depth: product.depth ?? 1.0,
-      height: product.height ?? 1.0,
+      width: product.width ?? null,
+      depth: product.depth ?? null,
+      height: product.height ?? null,
       category: product.category,
       rotatable: true
     };
 
+    // Same-category candidates, reusing the existing product catalog lookup, so the AI
+    // service can suggest a spatially better alternative if this product doesn't fit.
+    const categoryCandidates: CandidateProduct[] = await getProducts({
+      includeDetails: true,
+      category: product.category,
+    });
+    const candidateMetadata = categoryCandidates
+      .filter((p) => p.productId !== productId)
+      .map((p) => ({
+        productId: p.productId,
+        name: p.name,
+        description: p.description ?? "",
+        category: p.category,
+        material: p.material ?? null,
+        price: p.price,
+        stock: p.stock,
+        width: p.width ?? null,
+        depth: p.depth ?? null,
+        height: p.height ?? null,
+      }));
+
     const formData = new FormData();
     // Use Blob or Buffer. Axios supports native FormData in Node 18+, but standard way with Multer is appending Buffer.
-    // If native FormData is used, we might need a Blob. 
+    // If native FormData is used, we might need a Blob.
     // Using standard Blob for native FormData (if axios > 1.x) or just pass buffer if using form-data package.
     // We will append a Blob constructed from the buffer.
     const blob = new Blob([file.buffer], { type: file.mimetype });
     formData.append("image", blob, file.originalname);
     formData.append("furniture_metadata", JSON.stringify(furnitureMetadata));
+    formData.append("available_products", JSON.stringify(candidateMetadata));
 
     const response = await aiClient.post("/placement", formData);
-    
-    return response.data;
+    const data = response.data;
+
+    // Re-hydrate alternative recommendations with full product info (name/price/images)
+    // from the catalog we already fetched, mirroring how recommendedProducts is built
+    // for chat/visual-recommendation responses elsewhere in this file.
+    if (Array.isArray(data.alternative_recommendations) && data.alternative_recommendations.length > 0) {
+      data.alternative_recommendations = data.alternative_recommendations
+        .map((alt: { productId: string; [key: string]: unknown }) => {
+          const fullProduct = categoryCandidates.find((p) => p.productId === alt.productId);
+          return fullProduct ? { ...alt, product: fullProduct } : null;
+        })
+        .filter(Boolean);
+    }
+
+    return data;
   } catch (error) {
     handleAxiosError(error);
   }
