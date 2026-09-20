@@ -37,11 +37,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export interface AppError {
-  isAppError: true;
+export class AppError extends Error {
+  isAppError = true as const;
   status: number | null;
-  message: string;
   type: 'network' | 'auth' | 'validation' | 'server' | 'rate-limit' | 'unknown';
+
+  constructor(
+    message: string,
+    status: number | null,
+    type: 'network' | 'auth' | 'validation' | 'server' | 'rate-limit' | 'unknown'
+  ) {
+    super(message);
+    this.name = 'AppError';
+    this.status = status;
+    this.type = type;
+  }
 }
 
 api.interceptors.response.use(
@@ -98,12 +108,7 @@ api.interceptors.response.use(
       message = "Looks like you're offline or unable to connect. Please check your internet connection.";
     }
 
-    const appError: AppError = {
-      isAppError: true,
-      status,
-      message,
-      type
-    };
+    const appError = new AppError(message, status, type);
 
     return Promise.reject(appError);
   },

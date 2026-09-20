@@ -1,22 +1,34 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { usePublicSetting } from "@/features/admin/hooks/use-admin";
 
 const defaultAiFeatures = [
   {
-    title: "3D Visualization",
-    desc: "Rotate and inspect every detail before you buy. True sense of scale and texture.",
-    badge: "Coming Soon",
+    title: "Analyze Your Space",
+    desc: "Upload a photo of your room to check whether furniture works well in your space.",
+    badge: "Room Fit",
+    image: "/assets/ai/analyze.jpg",
+    ctaText: "Try Room Fit &rarr;",
+    href: "/shop-this-room",
   },
   {
-    title: "AR Placement",
-    desc: "Drop any piece into your room via your phone camera. See it live before ordering.",
-    badge: "Beta",
+    title: "Find Better Matches",
+    desc: "Get context-aware recommendations that suit your room's style and available space.",
+    badge: "Smart",
+    image: "/assets/ai/matches.jpg",
+    ctaText: "Ask LIMATA AI &rarr;",
+    href: "#",
+    action: "chat",
   },
   {
-    title: "AI Style Match",
-    desc: "Tell us your aesthetic — our AI recommends pieces that work together beautifully.",
-    badge: "Coming Soon",
+    title: "Visualize in AR",
+    desc: "See how pieces look in your home using your phone's camera before you decide.",
+    badge: "Preview",
+    image: "/assets/ai/ar.jpg",
+    ctaText: "Experience AR &rarr;",
+    href: "/products/cmqnju4670006ud6cpdni1ij9?hint=ar",
   },
 ];
 
@@ -24,6 +36,10 @@ interface AIFeature {
   title: string;
   desc: string;
   badge: string;
+  image: string;
+  ctaText: string;
+  href: string;
+  action?: string;
 }
 
 export function AIFeaturesSection() {
@@ -33,6 +49,7 @@ export function AIFeaturesSection() {
     (customAiFeatures as AIFeature[]) || defaultAiFeatures
   ).map((f: AIFeature, idx: number) => ({
     ...f,
+    href: f.href === "/shop-my-room" ? "/shop-this-room" : f.href,
     icon: icons[idx] || "✨",
   }));
   return (
@@ -96,7 +113,7 @@ export function AIFeaturesSection() {
                 background: "var(--accent)",
               }}
             />
-            Future Technology
+            LIMATA AI
             <span
               style={{
                 display: "block",
@@ -117,7 +134,7 @@ export function AIFeaturesSection() {
               marginBottom: "1rem",
             }}
           >
-            AI & AR Features
+            Shop Smarter with LIMATA
           </h2>
           <p
             className="animate-fade-up delay-200"
@@ -129,8 +146,7 @@ export function AIFeaturesSection() {
               lineHeight: 1.75,
             }}
           >
-            Practical tools to visualize, match, and place furniture in your
-            real space.
+            Analyze your room, find furniture that suits your space, and visualize it in AR.
           </p>
         </div>
 
@@ -150,7 +166,9 @@ export function AIFeaturesSection() {
                 background: "rgba(250,249,247,0.04)",
                 border: "1px solid rgba(250,249,247,0.07)",
                 borderRadius: "var(--radius-lg)",
-                padding: "2.25rem 2rem",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
                 transition:
                   "transform 0.3s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease",
                 cursor: "default",
@@ -166,62 +184,126 @@ export function AIFeaturesSection() {
                 el.style.borderColor = "rgba(250,249,247,0.07)";
               }}
             >
-              {/* Icon */}
+              {/* Image Header */}
               <div
                 style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: "var(--radius-md)",
-                  background: "rgba(201,169,110,0.12)",
-                  border: "1px solid rgba(201,169,110,0.2)",
+                  position: "relative",
+                  width: "100%",
+                  aspectRatio: "4/3",
+                  borderBottom: "1px solid rgba(250,249,247,0.05)",
+                }}
+              >
+                <Image
+                  src={f.image}
+                  alt={f.title}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
+              </div>
+
+              {/* Text Body */}
+              <div
+                style={{
+                  padding: "2rem",
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.375rem",
-                  marginBottom: "1.5rem",
+                  flexDirection: "column",
+                  flexGrow: 1,
                 }}
               >
-                {f.icon}
-              </div>
+                {/* Badge */}
+                <div
+                  style={{
+                    display: "inline-flex",
+                    fontSize: "0.68rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.08em",
+                    textTransform: "uppercase",
+                    color: "var(--accent)",
+                    background: "rgba(201,169,110,0.1)",
+                    borderRadius: "var(--radius-full)",
+                    padding: "0.2rem 0.6rem",
+                    marginBottom: "0.875rem",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  {f.badge}
+                </div>
 
-              {/* Badge */}
-              <div
-                style={{
-                  display: "inline-flex",
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "var(--accent)",
-                  background: "rgba(201,169,110,0.1)",
-                  borderRadius: "var(--radius-full)",
-                  padding: "0.2rem 0.6rem",
-                  marginBottom: "0.875rem",
-                }}
-              >
-                {f.badge}
-              </div>
+                <h3
+                  style={{
+                    fontSize: "1.0625rem",
+                    fontWeight: 600,
+                    color: "var(--fg-inverse)",
+                    marginBottom: "0.625rem",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {f.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "0.875rem",
+                    color: "rgba(250,249,247,0.45)",
+                    lineHeight: 1.75,
+                    marginBottom: "1.5rem",
+                  }}
+                >
+                  {f.desc}
+                </p>
 
-              <h3
-                style={{
-                  fontSize: "1.0625rem",
-                  fontWeight: 600,
-                  color: "var(--fg-inverse)",
-                  marginBottom: "0.625rem",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {f.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: "0.875rem",
-                  color: "rgba(250,249,247,0.45)",
-                  lineHeight: 1.75,
-                }}
-              >
-                {f.desc}
-              </p>
+                {/* CTA Link */}
+                {f.action === "chat" ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent("open-ai-chat", { detail: { open: true } }));
+                      }
+                    }}
+                    style={{
+                      marginTop: "auto",
+                      display: "inline-block",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--accent)",
+                      background: "transparent",
+                      border: "none",
+                      padding: 0,
+                      cursor: "pointer",
+                      textAlign: "left",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                    }}
+                    dangerouslySetInnerHTML={{ __html: f.ctaText }}
+                  />
+                ) : (
+                  <Link
+                    href={f.href}
+                    style={{
+                      marginTop: "auto",
+                      display: "inline-block",
+                      fontSize: "0.875rem",
+                      fontWeight: 600,
+                      color: "var(--accent)",
+                      textDecoration: "none",
+                      transition: "color 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+                    }}
+                    dangerouslySetInnerHTML={{ __html: f.ctaText }}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

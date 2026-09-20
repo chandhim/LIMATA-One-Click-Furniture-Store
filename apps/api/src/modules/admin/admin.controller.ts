@@ -25,7 +25,7 @@ export async function getAdminStatsController(
     });
     const pendingOrders = await prisma.order.count({
       where: { 
-        orderStatus: "PENDING",
+        orderStatus: "ACCEPTED",
         NOT: {
           paymentMethod: "PAYHERE",
           paymentStatus: "PENDING",

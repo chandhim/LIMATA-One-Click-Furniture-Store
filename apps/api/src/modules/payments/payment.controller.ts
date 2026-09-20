@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { ApiError } from "@/shared/errors/api-error";
+import { prisma } from "@/lib/prisma";
 import { findOrder } from "../orders/order.repository";
 import {
   generatePaymentHash,
@@ -25,9 +26,17 @@ export async function createPaymentParamsController(
       throw new ApiError(400, "Missing orderId parameter");
     }
 
-    const order = await findOrder(orderId);
+    let order: any = await findOrder(orderId);
+    let isAttempt = false;
+
     if (!order) {
-      throw new ApiError(404, "Order not found");
+      order = await prisma.checkoutAttempt.findUnique({
+        where: { attemptId: orderId },
+      });
+      if (!order) {
+        throw new ApiError(404, "Order not found");
+      }
+      isAttempt = true;
     }
 
     // Security check: Only the customer who placed the order can request payment parameters
@@ -43,7 +52,7 @@ export async function createPaymentParamsController(
     // PayHere uses LKR currency by default in Sri Lanka
     const currency = "LKR";
     const paymentParams = generatePaymentHash(
-      order.orderId,
+      isAttempt ? order.attemptId : order.orderId,
       order.totalAmount,
       currency,
     );
@@ -51,8 +60,8 @@ export async function createPaymentParamsController(
     // Fetch buyer details from the order to prefill the checkout form
     const checkoutParams = {
       ...paymentParams,
-      orderId: order.orderId,
-      items: `Order #${order.orderId} Checkout`,
+      orderId: isAttempt ? order.attemptId : order.orderId,
+      items: `Order #${isAttempt ? order.attemptId : order.orderId} Checkout`,
       first_name: order.shippingName.split(" ")[0] || "Customer",
       last_name: order.shippingName.split(" ").slice(1).join(" ") || "User",
       email: order.shippingEmail,

@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/shop-my-room",
+        destination: "/shop-this-room",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

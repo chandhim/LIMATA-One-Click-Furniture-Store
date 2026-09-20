@@ -3,7 +3,7 @@
 import { ProductCard } from "@/features/products/components/product-card";
 import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import type { ProductSummary } from "@/features/products/types/product.types";
-import { Sparkles, AlertCircle } from "lucide-react";
+import { Sparkles, AlertCircle, SearchX } from "lucide-react";
 import type { RecommendationResponse } from "../types/recommendation.types";
 
 export function AiRecommendationView({
@@ -50,7 +50,9 @@ export function AiRecommendationView({
   if (data.recommended_product_ids.length === 0) {
     return (
       <div style={{ marginBottom: "3rem", padding: "3rem 1.5rem", background: "var(--bg-surface)", border: "1.5px dashed var(--border)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🤔</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", color: "var(--fg-secondary)" }}>
+          <SearchX size={36} />
+        </div>
         <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No exact matches</h3>
         <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", maxWidth: "400px", margin: "0 auto 1.5rem" }}>We couldn&apos;t find products that perfectly match your constraints. Try broadening your criteria (e.g. higher max price).</p>
         <button onClick={onClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "transparent", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Reset Recommendations</button>
@@ -58,14 +60,48 @@ export function AiRecommendationView({
     );
   }
 
-  // Resolve products in the EXACT order returned by AI
+  // ── Group by score tier ───────────────────────────────────────────
   const recommendedProducts = data.recommended_product_ids
     .map(id => allProducts.find(p => p.productId === id))
     .filter((p): p is ProductSummary => p !== undefined);
 
+  type Group = { label: string; color: string; bg: string; border: string; desc: string; items: ProductSummary[] };
+  const groups: Group[] = [
+    { label: "Strong Match",  color: "#b45309", bg: "rgba(201,169,110,0.12)", border: "rgba(201,169,110,0.35)", desc: "Perfectly aligned with your preferences",    items: [] },
+    { label: "Good Match",    color: "#0e7490", bg: "rgba(6,182,212,0.08)",   border: "rgba(6,182,212,0.30)",   desc: "Solid picks that match your criteria well",  items: [] },
+    { label: "Complementary", color: "#6b7280", bg: "rgba(156,163,175,0.08)", border: "rgba(156,163,175,0.28)", desc: "Extra options worth considering",             items: [] },
+  ];
+
+  recommendedProducts.forEach((p) => {
+    const score = data.matching_info[p.productId]?.score ?? 0;
+    if (score >= 70) {
+      groups[0].items.push(p);  // Strong Match (>= 70)
+    } else if (score >= 50) {
+      groups[1].items.push(p);  // Good Match (50 - 69)
+    } else if (score >= 40) {
+      groups[2].items.push(p);  // Complementary (40 - 49)
+    }
+    // Items with score < 40 are strictly excluded
+  });
+
+  const hasAnyMatches = groups.some((g) => g.items.length > 0);
+
+  if (!hasAnyMatches) {
+    return (
+      <div style={{ marginBottom: "3rem", padding: "3rem 1.5rem", background: "var(--bg-surface)", border: "1.5px dashed var(--border)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", color: "var(--fg-secondary)" }}>
+          <SearchX size={36} />
+        </div>
+        <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No relevant matches found</h3>
+        <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", maxWidth: "400px", margin: "0 auto 1.5rem" }}>We couldn&apos;t find furniture matching your query. Try a different search term or adjust your price filter.</p>
+        <button onClick={onClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "transparent", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Reset Recommendations</button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ marginBottom: "3rem" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
         <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.25rem", fontWeight: 700, color: "var(--fg-primary)" }}>
           <Sparkles size={20} color="var(--accent)" /> Top Matches for You
         </h3>
@@ -74,26 +110,62 @@ export function AiRecommendationView({
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "1.25rem" }}>
-        {recommendedProducts.map((p) => {
-          const info = data.matching_info[p.productId];
-          const badge = info ? (
-             <div style={{ background: "rgba(28,26,23,0.85)", backdropFilter: "blur(6px)", padding: "0.5rem 0.75rem", borderRadius: "var(--radius-md)", fontSize: "0.75rem", color: "#fff", display: "flex", flexDirection: "column", gap: "0.25rem", border: "1px solid rgba(255,255,255,0.15)", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }}>
-               <div style={{ fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                 <Sparkles size={12} /> Match Score: {info.score}
-               </div>
-               {info.reasons.length > 0 && (
-                 <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>
-                   {info.reasons.map((r, i) => <li key={i} style={{ marginBottom: "0.1rem" }}>{r}</li>)}
-                 </ul>
-               )}
-             </div>
-          ) : null;
+      <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+        {groups.filter(g => g.items.length > 0).map((group) => {
+          const isStrong = group.label === "Strong Match";
+          return (
+            <div
+              key={group.label}
+              style={isStrong ? {
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border-strong)",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.5rem",
+                position: "relative",
+                overflow: "hidden",
+                boxShadow: "var(--shadow-sm)",
+              } : {}}
+            >
+              {/* Accent top stripe for Strong Match */}
+              {isStrong && (
+                <div style={{
+                  position: "absolute",
+                  top: 0, left: 0, right: 0,
+                  height: "3px",
+                  background: "var(--accent)",
+                  borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
+                }} />
+              )}
 
-          return <ProductCard key={p.productId} product={p} badge={badge} />;
+              {/* ── Section header ── */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem", paddingBottom: "0.75rem", borderBottom: `1px solid ${group.border}` }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                    <span style={{ fontSize: "1rem", fontWeight: 700, color: "var(--fg-primary)" }}>{group.label}</span>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, padding: "0.15rem 0.55rem", borderRadius: "999px", background: group.bg, color: group.color, border: `1px solid ${group.border}`, letterSpacing: "0.03em" }}>
+                      {group.items.length} {group.items.length === 1 ? "item" : "items"}
+                    </span>
+                    {isStrong && (
+                      <span style={{ fontSize: "0.68rem", fontWeight: 600, padding: "0.15rem 0.5rem", borderRadius: "999px", background: "var(--accent-light)", color: "var(--accent-dark)", border: "1px solid var(--accent)", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                        Best Picks
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--fg-secondary)", marginTop: "0.1rem" }}>{group.desc}</p>
+                </div>
+              </div>
+
+              {/* ── Product grid ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "1.25rem" }}>
+                {group.items.map((p) => (
+                  <ProductCard key={p.productId} product={p} />
+                ))}
+              </div>
+            </div>
+          );
         })}
       </div>
-      
+
       <div style={{ borderBottom: "1px solid var(--border)", margin: "3rem 0" }} />
     </div>
   );

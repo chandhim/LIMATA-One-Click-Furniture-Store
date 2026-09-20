@@ -72,7 +72,7 @@ export async function getReviewEligibilityController(
     const userId = req.user?.id;
 
     if (!userId) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "You need to be logged in to check review eligibility.");
     }
 
     // 1. Check if user already reviewed this product
@@ -125,15 +125,15 @@ export async function createReviewController(
     const { rating, title, comment } = req.body;
 
     if (!userId) {
-      throw new ApiError(401, "Unauthorized");
+      throw new ApiError(401, "You need to be logged in to submit a review.");
     }
 
     if (!rating || !title || !comment) {
-      throw new ApiError(400, "Rating, title, and comment are required");
+      throw new ApiError(400, "Please provide a star rating, a title, and a written comment to submit your review.");
     }
 
     if (rating < 1 || rating > 5) {
-      throw new ApiError(400, "Rating must be between 1 and 5");
+      throw new ApiError(400, "Please select a star rating between 1 and 5.");
     }
 
     // 1. Check if user already reviewed this product
@@ -145,7 +145,7 @@ export async function createReviewController(
     });
 
     if (existingReview) {
-      throw new ApiError(400, "You have already reviewed this product");
+      throw new ApiError(400, "You have already submitted a review for this product.");
     }
 
     // 2. Check if user has purchased the product and order is DELIVERED
@@ -162,7 +162,7 @@ export async function createReviewController(
     if (!orderWithProduct) {
       throw new ApiError(
         403,
-        "You must purchase and receive this product to review it",
+        "You can only review products that you have purchased and received.",
       );
     }
 

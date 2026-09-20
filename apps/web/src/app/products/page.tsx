@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePublicCategories } from "@/features/admin/hooks/use-admin";
 import { useProducts } from "@/features/products/hooks/use-products";
@@ -63,8 +63,19 @@ function ProductsPageContent() {
 
   const [search, setSearch] = useState<string>("");
   const [showAiPanel, setShowAiPanel] = useState(false);
-  const [showVisualRecPanel, setShowVisualRecPanel] = useState(false);
+  const visualParam =
+    searchParams.get("visual") === "true" ||
+    searchParams.get("shopRoom") === "true" ||
+    searchParams.get("feature") === "shop-this-room";
+  const [showVisualRecPanel, setShowVisualRecPanel] = useState(visualParam);
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  useEffect(() => {
+    if (visualParam) {
+      setShowVisualRecPanel(true);
+      setShowAiPanel(false);
+    }
+  }, [visualParam]);
 
   const {
     mutate: fetchAiRecs,
@@ -204,8 +215,8 @@ function ProductsPageContent() {
               marginBottom: "2.5rem",
             }}
           >
-            Discover thoughtfully curated pieces — from statement sofas to
-            bedroom sanctuaries. Built to last, designed to inspire.
+            Discover thoughtfully curated pieces from statement sofas to bedroom
+            sanctuaries. Built to last, designed to inspire.
           </p>
 
           {/* Large hero search */}
@@ -531,7 +542,7 @@ function ProductsPageContent() {
           )}
 
           {/* ── BROWSE MODE: category sections (full width) ── */}
-          {!isLoading && !isSearchMode && data && (
+          {!isLoading && !isSearchMode && !showVisualRecPanel && data && (
             <div>
               {allCategories.map(
                 ({ name, Icon }: { name: string; Icon: LucideIcon }) => {

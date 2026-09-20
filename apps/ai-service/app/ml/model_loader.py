@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Any, Optional
 from threading import Lock
 from enum import Enum
@@ -143,8 +144,13 @@ class ModelLoader:
                 # 7. Load the model
                 if model_name == "midas":
                     import torch
-                    # Download/Load MiDaS and its transforms
-                    torch.hub.set_dir('models/midas')
+                    # Robust path resolution for midas hub directory
+                    midas_dir = os.path.abspath("models/midas")
+                    if not os.path.exists(midas_dir):
+                        alt_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "models", "midas"))
+                        if os.path.exists(alt_dir):
+                            midas_dir = alt_dir
+                    torch.hub.set_dir(midas_dir)
                     model = torch.hub.load("intel-isl/MiDaS:master", "MiDaS_small", trust_repo=True)
                     midas_transforms = torch.hub.load("intel-isl/MiDaS:master", "transforms", trust_repo=True)
                     # Attach the transform to the model for convenience in the orchestrator

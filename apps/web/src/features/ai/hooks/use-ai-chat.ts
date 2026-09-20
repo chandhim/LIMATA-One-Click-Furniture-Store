@@ -7,7 +7,14 @@ import {
   type AiConversation 
 } from "../api/ai-chat.api";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
-import type { AppError } from "@/lib/axios";
+import { AppError } from "@/lib/axios";
+
+export interface ChatContext {
+  depth_analysis?: { space_availability?: string };
+  detected_objects?: string[];
+  ar_placement?: { suitable?: boolean; limiting_factor?: string };
+  [key: string]: unknown;
+}
 
 export function useAiChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -17,6 +24,7 @@ export function useAiChat() {
   const [conversations, setConversations] = useState<AiConversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [chatContext, setChatContext] = useState<ChatContext>({});
   
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
@@ -43,7 +51,7 @@ export function useAiChat() {
       setError(null);
     } catch (err) {
       const error = err as Record<string, unknown>;
-      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'unknown', message: "Failed to load conversation history." });
+      setError(error?.isAppError ? (error as unknown as AppError) : new AppError("Failed to load conversation history.", null, 'unknown'));
       console.error("Failed to load conversation:", err);
     } finally {
       setIsHistoryLoading(false);
@@ -54,6 +62,7 @@ export function useAiChat() {
     setActiveConversationId(null);
     setMessages([]);
     setError(null);
+    setChatContext({});
   }, []);
 
   const sendMessage = async (content: string) => {
@@ -69,7 +78,10 @@ export function useAiChat() {
       const response = await sendAiChatMessage({
         message: content,
         history: messages,
-        context: activeConversationId ? { conversationId: activeConversationId } : undefined
+        context: {
+          ...(activeConversationId ? { conversationId: activeConversationId } : {}),
+          ...chatContext
+        }
       });
 
       if (response.conversationId && !activeConversationId) {
@@ -85,7 +97,7 @@ export function useAiChat() {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       const error = err as Record<string, unknown>;
-      setError(error?.isAppError ? (error as unknown as AppError) : { isAppError: true, status: null, type: 'server', message: "Something went wrong. Please try again." });
+      setError(error?.isAppError ? (error as unknown as AppError) : new AppError("Something went wrong. Please try again.", null, 'server'));
     } finally {
       setIsLoading(false);
     }
@@ -100,6 +112,8 @@ export function useAiChat() {
     conversations,
     activeConversationId,
     isHistoryLoading,
+    chatContext,
+    setChatContext,
     loadConversations,
     loadConversation,
     startNewConversation

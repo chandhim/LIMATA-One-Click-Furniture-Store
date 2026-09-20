@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AdminLayout } from "@/components/layout/admin-layout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchDeliveryRates, updateDeliveryRates, DeliveryConfiguration } from "@/features/orders/services/delivery.service";
 import { DELIVERY_RATES_QUERY_KEY } from "@/features/orders/hooks/use-delivery-rates";
@@ -46,14 +45,14 @@ export default function AdminDeliveryPage() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
+      <div>
         <div>Loading delivery configurations...</div>
-      </AdminLayout>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
       <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontSize: "1.8rem", fontWeight: 700, color: "var(--fg-primary)" }}>Delivery Pricing Configuration</h1>
@@ -165,6 +164,6 @@ export default function AdminDeliveryPage() {
           ))}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }

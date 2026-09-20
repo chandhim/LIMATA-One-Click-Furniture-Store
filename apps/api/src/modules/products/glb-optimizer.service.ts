@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import { promises as fs, existsSync } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { execFile } from 'child_process';
@@ -32,15 +32,16 @@ export async function optimizeGlb(
     // 1. Temporarily store file
     await fs.writeFile(tempInputPath, buffer);
 
-    let gltfpackPath = process.platform === "win32"
-      ? path.join(process.cwd(), "binaries", "gltfpack.exe")
-      : path.join(process.cwd(), "binaries", "gltfpack-linux");
 
-    const fsSync = require("fs");
-    if (!fsSync.existsSync(gltfpackPath)) {
+    let gltfpackPath = process.platform === "win32"
+      ? path.join(process.cwd(), "scripts", "bin", "gltfpack.exe")
+      : path.join(process.cwd(), "scripts", "bin", "gltfpack-linux");
+      
+    // Fallback if process.cwd() is apps/api
+    if (!existsSync(gltfpackPath)) {
       gltfpackPath = process.platform === "win32"
-        ? path.join(process.cwd(), "apps", "api", "binaries", "gltfpack.exe")
-        : path.join(process.cwd(), "apps", "api", "binaries", "gltfpack-linux");
+        ? path.join(process.cwd(), "..", "..", "scripts", "bin", "gltfpack.exe")
+        : path.join(process.cwd(), "..", "..", "scripts", "bin", "gltfpack-linux");
     }
 
     // 2. Execute gltfpack
