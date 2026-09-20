@@ -531,7 +531,7 @@ function ProductsPageContent() {
           )}
 
           {/* ── BROWSE MODE: category sections (full width) ── */}
-          {!isLoading && !isSearchMode && data && (
+          {!isLoading && !isSearchMode && !showVisualRecPanel && data && (
             <div>
               {allCategories.map(
                 ({ name, Icon }: { name: string; Icon: LucideIcon }) => {

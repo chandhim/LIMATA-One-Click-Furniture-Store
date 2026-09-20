@@ -66,70 +66,111 @@ export function AiRecommendationPanel({
         Tell us what you&apos;re looking for, and our AI will find the best matches from our catalog based on keywords, materials, and constraints.
       </p>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-          {/* Query */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>Describe what you want</label>
-            <div style={{ position: "relative" }}>
-              <Search size={16} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--fg-muted)" }} />
-              <input
-                type="text"
-                placeholder="e.g. Modern sleek bar stool"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.6rem 0.6rem 0.6rem 2.25rem",
-                  borderRadius: "var(--radius-md)",
-                  border: "1px solid var(--border)",
-                  background: "var(--bg-base)",
-                  color: "var(--fg-primary)",
-                  fontSize: "0.9rem",
-                  outline: "none",
-                }}
-              />
-            </div>
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        {/* Primary Natural Language Query - Full Width & Spacious */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+          <label style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)" }}>
+            Describe what you want
+          </label>
+          <div style={{ position: "relative", width: "100%" }}>
+            <Search
+              size={18}
+              style={{
+                position: "absolute",
+                left: "1rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "var(--fg-muted)",
+                pointerEvents: "none",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="My living room is small and I don't want something that makes it feel crowded."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              style={{
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "0.85rem 1rem 0.85rem 2.65rem",
+                borderRadius: "var(--radius-lg)",
+                border: "1.5px solid var(--border)",
+                background: "var(--bg-base)",
+                color: "var(--fg-primary)",
+                fontSize: "0.95rem",
+                outline: "none",
+                transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "var(--accent)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(201,169,110,0.18)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
           </div>
+        </div>
 
+        {/* Secondary Optional Filters - Responsive Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "1rem",
+          }}
+        >
           {/* Max Price */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>Maximum Price (Rs.)</label>
+            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>
+              Maximum Price (Rs.)
+            </label>
             <input
               type="number"
-              placeholder="e.g. 5000"
+              placeholder="e.g. 50000"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               min="0"
               style={{
                 width: "100%",
-                padding: "0.6rem",
+                boxSizing: "border-box",
+                padding: "0.65rem 0.75rem",
                 borderRadius: "var(--radius-md)",
                 border: "1px solid var(--border)",
                 background: "var(--bg-base)",
                 color: "var(--fg-primary)",
                 fontSize: "0.9rem",
                 outline: "none",
+                transition: "border-color 0.2s ease",
               }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
             />
           </div>
 
           {/* Category */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>Category Preference</label>
+            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>
+              Category Preference
+            </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               style={{
                 width: "100%",
-                padding: "0.6rem",
+                boxSizing: "border-box",
+                padding: "0.65rem 0.75rem",
                 borderRadius: "var(--radius-md)",
                 border: "1px solid var(--border)",
                 background: "var(--bg-base)",
                 color: "var(--fg-primary)",
                 fontSize: "0.9rem",
                 outline: "none",
+                transition: "border-color 0.2s ease",
               }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
             >
               <option value="">Any Category</option>
               <option value="Living Room">Living Room</option>
@@ -143,7 +184,9 @@ export function AiRecommendationPanel({
 
           {/* Material */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>Preferred Material</label>
+            <label style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--fg-secondary)" }}>
+              Preferred Material
+            </label>
             <input
               type="text"
               placeholder="e.g. Wood, Metal, Leather"
@@ -151,40 +194,50 @@ export function AiRecommendationPanel({
               onChange={(e) => setMaterial(e.target.value)}
               style={{
                 width: "100%",
-                padding: "0.6rem",
+                boxSizing: "border-box",
+                padding: "0.65rem 0.75rem",
                 borderRadius: "var(--radius-md)",
                 border: "1px solid var(--border)",
                 background: "var(--bg-base)",
                 color: "var(--fg-primary)",
                 fontSize: "0.9rem",
                 outline: "none",
+                transition: "border-color 0.2s ease",
               }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
             />
           </div>
-        </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.5rem" }}>
-          <button
-            type="submit"
-            disabled={!hasFilters}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              background: hasFilters ? "var(--accent)" : "var(--bg-base)",
-              color: hasFilters ? "#fff" : "var(--fg-muted)",
-              border: hasFilters ? "none" : "1px solid var(--border)",
-              padding: "0.6rem 1.5rem",
-              borderRadius: "var(--radius-full)",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-              cursor: hasFilters ? "pointer" : "not-allowed",
-              transition: "all 0.2s ease",
-            }}
-          >
-            <SlidersHorizontal size={16} />
-            Find Recommendations
-          </button>
+          {/* Submit Button - Aligned in Second Row */}
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+            <button
+              type="submit"
+              disabled={!hasFilters}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                background: hasFilters ? "var(--accent)" : "var(--bg-base)",
+                color: hasFilters ? "#fff" : "var(--fg-muted)",
+                border: hasFilters ? "none" : "1px solid var(--border)",
+                padding: "0.65rem 1.25rem",
+                borderRadius: "var(--radius-md)",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+                cursor: hasFilters ? "pointer" : "not-allowed",
+                transition: "all 0.2s ease",
+                width: "100%",
+                height: "39.5px",
+                boxSizing: "border-box",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <SlidersHorizontal size={16} />
+              Find Recommendations
+            </button>
+          </div>
         </div>
       </form>
     </div>
