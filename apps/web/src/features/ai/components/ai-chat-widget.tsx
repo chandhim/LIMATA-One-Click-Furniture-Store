@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X, Loader2, Send, Sparkles, AlertCircle, Plus, ChevronLeft, MessageSquare, Clock } from "lucide-react";
 import { useAiChat, type ChatContext } from "../hooks/use-ai-chat";
+import { formatLimitingFactorLabel } from "../types/placement.types";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import type { Product } from "@/features/products/types/product.types";
 import Link from "next/link";
@@ -456,9 +457,9 @@ export function AiChatWidget() {
                           <Sparkles size={14} /> About this placement
                         </div>
                         <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "var(--fg-secondary)", lineHeight: 1.6 }}>
-                          <li>Status: {chatContext?.ar_placement?.suitable ? "✅ Suitable" : "❌ Space may be limited"}</li>
+                          <li>Status: {chatContext?.ar_placement?.suitable ? "Suitable for evaluated space" : "Space may be limited"}</li>
                           {chatContext?.ar_placement?.limiting_factor && (
-                            <li>Issue: <span style={{ textTransform: "capitalize" }}>{chatContext?.ar_placement?.limiting_factor}</span></li>
+                            <li>Issue: <span>{formatLimitingFactorLabel(chatContext.ar_placement.limiting_factor)}</span></li>
                           )}
                         </ul>
                       </div>

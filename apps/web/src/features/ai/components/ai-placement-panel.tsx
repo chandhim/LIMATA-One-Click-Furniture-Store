@@ -7,6 +7,7 @@ import { usePlacement } from "../hooks/use-placement";
 import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera, Check, Ruler, Move, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult, DimensionalFitStatus, MovementSpaceStatus } from "../types/placement.types";
+import { formatLimitingFactorDescription } from "../types/placement.types";
 import { CameraCapture } from "./camera-capture";
 
 const DIMENSIONAL_FIT_COPY: Record<DimensionalFitStatus, { label: string; tone: "good" | "bad" | "unknown" }> = {
@@ -348,8 +349,8 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
                     </div>
                     
                     {!result.suitable && result.limiting_factor && (
-                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", marginTop: "0.25rem" }}>
-                        {result.limiting_factor.charAt(0).toUpperCase() + result.limiting_factor.slice(1)} appears to be the main consideration for this placement.
+                      <div style={{ fontSize: "0.925rem", color: "var(--fg-secondary)", marginTop: "0.35rem", lineHeight: 1.5 }}>
+                        {formatLimitingFactorDescription(result.limiting_factor)}
                       </div>
                     )}
                   </div>
