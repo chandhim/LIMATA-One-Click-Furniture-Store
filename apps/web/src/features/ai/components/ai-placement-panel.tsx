@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { PlacementEvaluationResult } from "../types/placement.types";
 import { CameraCapture } from "./camera-capture";
@@ -213,7 +213,10 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
               >
                 <ScanLine size={48} style={{ animation: "pulse 1.5s infinite" }} color="var(--accent)" />
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                  <div style={{ fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>✨ Analyzing space</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>
+                    <Sparkles size={18} color="var(--accent)" />
+                    <span>Analyzing space</span>
+                  </div>
                   <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>Reading relative depth & clearance...</div>
                 </div>
               </div>
@@ -223,16 +226,21 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
           {/* Sequential Loading Indicator underneath */}
           {isPending && (
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "1.5rem", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)" }}>
-              <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1rem" }}>
-                ✨ LIMATA is analyzing your room...
+              <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.125rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1rem" }}>
+                <Sparkles size={18} color="var(--accent)" />
+                <span>LIMATA is analyzing your room...</span>
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease" }}>
-                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                    <Check size={12} strokeWidth={3} />
+                  </div>
                   <span>Understanding the room</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease 1s both" }}>
-                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                    <Check size={12} strokeWidth={3} />
+                  </div>
                   <span>Evaluating available space</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-secondary)", animation: "fadeIn 0.5s ease 2s both" }}>

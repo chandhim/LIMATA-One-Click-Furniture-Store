@@ -3,7 +3,7 @@
 import { ProductCard } from "@/features/products/components/product-card";
 import { ProductSkeleton } from "@/features/products/components/product-skeleton";
 import type { ProductSummary } from "@/features/products/types/product.types";
-import { Sparkles, AlertCircle } from "lucide-react";
+import { Sparkles, AlertCircle, SearchX } from "lucide-react";
 import type { RecommendationResponse } from "../types/recommendation.types";
 
 export function AiRecommendationView({
@@ -50,7 +50,9 @@ export function AiRecommendationView({
   if (data.recommended_product_ids.length === 0) {
     return (
       <div style={{ marginBottom: "3rem", padding: "3rem 1.5rem", background: "var(--bg-surface)", border: "1.5px dashed var(--border)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🤔</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", color: "var(--fg-secondary)" }}>
+          <SearchX size={36} />
+        </div>
         <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No exact matches</h3>
         <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", maxWidth: "400px", margin: "0 auto 1.5rem" }}>We couldn&apos;t find products that perfectly match your constraints. Try broadening your criteria (e.g. higher max price).</p>
         <button onClick={onClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "transparent", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Reset Recommendations</button>
@@ -87,7 +89,9 @@ export function AiRecommendationView({
   if (!hasAnyMatches) {
     return (
       <div style={{ marginBottom: "3rem", padding: "3rem 1.5rem", background: "var(--bg-surface)", border: "1.5px dashed var(--border)", borderRadius: "var(--radius-lg)", textAlign: "center" }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🤔</div>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem", color: "var(--fg-secondary)" }}>
+          <SearchX size={36} />
+        </div>
         <h3 style={{ fontSize: "1.125rem", color: "var(--fg-primary)", marginBottom: "0.5rem" }}>No relevant matches found</h3>
         <p style={{ fontSize: "0.9rem", color: "var(--fg-secondary)", maxWidth: "400px", margin: "0 auto 1.5rem" }}>We couldn&apos;t find furniture matching your query. Try a different search term or adjust your price filter.</p>
         <button onClick={onClear} style={{ padding: "0.5rem 1rem", border: "1px solid var(--border)", background: "transparent", color: "var(--fg-secondary)", borderRadius: "var(--radius-full)", cursor: "pointer" }}>Reset Recommendations</button>

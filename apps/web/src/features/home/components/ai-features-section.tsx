@@ -11,7 +11,7 @@ const defaultAiFeatures = [
     badge: "Room Fit",
     image: "/assets/ai/analyze.jpg",
     ctaText: "Try Room Fit &rarr;",
-    href: "/shop-my-room",
+    href: "/shop-this-room",
   },
   {
     title: "Find Better Matches",
@@ -49,6 +49,7 @@ export function AIFeaturesSection() {
     (customAiFeatures as AIFeature[]) || defaultAiFeatures
   ).map((f: AIFeature, idx: number) => ({
     ...f,
+    href: f.href === "/shop-my-room" ? "/shop-this-room" : f.href,
     icon: icons[idx] || "✨",
   }));
   return (
