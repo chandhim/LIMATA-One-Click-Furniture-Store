@@ -23,6 +23,12 @@ class ProductMetadata(BaseModel):
     material: Optional[str] = None
     price: float
     stock: int
+    # Real product dimensions in cm, when recorded. Optional — many catalog items do
+    # not have these yet. Never fabricate a value here; leave as None when unknown so
+    # the placement pipeline can correctly report DIMENSIONS_UNAVAILABLE.
+    width: Optional[float] = None
+    depth: Optional[float] = None
+    height: Optional[float] = None
 
 
 class RecommendationPreferences(BaseModel):

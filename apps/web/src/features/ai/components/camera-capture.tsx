@@ -100,7 +100,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
               const avg = sum / (32 * 32);
               
               if (avg < 40) {
-                setGuidanceMsg("💡 Try a brighter view.");
+                setGuidanceMsg("Try a brighter view for clearer room scan.");
               } else {
                 setGuidanceMsg("Step back to include the floor and main furniture.");
               }

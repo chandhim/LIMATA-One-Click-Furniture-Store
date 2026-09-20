@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, Loader2, Camera } from "lucide-react";
+import Link from "next/link";
+import { UploadCloud, ScanLine, X, AlertCircle, Sparkles, Loader2, Camera, Lightbulb, Maximize2, Sun, Armchair, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
 import { useVisualRecommend } from "../hooks/use-visual-recommend";
@@ -15,7 +16,7 @@ export function VisualRecommendPanel({
   onClose,
 }: {
   allProducts: ProductSummary[];
-  onClose: () => void;
+  onClose?: () => void;
 }) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -103,23 +104,64 @@ export function VisualRecommendPanel({
             Upload a photo of your room and we&apos;ll suggest furniture that complements what you already have.
           </p>
         </div>
-        <button
-          onClick={onClose}
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "transparent",
+              border: "none",
+              color: "var(--fg-muted)",
+              cursor: "pointer",
+              padding: "0.5rem",
+            }}
+            aria-label="Close Shop This Room"
+          >
+            <X size={24} />
+          </button>
+        )}
+      </div>
+
+      {/* Guest Login Hint Banner */}
+      {!isAuthenticated && (
+        <div
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            background: "transparent",
-            border: "none",
-            color: "var(--fg-muted)",
-            cursor: "pointer",
-            padding: "0.5rem",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            background: "rgba(201,169,110,0.08)",
+            border: "1px solid rgba(201,169,110,0.3)",
+            borderRadius: "var(--radius-lg)",
+            padding: "0.85rem 1.25rem",
           }}
-          aria-label="Close Shop This Room"
         >
-          <X size={24} />
-        </button>
-      </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <Sparkles size={18} color="var(--accent)" />
+            <span style={{ fontSize: "0.9rem", color: "var(--fg-primary)", fontWeight: 500 }}>
+              Sign in to your LIMATA account to analyze your room with AI and view personalized recommendations
+            </span>
+          </div>
+          <Link
+            href="/login?redirect=/shop-this-room"
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              color: "#fff",
+              background: "var(--accent)",
+              padding: "0.45rem 1.15rem",
+              borderRadius: "var(--radius-full)",
+              textDecoration: "none",
+              transition: "all 0.2s ease",
+            }}
+          >
+            Log In
+          </Link>
+        </div>
+      )}
 
       {/* Input or Result Split */}
       {!data && !isError && (
@@ -183,6 +225,115 @@ export function VisualRecommendPanel({
                     <div style={{ fontWeight: 600, color: "var(--fg-primary)", fontSize: "1.1rem" }}>Upload a photo</div>
                   </div>
                 </div>
+
+                {/* ── Hints & Prompts Guide for Room Fit ── */}
+                <div
+                  style={{
+                    background: "var(--bg-base)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "var(--radius-lg)",
+                    padding: "1.5rem",
+                    marginTop: "0.5rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      marginBottom: "1rem",
+                      color: "var(--accent)",
+                      fontWeight: 600,
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    <Lightbulb size={18} />
+                    Tips for Best AI Room Fit Results
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                      gap: "1.25rem",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                      <div
+                        style={{
+                          width: "2.25rem",
+                          height: "2.25rem",
+                          borderRadius: "var(--radius-sm)",
+                          background: "rgba(201,169,110,0.12)",
+                          color: "var(--accent)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Maximize2 size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.2rem" }}>
+                          Capture Floor & Walls
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                          Stand 6–10 ft back from a doorway or corner to capture both the floor plane and walls for depth calculation.
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                      <div
+                        style={{
+                          width: "2.25rem",
+                          height: "2.25rem",
+                          borderRadius: "var(--radius-sm)",
+                          background: "rgba(201,169,110,0.12)",
+                          color: "var(--accent)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Sun size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.2rem" }}>
+                          Good Lighting
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                          Natural daylight or bright room lighting helps AI accurately identify room geometry and furniture materials.
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                      <div
+                        style={{
+                          width: "2.25rem",
+                          height: "2.25rem",
+                          borderRadius: "var(--radius-sm)",
+                          background: "rgba(201,169,110,0.12)",
+                          color: "var(--accent)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Armchair size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", marginBottom: "0.2rem" }}>
+                          Show Key Furniture
+                        </div>
+                        <div style={{ fontSize: "0.8rem", color: "var(--fg-secondary)", lineHeight: 1.5 }}>
+                          Keep your main sofa, bed, or desk visible so AI can detect existing items and recommend complementary pieces.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )
           ) : (
@@ -219,7 +370,10 @@ export function VisualRecommendPanel({
                   >
                     <ScanLine size={48} style={{ animation: "pulse 1.5s infinite" }} color="var(--accent)" />
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                      <div style={{ fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>✨ Analyzing your room</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>
+                        <Sparkles size={18} color="var(--accent)" />
+                        <span>Analyzing your room</span>
+                      </div>
                       <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>Reading visual geometry & context...</div>
                     </div>
                   </div>
@@ -291,20 +445,27 @@ export function VisualRecommendPanel({
           
           {selectedImage && isPending && (
              <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", height: "100%", padding: "2rem" }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1.5rem" }}>
-                  ✨ LIMATA is analyzing your room...
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.25rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1.5rem" }}>
+                  <Sparkles size={20} color="var(--accent)" />
+                  <span>LIMATA is analyzing your room...</span>
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease" }}>
-                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                      <Check size={12} strokeWidth={3} />
+                    </div>
                     <span>Understanding the room</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease 1s both" }}>
-                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                      <Check size={12} strokeWidth={3} />
+                    </div>
                     <span>Detecting furniture</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease 2s both" }}>
-                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                    <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                      <Check size={12} strokeWidth={3} />
+                    </div>
                     <span>Evaluating available space</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-secondary)", animation: "fadeIn 0.5s ease 3s both" }}>

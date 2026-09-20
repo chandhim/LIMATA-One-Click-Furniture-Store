@@ -1,5 +1,5 @@
 import time
-from typing import Any
+from typing import Any, List, Optional
 
 from .model_loader import ModelLoader
 from .detection_result import DetectionResult
@@ -8,6 +8,9 @@ from app.ml.spatial.result import SpatialAnalysisResult
 from app.ml.spatial.engine import SpatialAnalysisEngine
 from app.ml.placement.result import FurnitureMetadata, PlacementEvaluationResult
 from app.ml.placement.engine import PlacementEvaluationEngine
+from app.ml.placement.compatibility import NOT_FIT_STATUSES
+from app.ml.placement.alternatives import rank_spatial_alternatives
+from app.models.requests import ProductMetadata
 from .converters import convert_yolo_results, convert_midas_results
 from .constants import ModelNames
 from .exceptions import AIInferenceException
@@ -120,22 +123,31 @@ class AIOrchestrator:
         except Exception as e:
             raise AIInferenceException(f"Failed to analyze spatial layout: {str(e)}") from e
 
-    def evaluate_placement(self, image: Any, furniture: FurnitureMetadata) -> PlacementEvaluationResult:
+    def evaluate_placement(
+        self,
+        image: Any,
+        furniture: FurnitureMetadata,
+        available_products: Optional[List[ProductMetadata]] = None,
+    ) -> PlacementEvaluationResult:
         """
         Convenience method that runs the entire spatial layout pipeline and then evaluates
         whether the provided furniture constraints are suitable for the room.
-        
+
         Args:
             image (Any): The input image to analyze.
             furniture (FurnitureMetadata): Constraints of the furniture item.
-            
+            available_products (Optional[List[ProductMetadata]]): Same-category candidate
+                products to consider as spatially suitable alternatives if the primary
+                furniture does not fit. Reuses the SAME spatial_result computed below —
+                no additional YOLO/MiDaS inference is run per candidate.
+
         Returns:
             PlacementEvaluationResult: The deterministic evaluation output.
         """
         try:
             # 1. Analyze spatial layout (perceive the room)
             spatial_result = self.analyze_spatial_layout(image)
-            
+
             # 2. Heuristically evaluate placement against the spatial layout
             # Here we need image height and width to get total area.
             # DetectionResult stores it, but we can also retrieve it directly from the image shape.
@@ -149,8 +161,19 @@ class AIOrchestrator:
                     image_height, image_width = 480, 640 # fallback
             except:
                 image_height, image_width = 480, 640 # fallback
-                
-            return self._placement_engine.evaluate(spatial_result, furniture, image_width, image_height)
+
+            result = self._placement_engine.evaluate(spatial_result, furniture, image_width, image_height)
+
+            # 3. If the selected item doesn't fit, look for a spatially better alternative
+            # among the (already fetched) same-category candidates. No new recommendation
+            # engine is introduced here — this reuses the identical dimensional-fit check
+            # against the spatial_result already computed above.
+            if available_products and result.dimensional_fit in NOT_FIT_STATUSES:
+                result.alternative_recommendations = rank_spatial_alternatives(
+                    spatial_result, furniture, available_products, image_width, image_height
+                )
+
+            return result
         except Exception as e:
             raise AIInferenceException(f"Failed to evaluate placement: {str(e)}") from e
 

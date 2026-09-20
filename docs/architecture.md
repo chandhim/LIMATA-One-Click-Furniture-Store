@@ -122,3 +122,13 @@ Exception
 
 ## 9. Current Implementation Status
 The foundational detection, depth, and spatial reasoning pipelines are complete and heavily unit-tested. The architecture enforces lazy-loading, thread-safety, clear exception handling, robust type abstraction, and strict separation between probabilistic perception and deterministic reasoning.
+
+## 10. Furniture Compatibility, Movement Space & Spatial Alternatives (`app/ml/placement/`)
+`PlacementEvaluationEngine` now runs three heuristics beyond congestion/obstacle-proximity, all pure functions consuming the same `SpatialAnalysisResult` already produced above — no additional YOLO/MiDaS inference is introduced:
+
+- **`compatibility.py` (`evaluate_dimensional_fit`)** — compares a product's real width/depth (cm, from the catalog) against an *estimated* available floor footprint derived from `calculate_congestion_index`. Returns `FITS`, `DOES_NOT_FIT_WIDTH`, `DOES_NOT_FIT_DEPTH`, `DIMENSIONS_UNAVAILABLE` (product has no recorded dimensions — never guessed), or `INSUFFICIENT_SCENE_DATA`. Checks rotated (90°) orientation when `FurnitureMetadata.rotatable`. `DOES_NOT_FIT_HEIGHT` exists in the status set but is never emitted today — the pipeline has no ceiling/vertical reference to evaluate against.
+- **`movement.py` (`evaluate_movement_space`)** — projects congestion forward by the candidate furniture's footprint to flag `MOVEMENT_SPACE_OK` / `_RESTRICTED` / `_SEVERELY_RESTRICTED` / `_UNAVAILABLE`. Reuses `calculate_congestion_index` and `evaluate_placement_region` directly; adds no new scene understanding.
+- **`alternatives.py` (`rank_spatial_alternatives`)** — when the primary item doesn't fit, re-runs `evaluate_dimensional_fit` (same `spatial_result`, zero extra inference) over same-category candidate products supplied by the Express layer, and returns the ones that fit, preferring the closest footprint to the original. Candidates without recorded dimensions are always skipped — this function never asserts a fit it cannot check.
+- **`config.py` (`PlacementConfig`)** — centralizes every threshold used above (congestion, obstacle-proximity, and the two new calibration constants `ASSUMED_FRAME_WIDTH_CM` / `ASSUMED_FRAME_DEPTH_CM`).
+
+**Known limitation, stated deliberately:** this service has no camera calibration and no metric depth sensor — a single RGB photo, YOLO pixel boxes, and MiDaS *relative* inverse depth cannot be converted into real-world centimeters with certainty. `ASSUMED_FRAME_WIDTH_CM`/`ASSUMED_FRAME_DEPTH_CM` are a documented, tunable approximation, not a calibrated measurement. Every dimensional-fit and movement-space result must be presented to users as an estimate.

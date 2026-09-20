@@ -35,6 +35,11 @@ export async function findProducts(opts: {
   if (includeDetails) {
     select.description = true;
     select.material = true;
+    // Needed by the AI module (recommendations, chat, visual/placement analysis) —
+    // width/depth/height are optional on Product and not selected for the public list.
+    select.width = true;
+    select.depth = true;
+    select.height = true;
   }
 
   const products = await prisma.product.findMany({

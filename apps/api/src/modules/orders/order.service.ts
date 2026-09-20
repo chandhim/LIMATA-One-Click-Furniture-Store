@@ -120,7 +120,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         where: { cartId: cart.cartId },
       });
 
-      return { type: 'ORDER', data: createdOrder };
+      return { type: 'ORDER' as const, data: createdOrder };
     } else {
       // PayHere: Create a CheckoutAttempt, not an Order!
       const attempt = await tx.checkoutAttempt.create({
@@ -146,7 +146,7 @@ export async function placeOrder(userId: string, input: CreateOrderInput) {
         }
       });
       // Do NOT reduce stock or clear cart yet.
-      return { type: 'ATTEMPT', data: attempt };
+      return { type: 'ATTEMPT' as const, data: attempt };
     }
   });
 
@@ -463,7 +463,7 @@ export async function confirmPayherePaymentClientSide(orderId: string, userId: s
   if (process.env.NODE_ENV !== "production") {
     console.log("[DEV MODE] Simulating successful PayHere webhook for attempt", orderId);
     try {
-      const { processPayHereNotification } = await import("../payments/payment.service");
+      const { processPayHereNotification } = await import("../payments/payment.service.js");
       const merchantId = process.env.PAYHERE_MERCHANT_ID || "1236345";
       const merchantSecret =
         process.env.PAYHERE_MERCHANT_SECRET ||

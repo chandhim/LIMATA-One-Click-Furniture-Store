@@ -2,11 +2,36 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePlacement } from "../hooks/use-placement";
-import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera } from "lucide-react";
+import { UploadCloud, CheckCircle2, XCircle, AlertTriangle, ScanLine, X, Loader2, Sparkles, Camera, Check, Ruler, Move, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
-import type { PlacementEvaluationResult } from "../types/placement.types";
+import type { PlacementEvaluationResult, DimensionalFitStatus, MovementSpaceStatus } from "../types/placement.types";
+import { formatLimitingFactorDescription } from "../types/placement.types";
 import { CameraCapture } from "./camera-capture";
+
+const DIMENSIONAL_FIT_COPY: Record<DimensionalFitStatus, { label: string; tone: "good" | "bad" | "unknown" }> = {
+  FITS: { label: "Estimated to fit the available space.", tone: "good" },
+  DOES_NOT_FIT_WIDTH: { label: "Estimated available width looks smaller than this product's width.", tone: "bad" },
+  DOES_NOT_FIT_DEPTH: { label: "Estimated available depth looks smaller than this product's depth.", tone: "bad" },
+  DOES_NOT_FIT_HEIGHT: { label: "Estimated available height looks smaller than this product's height.", tone: "bad" },
+  DIMENSIONS_UNAVAILABLE: { label: "This product's dimensions aren't recorded yet, so fit couldn't be checked.", tone: "unknown" },
+  INSUFFICIENT_SCENE_DATA: { label: "Not enough information in this photo to estimate available space.", tone: "unknown" },
+};
+
+const MOVEMENT_SPACE_COPY: Record<MovementSpaceStatus, { label: string; tone: "good" | "bad" | "warn" | "unknown" }> = {
+  MOVEMENT_SPACE_OK: { label: "Movement space around this item looks acceptable.", tone: "good" },
+  MOVEMENT_SPACE_RESTRICTED: { label: "Movement space around this item may be restricted.", tone: "warn" },
+  MOVEMENT_SPACE_SEVERELY_RESTRICTED: { label: "Movement space appears severely restricted.", tone: "bad" },
+  MOVEMENT_SPACE_UNAVAILABLE: { label: "Unable to determine movement space from this photo.", tone: "unknown" },
+};
+
+function ToneIcon({ tone }: { tone: "good" | "bad" | "warn" | "unknown" }) {
+  if (tone === "good") return <CheckCircle2 size={18} color="#16a34a" />;
+  if (tone === "bad") return <XCircle size={18} color="#dc2626" />;
+  if (tone === "warn") return <AlertTriangle size={18} color="#d97706" />;
+  return <HelpCircle size={18} color="var(--fg-muted)" />;
+}
 
 interface AiPlacementPanelProps {
   productId: string;
@@ -213,7 +238,10 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
               >
                 <ScanLine size={48} style={{ animation: "pulse 1.5s infinite" }} color="var(--accent)" />
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "center" }}>
-                  <div style={{ fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>✨ Analyzing space</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: 600, letterSpacing: "0.05em", fontSize: "1.1rem" }}>
+                    <Sparkles size={18} color="var(--accent)" />
+                    <span>Analyzing space</span>
+                  </div>
                   <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)" }}>Reading relative depth & clearance...</div>
                 </div>
               </div>
@@ -223,16 +251,21 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
           {/* Sequential Loading Indicator underneath */}
           {isPending && (
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "1.5rem", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)" }}>
-              <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1rem" }}>
-                ✨ LIMATA is analyzing your room...
+              <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "1.125rem", fontWeight: 600, color: "var(--accent-dark)", marginBottom: "1rem" }}>
+                <Sparkles size={18} color="var(--accent)" />
+                <span>LIMATA is analyzing your room...</span>
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease" }}>
-                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                    <Check size={12} strokeWidth={3} />
+                  </div>
                   <span>Understanding the room</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-primary)", animation: "fadeIn 0.5s ease 1s both" }}>
-                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "0.75rem" }}>✓</div>
+                  <div style={{ width: "1.25rem", height: "1.25rem", borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                    <Check size={12} strokeWidth={3} />
+                  </div>
                   <span>Evaluating available space</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--fg-secondary)", animation: "fadeIn 0.5s ease 2s both" }}>
@@ -316,12 +349,93 @@ export function AiPlacementPanel({ productId, onLaunchAr }: AiPlacementPanelProp
                     </div>
                     
                     {!result.suitable && result.limiting_factor && (
-                      <div style={{ fontSize: "0.95rem", color: "var(--fg-secondary)", marginTop: "0.25rem" }}>
-                        {result.limiting_factor.charAt(0).toUpperCase() + result.limiting_factor.slice(1)} appears to be the main consideration for this placement.
+                      <div style={{ fontSize: "0.925rem", color: "var(--fg-secondary)", marginTop: "0.35rem", lineHeight: 1.5 }}>
+                        {formatLimitingFactorDescription(result.limiting_factor)}
                       </div>
                     )}
                   </div>
-                  
+
+                  {/* Furniture Fit (dimension-based) */}
+                  {result.dimensional_fit && (
+                    <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+                        Furniture fit
+                      </div>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+                        <Ruler size={16} style={{ marginTop: "0.15rem", flexShrink: 0, color: "var(--fg-muted)" }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <ToneIcon tone={DIMENSIONAL_FIT_COPY[result.dimensional_fit]?.tone ?? "unknown"} />
+                          <span style={{ fontSize: "0.9rem", color: "var(--fg-secondary)" }}>
+                            {DIMENSIONAL_FIT_COPY[result.dimensional_fit]?.label ?? "Fit could not be determined."}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Movement Space */}
+                  {result.movement_space && (
+                    <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+                        Movement space
+                      </div>
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+                        <Move size={16} style={{ marginTop: "0.15rem", flexShrink: 0, color: "var(--fg-muted)" }} />
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <ToneIcon tone={MOVEMENT_SPACE_COPY[result.movement_space]?.tone ?? "unknown"} />
+                          <span style={{ fontSize: "0.9rem", color: "var(--fg-secondary)" }}>
+                            {MOVEMENT_SPACE_COPY[result.movement_space]?.label ?? "Could not be determined."}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Alternative Recommendations (spatially better fit) */}
+                  {result.alternative_recommendations && result.alternative_recommendations.length > 0 && (
+                    <div style={{ paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                      <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--fg-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
+                        Might fit better
+                      </div>
+                      <p style={{ fontSize: "0.8125rem", color: "var(--fg-secondary)", marginBottom: "0.75rem" }}>
+                        Based on the same estimated space, these similar products look more likely to fit.
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        {result.alternative_recommendations.map((alt) => (
+                          <Link
+                            key={alt.productId}
+                            href={`/products/${alt.productId}`}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "0.75rem",
+                              padding: "0.6rem",
+                              borderRadius: "var(--radius-md)",
+                              border: "1px solid var(--border)",
+                              background: "var(--bg-base)",
+                              textDecoration: "none",
+                              color: "inherit",
+                            }}
+                          >
+                            {alt.product?.images?.[0] && (
+                              <div style={{ position: "relative", width: 48, height: 48, borderRadius: "var(--radius-sm)", overflow: "hidden", flexShrink: 0, background: "var(--bg-surface)" }}>
+                                <Image src={alt.product.images[0]} alt={alt.product.name} fill className="object-cover" />
+                              </div>
+                            )}
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--fg-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {alt.product?.name ?? alt.productId}
+                              </div>
+                              {typeof alt.product?.price === "number" && (
+                                <div style={{ fontSize: "0.8rem", color: "var(--fg-secondary)" }}>Rs. {alt.product.price.toLocaleString()}</div>
+                              )}
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* AR Handoff */}
                   {result.suitable && onLaunchAr && (
                     <div style={{ marginTop: "0.5rem", paddingTop: "1.25rem", borderTop: "1px dashed var(--border)" }}>

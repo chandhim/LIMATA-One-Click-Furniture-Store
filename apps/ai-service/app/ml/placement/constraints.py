@@ -1,6 +1,7 @@
 from typing import Dict, Any, Tuple
 from app.ml.spatial.result import SpatialAnalysisResult
 from app.ml.placement.geometry import calculate_bbox_area
+from app.ml.placement.config import PlacementConfig
 
 def calculate_congestion_index(spatial_result: SpatialAnalysisResult, image_width: int, image_height: int) -> float:
     """
@@ -59,8 +60,9 @@ def evaluate_placement_region(spatial_result: SpatialAnalysisResult) -> Tuple[bo
     
     mean_depth = spatial_result.analysis_metadata.get("mean_depth", 0.0)
     
-    # If the closest object is more than 2x the mean inverse depth, it's very close to the camera.
-    if mean_depth > 0 and nearest_depth > (mean_depth * 2.0):
+    # If the closest object is more than OBSTACLE_PROXIMITY_DEPTH_RATIO times the mean
+    # inverse depth, it's very close to the camera.
+    if mean_depth > 0 and nearest_depth > (mean_depth * PlacementConfig.OBSTACLE_PROXIMITY_DEPTH_RATIO):
         return False, nearest_depth
         
     return True, nearest_depth
