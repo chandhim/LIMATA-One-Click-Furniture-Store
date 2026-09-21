@@ -651,11 +651,7 @@ export function VisualRecommendPanel({
               Suggested For You
             </h3>
 
-            {recommendedProducts.length === 0 ? (
-              <div style={{ padding: "3rem", textAlign: "center", background: "var(--bg-base)", borderRadius: "var(--radius-lg)", border: "1px dashed var(--border)" }}>
-                <p style={{ color: "var(--fg-secondary)" }}>No matching products found in the current catalog.</p>
-              </div>
-            ) : (() => {
+            {(() => {
               // ── Group products by score tier ──────────────────────────────
               type Group = { label: string; color: string; bg: string; border: string; desc: string; items: typeof recommendedProducts };
               const groups: Group[] = [
@@ -671,6 +667,37 @@ export function VisualRecommendPanel({
                 else if (score > 0.6) groups[1].items.push(p);
                 else groups[2].items.push(p);
               });
+
+              // Add additional complementary products from the identified room category
+              const detectedClass = data.visual_context.detected_class?.toLowerCase() || "";
+              let targetCategory = "";
+              if (detectedClass.includes("bed")) {
+                targetCategory = "Bedroom";
+              } else if (detectedClass.includes("table") || detectedClass.includes("dining")) {
+                targetCategory = "Dining Room";
+              } else if (detectedClass.includes("sofa") || detectedClass.includes("chair") || detectedClass.includes("tv")) {
+                targetCategory = "Living Room";
+              } else if (detectedClass.includes("desk") || detectedClass.includes("office")) {
+                targetCategory = "Office";
+              }
+
+              if (targetCategory) {
+                const additionalProducts = allProducts.filter(
+                  (p) => p.category === targetCategory && !recommendedProducts.some((rp) => rp.productId === p.productId)
+                );
+                // Take up to 4 additional products to show as complementary
+                groups[2].items.push(...additionalProducts.slice(0, 4));
+              }
+
+              const hasAnyMatches = groups.some(g => g.items.length > 0);
+
+              if (!hasAnyMatches) {
+                return (
+                  <div style={{ padding: "3rem", textAlign: "center", background: "var(--bg-base)", borderRadius: "var(--radius-lg)", border: "1px dashed var(--border)" }}>
+                    <p style={{ color: "var(--fg-secondary)" }}>No matching products found in the current catalog.</p>
+                  </div>
+                );
+              }
 
               const makeBadge = (p: (typeof recommendedProducts)[number], label: string) => {
                 const info = data.matching_info[p.productId];
